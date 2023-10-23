@@ -1,21 +1,27 @@
-.domos-estate button,
-.domos-estate button:hover,
-.domos-estate button:focus,
-.domos-estate button:active {
-	border: initial;
-  background: initial;
-  padding: initial;
-  font-size: initial;
-  color: initial;
-  font-weight: initial;
-  text-transform: none;
-  -webkit-appearance: button;
-  outline: initial;
+@import 'frontend/wp-reset.css';
+@import '@splidejs/splide/dist/css/splide.min.css';
+
+@config "../../frontend.tailwind.config.js"
+
+.lum-lightbox-inner img {
+    @apply mx-auto;
 }
 
-/*.domos-estate p {*/
-/*  margin: 0;*/
-/*}*/
+.lum-lightbox {
+    @apply opacity-0 transition-opacity;
+}
+
+.lum-lightbox.lum-open {
+    @apply bg-gray-900/50 backdrop-blur-sm z-50 opacity-100 ;
+}
+
+.lum-img {
+    @apply rounded-lg animate-in fade-in zoom-in;
+}
+
+.lum-lightbox-image-wrapper {
+    @apply p-10;
+}
 
 @tailwind base;
 @tailwind components;

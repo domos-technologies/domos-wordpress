@@ -83,22 +83,22 @@ $building = $block->building;
 					Fakten
 				</h4>
 
-				<div class="col-span-4 grid grid-cols-8 gap-5">
+				<div class="col-span-4 grid grid-cols-7 gap-5">
 					@foreach($building->features as $name => $data)
 						<?php
 							$name = str_replace('_', '-', $name);
+							$label = \Domos\Core\FeatureType::from($name)->label();
 						?>
-						<x-icons.feature :type="$name" class="w-full aspect-square" />
+						<div class="flex flex-col justify-center">
+							<x-icons.feature :type="$name" class="w-full aspect-square mb-1" />
+							<div class="text-xs text-center w-full font-medium text-gray-500">{{ $label }}</div>
+						</div>
 				    @endforeach
-
-{{--				<x-portfolio.blocks.feature-block--}}
-{{--					class="col-span-4"--}}
-{{--					:features="$building->features"--}}
-{{--				/>--}}
+				</div>
 			</section>
 		@endif
 
-		<section class="grid-cols-5 gap-10 hidden lg:block ">
+		<section class="grid-cols-5 gap-10 hsidden lg:block ">
 			<h4
 				class="col-span-1 mb-8 text-2xl/normal font-semibold relative text-primary-600"
 			>

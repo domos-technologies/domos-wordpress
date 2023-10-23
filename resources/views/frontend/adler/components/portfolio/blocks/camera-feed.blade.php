@@ -1,4 +1,3 @@
-
 @props(['estate', 'block'])
 
 @php

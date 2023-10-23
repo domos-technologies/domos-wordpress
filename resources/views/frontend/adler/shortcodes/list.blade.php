@@ -233,8 +233,6 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 								:alt="estate.media.thumbnail.alt"
 								loading="lazy"
 							/>
-
-							<img 
 						</figure>
 
 						<div class="text-gray-500 text-base uppercase mb-1 group-hover:opacity-80" x-text="estate.address.city"></div>

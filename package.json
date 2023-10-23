@@ -18,27 +18,37 @@
     }
   ],
   "scripts": {
-    "build": "bun resources/js/build.mjs",
-    "dev": "bun resources/js/build.mjs --dev",
-    "tailwind:watch": "tailwindcss -i ./resources/css/admin.css -o ./public/css/admin.css --watch",
-    "tailwind": "tailwindcss -i ./resources/css/admin.css -o ./public/css/admin.css",
-    "frontend:watch": "tailwindcss -i ./resources/css/frontend.css -o ./public/css/frontend.css --watch --config ./frontend.tailwind.config.js",
-    "frontend": "tailwindcss -i ./resources/css/frontend.css -o ./public/css/frontend.css --config ./frontend.tailwind.config.js"
+    "build": "NODE_ENV=production concurrently \"bun run js\" \"bun run admin\" \"bun run frontend\"",
+    "dev": "concurrently \"bun run js:watch\" \"bun run admin:watch\" \"bun run frontend:watch\"",
+    "js": "bun resources/js/build.mjs",
+    "js:watch": "bun resources/js/build.mjs --dev",
+    "admin:watch": "postcss ./resources/css/admin.css -o ./public/css/admin.css --watch",
+    "admin": "postcss ./resources/css/admin.css -o ./public/css/admin.css",
+    "frontend:watch": "postcss ./resources/css/frontend.css -o ./public/css/frontend.css --watch",
+    "frontend": "postcss ./resources/css/frontend.css -o ./public/css/frontend.css"
   },
   "devDependencies": {
     "@playwright/test": "^1.26.0",
     "@roots/bud": "6.7.1",
     "@roots/bud-preset-wordpress": "6.7.1",
+    "autoprefixer": "^10.4.16",
     "esbuild": "^0.19.4",
+    "postcss": "^8.4.31",
+    "postcss-cli": "^10.1.0",
+    "postcss-import": "^15.1.0",
     "tailwindcss": "^3.3.3"
   },
   "dependencies": {
     "@alpinejs/persist": "^3.13.1",
     "@roots/wordpress-hmr": "6.7.1",
+    "@splidejs/splide": "^4.1.4",
     "@tailwindcss/typography": "^0.5.10",
     "@types/alpinejs": "^3.13.2",
     "alpinejs": "^3.13.1",
-    "lottie-web": "^5.12.2"
+    "concurrently": "^8.2.2",
+    "lottie-web": "^5.12.2",
+    "luminous-lightbox": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "browserslist": [
     "extends @roots/browserslist-config"

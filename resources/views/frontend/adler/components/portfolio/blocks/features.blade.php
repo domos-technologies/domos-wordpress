@@ -1,5 +1,11 @@
-@props(['block', 'page'])
+@props(['estate', 'block'])
 
+@php
+/** @var \SchemaImmo\Estate $estate */
+/** @var \SchemaImmo\WebExpose\Block\FeaturesBlock $block */
+
+$feed = $block->;
+@endphp
 {{-- Features --}}
 @if ($page->estate->features->count() > 0)
 	<x-adler::portfolio.container class="py-20 md:py-20">
@@ -16,3 +22,4 @@
 		<x-portfolio.blocks.feature-block-grouped :groups="$page->estate->featureGroupsInPool" />
 	</x-adler::portfolio.container>
 @endif
+

@@ -22,7 +22,7 @@ class DOMOS
     public function url(): string
     {
         if (!isset($this->url)) {
-            $this->url = 'https://adler.domos.app';
+            $this->url = 'https://umbrella.domos.test';
         }
 
         return $this->url;

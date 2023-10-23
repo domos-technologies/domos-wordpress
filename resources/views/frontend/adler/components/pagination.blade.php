@@ -60,7 +60,6 @@
 						class="box-content absolute bottom-0 w-0 h-px -mx-px duration-200 ease-out translate-y-px border-transparent bg-primary-900 group-hover:border-l group-hover:border-r group-hover:border-primary-900 left-1/2 group-hover:left-0 group-hover:w-full"></span>
 				</a>
 			</li>
-
 		</template>
 {{--		<li class="hidden h-full md:block">--}}
 {{--			<a href="#" class="relative inline-flex items-center h-full px-3 text-primary-900 group bg-gray-50">--}}

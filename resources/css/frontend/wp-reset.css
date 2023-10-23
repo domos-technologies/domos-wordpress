@@ -1,0 +1,14 @@
+.domos-estate button,
+.domos-estate button:hover,
+.domos-estate button:focus,
+.domos-estate button:active {
+	border: initial;
+	background: initial;
+	padding: initial;
+	font-size: initial;
+	color: initial;
+	font-weight: initial;
+	text-transform: none;
+	-webkit-appearance: button;
+	outline: initial;
+}
