@@ -1,0 +1,57 @@
+{
+  "name": "domos/wordpress-core",
+  "type": "wordpress-plugin",
+  "description": "WordPress starter plugin",
+  "homepage": "https://inframe.de",
+  "authors": [
+    {
+      "name": "Lukas Mateffy (Inframe)",
+      "email": "lukas@inframe.de",
+      "homepage": "https://inframe.de"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/roots/clover/issues",
+    "forum": "https://discourse.roots.io/"
+  },
+  "autoload": {
+    "psr-4": {
+      "Domos\\Core\\": "src/"
+    },
+    "files": [
+      "src/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Domos\\Core\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.3||^8.0",
+    "roots/acorn": "^3.2.0",
+    "ext-json": "*",
+    "domos/schema": "dev-main",
+    "yahnis-elsts/plugin-update-checker": "^5.2"
+  },
+  "scripts": {
+    "lint": "pint",
+    "test": "echo 'The road to hell is paved with good intentions.'",
+    "post-autoload-dump": [
+      "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
+    ]
+  },
+  "require-dev": {
+    "laravel/pint": "^1.2"
+  },
+  "minimum-stability": "dev",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../domos/packages/schema"
+    }
+  ]
+}

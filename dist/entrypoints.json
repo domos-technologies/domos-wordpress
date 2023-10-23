@@ -1,0 +1,15 @@
+{
+  "editor": {
+    "js": [
+      "js/editor.js"
+    ],
+    "dependencies": [
+      "wp-blocks",
+      "wp-data",
+      "wp-hooks",
+      "wp-rich-text",
+      "wp-plugins",
+      "wp-i18n"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@roots/clover",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "description": "Clover",
+  "homepage": "https://roots.io/",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Roots",
+      "email": "team@roots.io"
+    }
+  ],
+  "scripts": {
+    "build": "bun resources/js/build.mjs",
+    "dev": "bun resources/js/build.mjs --dev",
+    "tailwind:watch": "tailwindcss -i ./resources/css/admin.css -o ./public/css/admin.css --watch",
+    "tailwind": "tailwindcss -i ./resources/css/admin.css -o ./public/css/admin.css",
+    "frontend:watch": "tailwindcss -i ./resources/css/frontend.css -o ./public/css/frontend.css --watch --config ./frontend.tailwind.config.js",
+    "frontend": "tailwindcss -i ./resources/css/frontend.css -o ./public/css/frontend.css --config ./frontend.tailwind.config.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.26.0",
+    "@roots/bud": "6.7.1",
+    "@roots/bud-preset-wordpress": "6.7.1",
+    "esbuild": "^0.19.4",
+    "tailwindcss": "^3.3.3"
+  },
+  "dependencies": {
+    "@alpinejs/persist": "^3.13.1",
+    "@roots/wordpress-hmr": "6.7.1",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/alpinejs": "^3.13.2",
+    "alpinejs": "^3.13.1",
+    "lottie-web": "^5.12.2"
+  },
+  "browserslist": [
+    "extends @roots/browserslist-config"
+  ]
+}
