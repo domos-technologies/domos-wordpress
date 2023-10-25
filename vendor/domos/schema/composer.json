@@ -1,0 +1,20 @@
+{
+	"name": "domos/schema",
+	"description": "description",
+	"minimum-stability": "stable",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Lukas Mateffy",
+			"email": "github@mateffy.me"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"SchemaImmo\\": "src/"
+		}
+	},
+	"require": {
+		"php": ">=7.1"
+	}
+}

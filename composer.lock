@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "251e5c32a63b1f1f3e44a6961cdd05fe",
+    "content-hash": "ff13c2d1af1e5a637d9760053439bc86",
     "packages": [
         {
             "name": "brick/math",
@@ -155,20 +155,28 @@
         {
             "name": "domos/schema",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/domos-technologies/schema.git",
+                "reference": "6458bc14128a29c95f9597f660a073224aa47479"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../domos/packages/schema",
-                "reference": "0dcaf07d49b92d5e0b00f7452a444d738d0499e9"
+                "type": "zip",
+                "url": "https://api.github.com/repos/domos-technologies/schema/zipball/6458bc14128a29c95f9597f660a073224aa47479",
+                "reference": "6458bc14128a29c95f9597f660a073224aa47479",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "SchemaImmo\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],
@@ -179,9 +187,11 @@
                 }
             ],
             "description": "description",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/domos-technologies/schema/issues",
+                "source": "https://github.com/domos-technologies/schema/tree/main"
+            },
+            "time": "2023-10-25T10:39:49+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -4844,9 +4854,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "domos/schema": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
