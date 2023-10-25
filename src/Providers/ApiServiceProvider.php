@@ -3,7 +3,10 @@
 namespace Domos\Core\Providers;
 
 use Domos\Core\DOMOS;
+use Domos\Core\Exceptions\CannotConnectToDomos;
 use Domos\Core\Exceptions\CouldNotSync;
+use Domos\Core\Exceptions\InvalidInquiry;
+use Domos\Core\Exceptions\PluginNotConfigured;
 
 class ApiServiceProvider implements Provider
 {
@@ -18,6 +21,32 @@ class ApiServiceProvider implements Provider
                 'permission_callback' => function () {
                     // check if user can manage options
                     return current_user_can('manage_options');
+                },
+            ]);
+
+			register_rest_route('domos/admin', '/save-api-settings', [
+                'methods' => 'POST',
+                'callback' => function (\WP_REST_Request $request) {
+					$url = $request->get_param('url');
+					$token = $request->get_param('token');
+
+					return $this->saveApiSettings($url, $token);
+                },
+                'permission_callback' => function () {
+                    // check if user can manage options
+                    return current_user_can('manage_options');
+                },
+            ]);
+
+			register_rest_route('domos/inquiry', '/submit', [
+                'methods' => 'POST',
+                'callback' => function (\WP_REST_Request $request) {
+					$jsonBody = $request->get_json_params();
+
+					return $this->passInquiryToDomos($jsonBody);
+                },
+                'permission_callback' => function () {
+                    return true;
                 },
             ]);
         });
@@ -40,6 +69,10 @@ class ApiServiceProvider implements Provider
 	protected function sync()
 	{
 		try {
+			if (DOMOS::instance()->url() === null) {
+				return new \WP_Error('no_url', 'Es wurde noch keine URL angegeben.');
+			}
+
             [$created, $updated, $deleted] = DOMOS::instance()->sync->synchronize();
 
             return [
@@ -65,7 +98,77 @@ class ApiServiceProvider implements Provider
                 $message = 'Ein unbekannter Fehler ist aufgetreten.';
             }
 
-            return new \WP_Error('unknown',  $message, ['trace' => $th->getTrace()]);
+            return new \WP_Error('unknown', $message);
         }
+	}
+
+	protected function saveApiSettings(string $url, ?string $token = null)
+	{
+		$options = DOMOS::instance()->options;
+
+		// Starts with https://
+		if (substr($url, 0, 8) !== 'https://') {
+			return new \WP_Error('invalid_url', 'Die URL muss mit https:// beginnen.');
+		}
+
+		// Ends with .domos.test or .domos.app
+		if (!preg_match('/\.domos\.(test|app)$/', $url)) {
+			return new \WP_Error('invalid_url', 'Die URL muss auf .domos.test oder .domos.app enden.');
+		}
+
+		// sanitize
+		$url = filter_var($url, FILTER_SANITIZE_URL);
+
+		// Remove trailing slash
+		$url = rtrim($url, '/');
+
+		try {
+			$options->url->set($url);
+		} catch (\Exception $th) {
+			return new \WP_Error('invalid_url', 'Die URL ist ungültig.');
+		}
+
+		try {
+			$options->token->set($token);
+		} catch (\Exception $th) {
+			return new \WP_Error('invalid_token', 'Der Token ist ungültig.');
+		}
+
+		try {
+			$data = DOMOS::instance()->api->whoami();
+
+			if (isset($data['customer']) && isset($data['customer']['name'])) {
+				$message = "Hallo, {$data['customer']['name']}!";
+			} else {
+				$message = 'Verbindung hergestellt.';
+			}
+
+			return [
+				'success' => true,
+				'message' => $message,
+			];
+		} catch (CannotConnectToDomos $th) {
+			$this->logThrowable($th);
+
+			return new \WP_Error($th->errorCode, $th->getMessage());
+		} catch (\Throwable $th) {
+			$this->logThrowable($th);
+
+			return new \WP_Error('unknown', 'Ein unbekannter Fehler ist aufgetreten.');
+		}
+	}
+
+	protected function passInquiryToDomos(array $json)
+	{
+		try {
+			return DOMOS::instance()->api->inquireRaw($json);
+		} catch (InvalidInquiry $exception) {
+			return new \WP_Error('validation', $exception->getMessage(), $exception->errorData);
+		} catch (CannotConnectToDomos $exception) {
+			return new \WP_Error('cannot_connect_to_domos', $exception->getMessage());
+		} catch (\Throwable $exception) {
+			var_dump($exception);
+			return new \WP_Error('unknown', $exception->getMessage());
+		}
 	}
 }

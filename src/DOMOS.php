@@ -2,27 +2,30 @@
 
 namespace Domos\Core;
 
+use Domos\Core\Sync\DomosClient;
 use Domos\Core\Sync\SyncManager;
 
 class DOMOS
 {
-    protected string $url;
+    protected ?string $url;
 
+	public DomosClient $api;
     public SyncManager $sync;
     public URLResolver $urlResolver;
 	public Options $options;
 
     public function __construct()
     {
-        $this->sync = new SyncManager($this->url());
-        $this->urlResolver = new URLResolver();
 		$this->options = new Options();
+        $this->urlResolver = new URLResolver();
+		$this->sync = new SyncManager();
+		$this->api = new DomosClient($this->url());
     }
 
-    public function url(): string
+    public function url(): ?string
     {
         if (!isset($this->url)) {
-            $this->url = 'https://umbrella.domos.test';
+            $this->url = $this->options->url->get();
         }
 
         return $this->url;

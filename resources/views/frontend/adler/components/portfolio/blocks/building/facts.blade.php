@@ -7,7 +7,7 @@
 	'keyColor' => 'text-gray-500'
 ])
 
-<div {{ $attributes->class(['grid grid-cols-2 gap-5 gap-y-8 font-medium']) }}>
+<div {{ $attributes->class(['grid grid-cols-2 gap-5 font-medium']) }}>
 
 	@foreach($facts as $key => $value)
 		<dl {{ $attributes->class(['col-span-1']) }}>

@@ -1,7 +1,7 @@
-@props(['page', 'block'])
+@props(['estate'])
 
 @php
-    $estateId = property_exists($page, 'estate') ? $page->estate?->id : null;
+/** @var \SchemaImmo\Estate $estate */
 @endphp
 
 <x-adler::portfolio.container class="py-16 md:py-32 grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -16,42 +16,11 @@
 		<h2 class="text-4xl text-primary-500 font-semibold mb-4">KONTAKTANFRAGE</h2>
 		<p class="mb-10 text-gray-700">Holen Sie sich jetzt unverbindlich und unkompliziert Details zum Gebäude und Ihren Mietkonditionen ein.</p>
 
-		@livewire(\App\Livewire\Components\Portfolio\ContactForm::class, ['estateId' => $estateId])
+		<x-adler::portfolio.blocks.contact-form.form :estate="$estate" />
 	</div>
 	<div class="col-span-1 space-y-10">
-		@foreach ($page->estate->points_of_contact as $contact)
-			<div class="max-w-md mx-auto bg-gray-50 text-primary-600 px-10 py-8 text-xl shadow-lg">
-				@if ($contact->avatar)
-					<img
-						class="w-full rounded-full max-w-[13rem] mx-auto mb-10"
-						src="{{ $contact->avatar->src }}"
-						alt="Profilbild von {{ $contact->name }}"
-					/>
-				@endif
-
-				<p class="font-semibold text-2xl">{{ $contact->name }}</p>
-				<p class="font-normal  text-2xl mb-5">{{ $contact->position }}</p>
-
-				@if ($contact->email)
-					<div @class(['flex items-center'])>
-						@svg('bi-envelope-open', 'w-3.5 h-4 mr-2 flex-shrink-0')
-						<p class="truncate hover:opacity-70 transition-opacity">
-							<a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a>
-						</p>
-					</div>
-				@endif
-
-				@if ($contact->phone)
-					<div @class(['flex items-center'])>
-						@svg('bi-phone', 'w-3.5 h-3.5 mr-2 flex-shrink-0')
-						<p class="truncate hover:opacity-70 transition-opacity">
-							<a href="tel:{{ $contact->phone }}">
-								{{ $contact->phone }}
-							</a>
-						</p>
-					</div>
-				@endif
-			</div>
+		@foreach ($estate->social->contacts as $contact)
+			<x-adler::portfolio.blocks.contact-form.contact :contact="$contact" />
 		@endforeach
 	</div>
 </x-adler::portfolio.container>

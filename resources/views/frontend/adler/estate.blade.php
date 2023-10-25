@@ -32,6 +32,11 @@
 	--primary-950: {{ $hexToRgb('#091c36') }};
 }
 </style>
+<script>
+	window.DOMOS = window.DOMOS || {
+		lightbox: false
+	};
+</script>
 
 {{-- Header --}}
 <x-adler::portfolio.header :bg-src="$estate->media->thumbnail->src ?? null">
@@ -86,4 +91,6 @@
             :block="$block"
         />
     @endforeach
+
+	<x-adler::portfolio.blocks.contact-form :estate="$estate" />
 @endif

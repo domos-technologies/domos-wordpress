@@ -9,34 +9,45 @@
     class="w-full mx-auto flex flex-col items-center justify-center p-10 space-y-10"
     x-data="{
         url: '{{ $url }}',
-        error: null,
-        synchronizing: false,
 
-        execution: null,
+        sync: {
+        	synchronizing: false,
+        	error: null,
+        	execution: null,
+		},
 
-        async sync() {
+        settings: {
+        	status: 'idle',
+        	message: null,
+        },
+
+        async syncNow() {
+        	if (this.sync.synchronizing) {
+        		return;
+			}
+
             // Fetch data from the server, with credentials from the current user.
-            this.synchronizing = true;
-            this.error = null;
-            this.execution = null;
-
-            const response = await fetch('/wp-json/domos/admin/sync', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': wpApiSettings.nonce,
-                },
-            });
+            this.sync.synchronizing = true;
+            this.sync.error = null;
+            this.sync.execution = null;
 
             try {
+				const response = await fetch('/wp-json/domos/admin/sync', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': wpApiSettings.nonce,
+					},
+				});
+
                 if (!response.ok) {
                     const data = await response.json();
 
-                    this.error = `${data.message} (${data.code})`;
+                    this.sync.error = `${data.message} (${data.code})`;
                 } else {
                     const {created, deleted, updated} = await response.json();
 
-                    this.execution = {
+                    this.sync.execution = {
                         created,
                         deleted,
                         updated,
@@ -45,10 +56,47 @@
             } catch (e) {
                 console.error(e);
 
-                this.error = 'Ein unbekannter Fehler ist aufgetreten.';
+                this.sync.error = 'Ein unbekannter Fehler ist aufgetreten.';
             }
 
-            this.synchronizing = false;
+            this.sync.synchronizing = false;
+        },
+
+        async saveSettings() {
+        	if (this.settings.status === 'saving') {
+				return;
+			}
+
+			this.settings.status = 'saving';
+			this.settings.message = null;
+
+			try {
+				const response = await fetch('/wp-json/domos/admin/save-api-settings', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': wpApiSettings.nonce,
+					},
+					body: JSON.stringify({
+						url: this.url,
+					}),
+				});
+
+				const data = await response.json();
+
+				if (!response.ok) {
+					this.settings.message = `${data.message} (${data.code})`;
+					this.settings.status = 'error';
+				} else {
+					this.settings.message = data.message ?? 'Einstellungen erfolgreich gespeichert.';
+					this.settings.status = 'saved';
+				}
+			} catch (e) {
+				console.error(e);
+
+				this.settings.message = 'Ein unbekannter Fehler ist aufgetreten.';
+				this.settings.status = 'idle';
+			}
         }
     }"
 >
@@ -69,7 +117,7 @@
 
             tabButtonClicked(tabButton) {
                 const id = tabButton.id.replace(this.tabId + '-', '');
-                console.log(id);
+
                 if (this.url === null && id === '1') {
                     return;
                 }
@@ -105,37 +153,38 @@
             </div>
         </div>
         <div class="relative w-full mt-2 content">
+
+			{{-- Sync Page --}}
             <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
-                <!-- Tab Content 1 - Replace with your content -->
-                <div class="border rounded-lg shadow-sm bg-gray-50 text-neutral-900 overflow-hidden">
+                <div class="border rounded-lg shadow-sm bg-gray-50 text-gray-900 overflow-hidden">
                     <div class="flex flex-col space-y-1.5 p-6">
                         <h3 class="text-lg font-semibold leading-none tracking-tight">Sync</h3>
-                        <p class="text-sm text-neutral-500">Synchronisiere WordPress mit deiner domos-Instanz.</p>
+                        <p class="text-sm text-gray-500">Synchronisiere WordPress mit deiner domos-Instanz.</p>
                     </div>
                     <div class="p-6 pt-0 space-y-2">
                         <button
                             type="button"
-                            class="inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-neutral-950 hover:bg-neutral-900 focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 focus:shadow-outline focus:outline-none"
-                            @click="sync"
-                            :disabled="synchronizing"
+                            class="inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-gray-950 hover:bg-gray-900 focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 focus:shadow-outline focus:outline-none"
+                            @click="syncNow"
+                            :disabled="sync.synchronizing"
                         >
-                            <span x-show="!synchronizing">Jetzt synchronisieren</span>
-                            <span x-show="synchronizing">Synchronisiert...</span>
+                            <span x-show="!sync.synchronizing">Jetzt synchronisieren</span>
+                            <span x-show="sync.synchronizing">Synchronisiert...</span>
                         </button>
                     </div>
-                    <template x-if="error">
+                    <template x-if="sync.error">
                         <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
                             <p><strong>Die Syncronisation ist fehlgeschlagen.</strong></p>
-                            <p x-text="error"></p>
+                            <p x-text="sync.error"></p>
                         </div>
                     </template>
-                    <template x-if="synchronizing">
+                    <template x-if="sync.synchronizing">
                         <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 flex justify-between items-center">
                             <p class="font-semibold">Synchronisiert...</p>
                             <x-icons.loader class="w-6 h-6 animate animate-spin" />
                         </div>
                     </template>
-                    <template x-if="execution">
+                    <template x-if="sync.execution">
                         <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
                             <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert.</p>
 
@@ -143,7 +192,7 @@
                                 <figure>
                                     <p
                                         class="text-xl font-semibold text-teal-700"
-                                        x-text="execution.created"
+                                        x-text="sync.execution.created"
                                     ></p>
                                     <figcaption>Erstellt</figcaption>
                                 </figure>
@@ -151,7 +200,7 @@
                                 <figure>
                                     <p
                                         class="text-xl font-semibold"
-                                        x-text="execution.updated"
+                                        x-text="sync.execution.updated"
                                     ></p>
                                     <figcaption>Aktualisiert</figcaption>
                                 </figure>
@@ -159,7 +208,7 @@
                                 <figure>
                                     <p
                                         class="text-xl font-semibold text-rose-700"
-                                        x-text="execution.deleted"
+                                        x-text="sync.execution.deleted"
                                     ></p>
                                     <figcaption>Gelöscht</figcaption>
                                 </figure>
@@ -167,15 +216,18 @@
                         </div>
                     </template>
                 </div>
-                <!-- End Tab Content 1 -->
             </div>
 
+
+			{{-- Settings Page --}}
             <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
-                <!-- Tab Content 2 - Replace with your content -->
-                <div class="border rounded-lg shadow-sm bg-gray-50 text-neutral-900">
+                <form
+					class="border rounded-lg shadow-sm overflow-hidden bg-gray-50 text-gray-900"
+					@submit.prevent="saveSettings"
+				>
                     <div class="flex flex-col space-y-1.5 p-6">
                         <h3 class="text-lg font-semibold leading-none tracking-tight">API-Einstellungen</h3>
-                        <p class="text-sm text-neutral-500">Verbindung zu domos-API herstellen.</p>
+                        <p class="text-sm text-gray-500">Verbindung zu domos-API herstellen.</p>
                     </div>
 
                     <div class="p-6 pt-0 space-y-2">
@@ -184,9 +236,12 @@
                                 class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 for="name">DOMOS-URL</label>
                             <input x-model="url"
-                                    type="url" placeholder="URL" id="url"
+								   type="url"
+								   placeholder="URL"
+								   id="url"
+								   required
                                    value="{{ $url }}"
-                                   class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"/>
+                                   class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"/>
                         </div>
                         <div class="space-y-1">
                             <label
@@ -197,20 +252,40 @@
                             </label>
                             <input type="text" placeholder="XXXXXXXX..." id="token"
                                    value=""
-                                   class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"/>
+                                   class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"/>
                         </div>
                     </div>
 
                     <div class="flex items-center p-6 pt-0">
-                        <button type="button"
-                                class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-neutral-950 hover:bg-neutral-900 focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 focus:shadow-outline focus:outline-none">
-                            Save password
+                        <button type="submit"
+                                class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-gray-950 hover:bg-gray-900 focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 focus:shadow-outline focus:outline-none">
+                            Speichern
                         </button>
                     </div>
-                </div>
-                <!-- End Tab Content 2 -->
-            </div>
 
+					<template x-if="settings.status === 'error'">
+						<div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
+							<p><strong>Die Einstellungen konnten nicht gespeichert werden.</strong></p>
+							<p x-text="settings.message"></p>
+						</div>
+					</template>
+					<template x-if="settings.status === 'saving'">
+                        <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 flex justify-between items-center">
+                            <p class="font-semibold">Speichert...</p>
+                            <x-icons.loader class="w-6 h-6 animate animate-spin" />
+                        </div>
+                    </template>
+					<template x-if="settings.status === 'saved'">
+						<div class="flex justify-between items-center px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
+							<div>
+								<p><strong>Einstellungen erfolgreich gespeichert.</strong></p>
+								<p x-text="settings.message"></p>
+							</div>
+							<x-icons.check class="w-6 h-6 flex-shrink-0 text-teal-500 rounded-full border-2 bg-teal-100 p-1 border-teal-500 stroke-[4px]" />
+						</div>
+					</template>
+                </form>
+            </div>
         </div>
     </div>
 </div>

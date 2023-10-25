@@ -23,6 +23,14 @@
     @apply p-10;
 }
 
+.domos-feature-block--group {
+	@apply shadow-inner;
+}
+
+.domos-feature-block--group--heading {
+	@apply shadow -ml-12 -mt-12 px-5 py-2 bg-primary-600/90 uppercase;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

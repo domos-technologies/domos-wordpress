@@ -1,5 +1,13 @@
 @config "../../tailwind.config.js"
 
+/*
+ * [2023-10-23, @mateffy]: For some god-awful reason, the CSS reset will not be included in the
+ * generated CSS file unless we include a single custom class.
+ * I think it's because it will see this file as "empty" otherwise or something.
+ * Recheck sometime in the future.
+ */
+.class-that-fixes-postcss-somehow {}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

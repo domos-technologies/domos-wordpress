@@ -32,8 +32,8 @@ $spacesWithRent = array_filter($rentables, function (Rentable $rentable) {
 $hasAnySpaceRent = count($spacesWithRent) > 0;
 ?>
 
-<table {{ $attributes->class(['w-full text-base table-auto mt-1 rounded shadow-inner bg-gray-50']) }}>
-<thead class="border-b text-left [&_th]:font-medium [&_th]:px-6 [&_th]:py-4 uppercase dark:border-gray-500 border-gray-300 text-gray-600">
+<table {{ $attributes->class(['w-full text-base table-auto mt-1  shadow-inners bg-gray-50 border border-gray-200']) }}>
+<thead class="border-b text-left [&_th]:font-medium [&_th]:px-6 [&_th]:py-4 [&_th]:border-0 uppercase dark:border-gray-500 border-gray-300 text-gray-600">
 		<tr>
 			<th
 				scope="col"

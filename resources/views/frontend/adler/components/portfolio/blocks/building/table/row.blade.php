@@ -2,7 +2,7 @@
 
 <tr
 	@class([
-		'border-t border-gray-300 [&>td]:space-y-2 [&>td]:whitespace-nowrap [&>td]:py-2 [&>td]:px-6',
+		'border-t border-gray-300 [&>td]:space-y-2 [&>td]:whitespace-nowrap [&>td]:py-2 [&>td]:px-6 [&>td]:border-0',
 		'transition-colors hover:bg-gray-100' => $canBeExpanded
 	])
 
@@ -11,7 +11,7 @@
 		@click="toggleExpansion('{{ $rentable->id }}')"
 	@endif
 >
-	<td class="w-px whitespace-nowrap !p-0 !py-3 !pl-6 align-top text-gray-500">
+	<td class=" w-px whitespace-nowrap !p-0 !py-3 !pl-6 align-top text-gray-500">
 		@if ($canBeExpanded)
 			<x-icons.chevron-right
 				class="w-5 h-5 transition-transform"
@@ -72,16 +72,28 @@
 {{--                    </nav>--}}
 {{--                </td>--}}
 </tr>
-<template x-if="expanded === '{{ $rentable->id }}'">
-	<tr class="overflow-hidden">
-		<td></td>
-		<td colspan="6" class="h-0">
+{{--<template x-if="expanded === '{{ $rentable->id }}'">--}}
+	<tr
+		class="overflow-hidden group"
+		:class="{
+			'border-b border-gray-300': expanded === '{{ $rentable->id }}',
+			'opacity-0': expanded !== '{{ $rentable->id }}',
+		}"
+	>
+		<td class="!h-0 !p-0 !border-0 group-hover:bg-transparent"></td>
+		<td colspan="6" class="!h-0 !p-0 !border-0 group-hover:bg-transparent" >
 			<div
 				@class([
-					'transition-[max-height opacity] grid  gap-12 overflow-hidden pl-10 pr-8 py-8',
+					'transition-[max-height opacity] grid  gap-12 overflow-hidden pl-10 pr-8',
 					'grid-cols-1' => !$hasSlider,
 					'grid-cols-2' => $hasSlider
 				])
+				:class="{
+					'!max-h-0 !py-0': expanded !== '{{ $rentable->id }}',
+					'py-8': expanded === '{{ $rentable->id }}',
+				}"
+				x-cloak
+				x-show="expanded === '{{ $rentable->id }}'"
 				x-transition:enter="ease-out duration-200"
 				x-transition:enter-start="opacity-0 max-h-0"
 				x-transition:enter-end="opacity-100 max-h-96"
@@ -111,14 +123,14 @@
 					/>
 
 					@if(count($rentable->features) > 0)
-						<div class="col-span-4 grid grid-cols-5 gap-4 mt-8">
+						<div class="col-span-4 grid grid-cols-4 gap-4 mt-8">
 							@foreach($rentable->features as $name => $data)
 								<?php
 									$name = str_replace('_', '-', $name);
 									$label = \Domos\Core\FeatureType::from($name)->label();
 								?>
-								<div class="flex flex-col justify-center max-w-[100px]">
-									<x-icons.feature :type="$name" class="w-full aspect-square mb-1" />
+								<div class="flex flex-col items-center max-w-[100px]">
+									<x-icons.feature :type="$name" class="w-14 aspect-square mb-1" />
 									<div class="text-sm text-center w-full font-medium text-gray-500">{{ $label }}</div>
 								</div>
 							@endforeach
@@ -143,4 +155,4 @@
 			</div>
 		</td>
 	</tr>
-</template>
+{{--</template>--}}

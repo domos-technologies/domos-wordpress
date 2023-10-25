@@ -22,60 +22,21 @@ $building = $block->building;
 					{{ \Domos\Core\Formatters\AddressFormatter::line($building->address) }}
 				</p>
 
-{{--				<x-portfolio.section.fact-box--}}
-{{--					:facts="[]"--}}
-{{--					:theme="$theme->factBox"--}}
-{{--					class="w-full"--}}
-{{--					cols="grid-cols-2"--}}
-{{--				/>--}}
+				<x-adler::portfolio.blocks.building.facts
+					:facts="$block->facts"
+				/>
 			</section>
 
 			<div class="col-span-full lg:col-span-2">
-{{--				@if ($hasSlider)--}}
-{{--					<x-ui.slider--}}
-{{--						class="w-full aspect-video rounded-lg overflow-hidden shadow"--}}
-{{--					>--}}
-{{--						@php--}}
-{{--							$index = 0;--}}
-{{--							$matterport_index = null;--}}
-{{--							$video_index = null;--}}
-{{--						@endphp--}}
-
-{{--						@if ($building->matterport_url)--}}
-{{--							<x-ui.slider.iframe-slide :src="$matterport_url" />--}}
-
-{{--							@php--}}
-{{--								$matterport_index = $index;--}}
-{{--								$index++;--}}
-{{--							@endphp--}}
-{{--						@endif--}}
-
-{{--						@foreach ($building->images as $image)--}}
-{{--							<x-ui.slider.image-slide class="object-cover object-center" :src="$image->src" :preview-src="$image->thumbnailSrc" />--}}
-
-{{--							@php--}}
-{{--								$index++;--}}
-{{--							@endphp--}}
-{{--						@endforeach--}}
-
-{{--						@if ($building->video_url)--}}
-{{--							<x-ui.slider.iframe-slide :src="$video_url" />--}}
-
-{{--							@php--}}
-{{--								$video_index = $index;--}}
-{{--								$index++;--}}
-{{--							@endphp--}}
-{{--						@endif--}}
-
-{{--						<x-slot:overlay>--}}
-{{--							<x-ui.slider.navigation :matterport-index="$matterport_index" :video-index="$video_index" />--}}
-{{--						</x-slot:overlay>--}}
-{{--					</x-ui.slider>--}}
-{{--				@endif--}}
+				@if (count($building->media->images) > 0)
+					<x-adler::portfolio.blocks.building.slider
+						:images="$building->media->images"
+					/>
+				@endif
 			</div>
 		</div>
 
-		@if(count($building->features) > 0)
+		@if(count($block->features) > 0)
 			<section class="grid grid-cols-5 gap-10 mb-20">
 				<h4
 					class="col-span-1 mb-8 text-2xl/normal font-semibold relative text-primary-600"
@@ -83,15 +44,16 @@ $building = $block->building;
 					Fakten
 				</h4>
 
-				<div class="col-span-4 grid grid-cols-7 gap-5">
-					@foreach($building->features as $name => $data)
+				<div class="col-span-4 grid grid-cols-5 gap-5">
+					@foreach($block->features as $name => $preformattedFeature)
 						<?php
+							/** @var \SchemaImmo\WebExpose\PreformattedFeature $preformattedFeature */
 							$name = str_replace('_', '-', $name);
-							$label = \Domos\Core\FeatureType::from($name)->label();
+							$label = $preformattedFeature->label;
 						?>
-						<div class="flex flex-col justify-center">
-							<x-icons.feature :type="$name" class="w-full aspect-square mb-1" />
-							<div class="text-xs text-center w-full font-medium text-gray-500">{{ $label }}</div>
+						<div class="flex flex-col items-center">
+							<x-icons.feature :type="$name" class="w-24 h-24 aspect-square mb-2" />
+							<div class="text-base text-center w-full font-medium text-gray-500">{{ $label }}</div>
 						</div>
 				    @endforeach
 				</div>

@@ -96,7 +96,7 @@ enum FeatureType: string
 	case ServerRoom = 'server-room';
 	case Shower = 'shower';
 	case SmartMetering = 'smart-metering';
-	case SocialTenant = 'Social-Tenant';
+	case SocialTenant = 'social-tenant';
 	case SolarEnergy = 'solar-energy';
 	case SolarHeating = 'solar-heating';
 	case SprinklerSystem = 'sprinkler-system';
@@ -107,7 +107,7 @@ enum FeatureType: string
 	case UrbanGardening = 'urban-gardening';
 	case VariableRoomDivision = 'variable-room-division';
 	case Ventilation = 'ventilation';
-	case WashingClothes = 'Washing-Clothes';
+	case WashingClothes = 'washing-clothes';
 	case WaterRetention = 'water-retention';
 	case WildFlowerGrasses = 'wild-flower-grasses';
 	case WindEnergy = 'wind-energy';
