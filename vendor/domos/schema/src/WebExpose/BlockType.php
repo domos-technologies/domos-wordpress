@@ -32,7 +32,7 @@ enum BlockType: string
 			case self::Image:
 				return Block\ImageBlock::class;
 			case self::ImageTabs:
-				return Block\ImagesBlock::class;
+				return Block\ImageTabsBlock::class;
 			case self::Nearby:
 				return Block\NearbyBlock::class;
 			case self::Summary:

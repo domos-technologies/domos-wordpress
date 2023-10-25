@@ -39,6 +39,8 @@ class FeaturesBlock extends Block
 			fn (array $group) => FeatureGroup::from($group),
 			$data['groups'] ?? []
 		);
+
+		return $this;
 	}
 
 	public function toArrayWithoutExtra(): array
