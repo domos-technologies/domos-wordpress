@@ -2,21 +2,29 @@
 
 namespace SchemaImmo\Rentable\Space;
 
-enum Type: string
+class Type
 {
-	// TODO: work this out bruh
-	case Office = 'office';
-	case Living = 'living';
-	case Production = 'production';
-	case Storage = 'storage';
-	case Retail = 'retail';
-	case Gastronomy = 'gastronomy';
-	case Research = 'research';
-	case Health = 'health';
+    protected const Office = 'office';
+	protected const Living = 'living';
+	protected const Production = 'production';
+	protected const Storage = 'storage';
+	protected const Retail = 'retail';
+	protected const Gastronomy = 'gastronomy';
+	protected const Research = 'research';
+	protected const Health = 'health';
+    protected const OpenSpace = 'open-space';
+	protected const OutdoorSpace = 'outdoor-space';
 
-	public function label(): string
-	{
-		return match ($this) {
+    public string $value;
+
+    protected function __construct(string $value)
+    {
+        $this->value = $value;
+    }
+
+    public function label()
+    {
+        return match ($this->value) {
 			self::Office => 'Büro',
 			self::Living => 'Wohnen',
 			self::Production => 'Produktion',
@@ -25,6 +33,18 @@ enum Type: string
 			self::Gastronomy => 'Gastronomie & Freizeit',
 			self::Research => 'Forschung & Entwicklung',
 			self::Health => 'Gesundheit & soziale Nutzungen',
+            self::OpenSpace => 'Freifläche',
+            self::OutdoorSpace => 'Außenfläche',
 		};
-	}
+    }
+
+    public static function from(string $value): static
+    {
+        return new static($value);
+    }
+
+    public static function tryFrom(string $value): static
+    {
+        return new static($value);
+    }
 }

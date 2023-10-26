@@ -24,12 +24,12 @@ class Space implements Arrayable
 	public ?string $notes = null;
 
 	public function __construct(
-		Space\Type $type,
-		?string $id = null,
-		?float $area = null,
-		?Price $price = null,
-		?int $floor = null,
-		?string $notes = null
+        Space\Type $type,
+        ?string    $id = null,
+        ?float     $area = null,
+        ?Price     $price = null,
+        ?int       $floor = null,
+        ?string    $notes = null
 	)
 	{
 		$this->type = $type;

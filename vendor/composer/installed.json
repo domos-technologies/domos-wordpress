@@ -159,18 +159,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/domos-technologies/schema.git",
-                "reference": "341d51b88e8884f6b86cd6760279a554e7e5c614"
+                "reference": "46de005dc6b353087b37e6a1904631d1cd50789e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/domos-technologies/schema/zipball/341d51b88e8884f6b86cd6760279a554e7e5c614",
-                "reference": "341d51b88e8884f6b86cd6760279a554e7e5c614",
+                "url": "https://api.github.com/repos/domos-technologies/schema/zipball/46de005dc6b353087b37e6a1904631d1cd50789e",
+                "reference": "46de005dc6b353087b37e6a1904631d1cd50789e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1"
             },
-            "time": "2023-10-25T10:56:49+00:00",
+            "time": "2023-10-26T09:26:25+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",

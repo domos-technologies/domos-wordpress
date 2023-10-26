@@ -3,7 +3,7 @@
         'name' => 'domos/wordpress-core',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1733d72c99d487862838820ae1f9deef7241f205',
+        'reference' => 'e3a2e2e7e2f66e779cb5475ac5e60080ed64a33f',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'domos/schema' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '341d51b88e8884f6b86cd6760279a554e7e5c614',
+            'reference' => '46de005dc6b353087b37e6a1904631d1cd50789e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../domos/schema',
             'aliases' => array(
@@ -42,7 +42,7 @@
         'domos/wordpress-core' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1733d72c99d487862838820ae1f9deef7241f205',
+            'reference' => 'e3a2e2e7e2f66e779cb5475ac5e60080ed64a33f',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
