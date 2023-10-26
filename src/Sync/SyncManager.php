@@ -34,6 +34,10 @@ class SyncManager
 			}
 		}
 
+		// Make cities unique
+	    $cities = array_unique($cities);
+		$usages = array_unique($usages);
+
 		$domos->options->cities->set($cities);
 		$domos->options->usages->set($usages);
 

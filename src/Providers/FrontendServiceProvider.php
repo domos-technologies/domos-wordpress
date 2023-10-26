@@ -5,6 +5,7 @@ namespace Domos\Core\Providers;
 use Domos\Core\DOMOS;
 use Domos\Core\EstatePost;
 use Illuminate\Support\Facades\Blade;
+use SchemaImmo\Rentable\Space\Type;
 
 class FrontendServiceProvider implements Provider
 {
@@ -63,8 +64,13 @@ class FrontendServiceProvider implements Provider
         $url = $domos->urlResolver;
 		$options = $domos->options;
 
+		$usages = array_map(function (string $value) {
+			return Type::from($value);
+		}, $options->usages->get() ?? []);
+
 		return view('frontend.adler.shortcodes.list', [
-			'cities' => $options->cities->get(),
+			'cities' => $options->cities->get() ?? [],
+			'usages' => $usages,
 			'searchApiUrl' => $url->estateSearchUrl(),
 			'jsUrl' => $url->pluginUrl('public/js/estate.js'),
 			'cssUrl' => $url->pluginUrl('public/css/frontend.css')

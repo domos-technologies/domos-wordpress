@@ -1,4 +1,4 @@
-@props(['jsUrl', 'cssUrl', 'searchApiUrl', 'cities'])
+@props(['jsUrl', 'cssUrl', 'searchApiUrl', 'cities' => [], 'usages' => []])
 
 <?php
 
@@ -147,8 +147,9 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 >
 	<iframe
 		src="{{ \Domos\Core\DOMOS::instance()->url() }}/api/embed/world-map"
-		class="w-full aspect-video border-0"
+		class="w-full aspect-video border-0 mb-10"
 	></iframe>
+
 	<header class="mb-20">
 		<form
 			class="grid md:grid-cols-4 gap-10 items-center"
@@ -194,8 +195,11 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 					x-model="filter.usage"
 					@change="search"
 				>
-					<option value="1">1</option>
-					<option value="2">2</option>
+					<option value="all">Alle</option>
+
+					@foreach ($usages as $type)
+						<option value="{{ $type->value }}">{{ $type->label() }}</option>
+					@endforeach
 				</select>
 			</div>
 		</form>
