@@ -1,13 +1,13 @@
 {
   "name": "domos/wordpress-core",
   "type": "wordpress-plugin",
-  "description": "WordPress starter plugin",
-  "homepage": "https://inframe.de",
+  "description": "Die domos WordPress-Integration",
+  "homepage": "https://domos.de",
   "authors": [
     {
-      "name": "Lukas Mateffy (Inframe)",
-      "email": "lukas@inframe.de",
-      "homepage": "https://inframe.de"
+      "name": "Lukas Mateffy (domos GmbH)",
+      "email": "lukas@domos.de",
+      "homepage": "https://domos.de"
     }
   ],
   "keywords": [

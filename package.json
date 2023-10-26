@@ -1,22 +1,10 @@
 {
-  "name": "@roots/clover",
+  "name": "domos/wordpress",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
-  "description": "Clover",
-  "homepage": "https://roots.io/",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://opensource.org/licenses/MIT"
-    }
-  ],
-  "authors": [
-    {
-      "name": "Roots",
-      "email": "team@roots.io"
-    }
-  ],
+  "description": "domos",
+  "homepage": "https://domos.de",
   "scripts": {
     "build": "NODE_ENV=production concurrently \"bun run js\" \"bun run admin\" \"bun run frontend\"",
     "dev": "concurrently \"bun run js:watch\" \"bun run admin:watch\" \"bun run frontend:watch\"",
