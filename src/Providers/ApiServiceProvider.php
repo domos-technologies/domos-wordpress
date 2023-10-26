@@ -152,6 +152,7 @@ class ApiServiceProvider implements Provider
 		}
 
 		try {
+			DOMOS::instance()->api->setHost($url);
 			$data = DOMOS::instance()->api->whoami();
 
 			if (isset($data['customer']) && isset($data['customer']['name'])) {
@@ -171,7 +172,10 @@ class ApiServiceProvider implements Provider
 		} catch (\Throwable $th) {
 			$this->logThrowable($th);
 
-			return new \WP_Error('unknown', 'Ein unbekannter Fehler ist aufgetreten.');
+			return new \WP_Error('unknown', WP_DEBUG
+				? $th->getMessage()
+				: 'Ein unbekannter Fehler ist aufgetreten.'
+			);
 		}
 	}
 

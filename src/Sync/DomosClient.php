@@ -20,14 +20,19 @@ class DomosClient
     public function __construct(?string $host)
     {
 		if ($host) {
-			$this->host = str($host)
-				->replace(['http://', 'https://'], '');
+			$this->setHost($host);
 
 			add_filter('https_ssl_verify', function($params, $url) {
 				return $this->shouldVerifySsl($url);
 	        }, 10, 2 );
 		}
     }
+
+	public function setHost(string $host)
+	{
+		$this->host = str($host)
+			->replace(['http://', 'https://'], '');
+	}
 
     public function estates(): array
     {

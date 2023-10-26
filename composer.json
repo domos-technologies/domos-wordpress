@@ -34,8 +34,8 @@
     "php": "^7.3||^8.0",
     "roots/acorn": "^3.2.0",
     "ext-json": "*",
-    "domos/schema": "^0.0.1",
-    "yahnis-elsts/plugin-update-checker": "^5.2"
+    "yahnis-elsts/plugin-update-checker": "^5.2",
+    "domos/schema": "^0.0.2"
   },
   "scripts": {
     "lint": "pint",

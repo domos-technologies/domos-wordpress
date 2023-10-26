@@ -35,6 +35,7 @@ class Type
 			self::Health => 'Gesundheit & soziale Nutzungen',
             self::OpenSpace => 'Freifläche',
             self::OutdoorSpace => 'Außenfläche',
+            default => ucfirst($this->value)
 		};
     }
 
