@@ -28,7 +28,7 @@ class SyncManager
 			foreach ($estate->buildings as $building) {
 				foreach ($building->rentables as $rentable) {
 					foreach ($rentable->spaces as $space) {
-						$usages[] = $space->type->slug;
+						$usages[] = $space->type->value;
 					}
 				}
 			}

@@ -1,5 +1,6 @@
 <?php
 /** @var string $url */
+/** @var ?string $token */
 ?>
 
 <script src="https://unpkg.com/alpinejs@3.13.1"></script>
@@ -9,6 +10,7 @@
     class="w-full mx-auto flex flex-col items-center justify-center p-10 space-y-10"
     x-data="{
         url: '{{ $url }}',
+        token: {{ $token ? "'$token'" : 'null'}},
 
         sync: {
         	synchronizing: false,
@@ -79,6 +81,7 @@
 					},
 					body: JSON.stringify({
 						url: this.url,
+						token: this.token,
 					}),
 				});
 
@@ -251,7 +254,8 @@
                                 API-Token (optional)
                             </label>
                             <input type="text" placeholder="XXXXXXXX..." id="token"
-                                   value=""
+                                   value="{{ $token }}"
+								   x-model="token"
                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"/>
                         </div>
                     </div>

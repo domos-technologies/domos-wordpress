@@ -15,6 +15,7 @@ class DomosCoreServiceProvider implements Provider
             AdminServiceProvider::class,
             FrontendServiceProvider::class,
 	        UpdateServiceProvider::class,
+	        CronServiceProvider::class
         ];
     }
 
