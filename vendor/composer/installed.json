@@ -154,8 +154,8 @@
         },
         {
             "name": "domos/schema",
-            "version": "dev-main",
-            "version_normalized": "dev-main",
+            "version": "0.0.1",
+            "version_normalized": "0.0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/domos-technologies/schema.git",
@@ -171,7 +171,6 @@
                 "php": ">=7.1"
             },
             "time": "2023-10-26T09:26:25+00:00",
-            "default-branch": true,
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -192,7 +191,7 @@
             "description": "description",
             "support": {
                 "issues": "https://github.com/domos-technologies/schema/issues",
-                "source": "https://github.com/domos-technologies/schema/tree/main"
+                "source": "https://github.com/domos-technologies/schema/tree/0.0.1"
             },
             "install-path": "../domos/schema"
         },
