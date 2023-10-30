@@ -1,55 +1,31 @@
 import lottie from 'lottie-web';
+import {makeLottieColor, type LottieColor} from "@/helpers/colors";
+import {getLottieColors} from "@/options";
+
+function replaceColors(icon: string, color1: LottieColor, color2: LottieColor): string {
+	return String(icon)
+		.replaceAll('["color1"]', JSON.stringify(color1))
+		.replaceAll('["color2"]', JSON.stringify(color2));
+}
 
 async function fetchIconData(src: string): Promise<object>
 {
-	const json = await fetch(src).then((res) => res.text());
+	const json = await fetch(src)
+		.then((res) => res.text());
 
-	const style = getComputedStyle(document.documentElement);
-	// get CSS variable
-	let primary800 = style.getPropertyValue('--primary-800');
-	let primary400 = style.getPropertyValue('--primary-400');
+	const { color1, color2 } = getLottieColors();
 
-	if (primary800 === '') {
-		primary800 = 'rgb(0,255,0)';
-	}
+	const lottieColor1: LottieColor = makeLottieColor(color1);
+	const lottieColor2: LottieColor = makeLottieColor(color2);
 
-	if (primary400 === '') {
-		primary400 = 'rgb(255,0,0)';
-	}
+	// console.log('Colors', {
+	// 	color1,
+	// 	color2,
+	// 	lottieColor1,
+	// 	lottieColor2,
+	// });
 
-
-	const lottieRgba1 = [
-		...primary800
-			.replace('rgb(', '')
-			.replace(')', '')
-			.split(','),
-	].map((v) => parseInt(v) / 255.0);
-
-	const lottieRgba2 = [
-		...primary400
-			.replace('rgb(', '')
-			.replace(')', '')
-			.split(','),
-	].map((v) => parseInt(v) / 255.0);
-
-	console.log(lottieRgba1, lottieRgba2);
-
-	// json_encode(['a' => 0, 'k' => $lottieRgba1, 'ix' => 3])
-	const color1 = {
-		a: 0,
-		k: lottieRgba1,
-		ix: 3,
-	};
-
-	const color2 = {
-		a: 0,
-		k: lottieRgba2,
-		ix: 3,
-	};
-
-	const replaced = String(json)
-		.replaceAll('["color1"]', JSON.stringify(color1))
-		.replaceAll('["color2"]', JSON.stringify(color2));
+	const replaced = replaceColors(json, lottieColor1, lottieColor2);
 
 	return JSON.parse(replaced);
 }
@@ -81,7 +57,6 @@ function lottieIcon(props: {
 			loop = false
 		) {
 			const data = await fetchIconData(src);
-			console.log('lottie init', data);
 
 			const animation = lottie.loadAnimation({
 				container,

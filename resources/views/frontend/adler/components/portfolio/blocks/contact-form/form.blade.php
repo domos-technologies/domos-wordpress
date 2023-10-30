@@ -188,7 +188,7 @@
 			required
 			maxlength="7000"
 			x-model="data.message"
-			x-data
+			x-data="{}"
 			x-autosize
 		 ></x-adler::portfolio.blocks.contact-form.form.textarea>
 		<x-adler::portfolio.blocks.contact-form.form.error

@@ -81,7 +81,11 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 				url.searchParams.set('page', this.pagination.currentPage);
 			}
 
-			const response = await fetch(url);
+			const response = await fetch(url, {
+				headers: {
+					'Accept': 'application/json',
+				}
+			});
 
 			if (!response.ok) {
 				console.error(response);
@@ -93,8 +97,6 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 			}
 
 			const json = await response.json();
-
-			console.info(json);
 
 			this.estates = json.data;
 			this.pagination = {
@@ -230,13 +232,14 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 						:href="`/objekte/${estate.slug}`"
 					>
 						<figure class="relative w-full mb-5 aspect-video min-h-[12rem] bg-primary-100">
-							<img
-								x-show="estate.media.thumbnail"
-								class="absolute h-full w-full object-cover object-center group-hover:opacity-80"
-								:src="estate.media.thumbnail.src"
-								:alt="estate.media.thumbnail.alt"
-								loading="lazy"
-							/>
+							<template x-if="estate.media.thumbnail">
+								<img
+									class="absolute h-full w-full object-cover object-center group-hover:opacity-80"
+									:src="estate.media.thumbnail.src"
+									:alt="estate.media.thumbnail.alt"
+									loading="lazy"
+								/>
+							</template>
 						</figure>
 
 						<div class="text-gray-500 text-base uppercase mb-1 group-hover:opacity-80" x-text="estate.address.city"></div>

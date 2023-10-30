@@ -27,6 +27,8 @@ foreach ($categories as $category) {
     $placesByType[$category->value] = array_values($filtered);
 }
 
+$categories = array_filter($categories, fn (Place\Category $category) => count($placesByType[$category->value]) > 0);
+
 ?>
 
 <div
@@ -101,11 +103,12 @@ foreach ($categories as $category) {
 
         formatDuration(minutes) {
 		    if (minutes < 60) {
-                return minutes + ' min';
+                return Math.floor(minutes) + ' min';
             }
 
+
             const hours = Math.floor(minutes / 60);
-            const remainingMinutes = minutes % 60;
+            const remainingMinutes = Math.floor(minutes % 60);
 
             return hours + ' h ' + remainingMinutes + ' min';
         },
@@ -187,7 +190,7 @@ foreach ($categories as $category) {
 					</div>
 					<span
 						class="text-sm opacity-75 mr-5"
-						x-text="formatDistance(location.directions_from_estate.walking.duration)"
+						x-text="formatDuration(location.directions_from_estate.walking.duration)"
 					></span>
 				</div>
 			</button>

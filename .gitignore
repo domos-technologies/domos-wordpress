@@ -5,3 +5,5 @@ npm-debug.log
 /test-results/
 /playwright-report/
 /playwright/.cache/
+domos-core.zip
+.DS_Store

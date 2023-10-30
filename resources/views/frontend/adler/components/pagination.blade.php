@@ -55,9 +55,6 @@
 				   x-text="page"
 				   @click.prevent="if (page !== '...') { goToPage(page); }"
 				>
-					<span
-						x-show="page === '...'"
-						class="box-content absolute bottom-0 w-0 h-px -mx-px duration-200 ease-out translate-y-px border-transparent bg-primary-900 group-hover:border-l group-hover:border-r group-hover:border-primary-900 left-1/2 group-hover:left-0 group-hover:w-full"></span>
 				</a>
 			</li>
 		</template>

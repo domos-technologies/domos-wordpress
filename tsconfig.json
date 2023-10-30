@@ -7,7 +7,12 @@
 			"@/*": [
 				"./resources/js/*"
 			]
-		}
+		},
+		"lib": [
+			"es2015",
+			"es2021",
+			"dom"
+		],
 	},
 	"exclude": [
 		"node_modules"

@@ -47,10 +47,22 @@ class FrontendServiceProvider implements Provider
             return;
         }
 
-        $url = DOMOS::instance()->urlResolver;
+		$domos = DOMOS::instance();
+        $url = $domos->urlResolver;
+
 
         wp_register_style('domos-frontend', $url->pluginUrl('public/css/frontend.css'), [], DOMOS_CORE_VERSION);
 		wp_register_script('domos-frontend--estate', $url->pluginUrl('public/js/estate.js'), [], DOMOS_CORE_VERSION, true);
+
+		// @see resources/js/options.ts
+		wp_localize_script( 'domos-frontend--estate', 'DOMOS', [
+			'lightbox' => $domos->isLightboxEnabled(),
+
+			'colors' => [
+				'primary' => $domos->getPrimaryShades(),
+				'lottie' => $domos->getLottieColors()
+			]
+		]);
 
 //		wp_localize_script('domos-frontend--estate', 'domos', [
 //			'ajaxUrl' => admin_url('admin-ajax.php'),
