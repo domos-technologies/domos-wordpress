@@ -148,7 +148,7 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 	}"
 >
 	<iframe
-		src="{{ \Domos\Core\DOMOS::instance()->url() }}/api/embed/world-map"
+		src="{{ \Domos\Core\DOMOS::instance()->url() }}/api/embeds/v1/world-map"
 		class="w-full aspect-video border-0 mb-10"
 	></iframe>
 

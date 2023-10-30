@@ -49,7 +49,7 @@ class URLResolver
     {
         $domosUrl = DOMOS::instance()->url();
 
-        return "{$domosUrl}/api/embed/estate-map/{$estateId}";
+        return "{$domosUrl}/api/embeds/v1/estate-map/{$estateId}";
     }
 
 	public function estateSearchUrl(): string
