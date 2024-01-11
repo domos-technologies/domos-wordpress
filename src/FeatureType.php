@@ -43,14 +43,17 @@ enum FeatureType: string
 	case DressingRoom = 'dressing-room';
 	case ElectricHeating = 'electric-heating';
 	case ElectricVehicleChargingStation = 'electric-vehicle-charging-station';
+	case ElectronicLock = 'electronic-lock';
 	case Elevators = 'elevators';
 	case FiberglassConnection = 'fiberglass-connection';
 	case FloorHeating = 'floor-heating';
 	case FlooredWindows = 'floored-windows';
 	case Floors = 'floors';
 	case GasHeating = 'gas-heating';
+	case GastronomyOnSite = 'gastronomy-on-site';
 	case GeoThermal = 'geo-thermal';
 	case GreenCourtyard = 'green-courtyard';
+	case GreenLeaseContracts = 'green-lease-contracts';
 	case GreenedFacade = 'greened-facade';
 	case GreenedRoof = 'greened-roof';
 	case GroundLevelAccess = 'ground-level-access';
@@ -66,6 +69,7 @@ enum FeatureType: string
 	case HighVoltageOutlet = 'high-voltage-outlet';
 	case HydraulicLift = 'hydraulic-lift';
 	case IndividuallyExpandable = 'individually-expandable';
+	case InfraredHeating = 'infrared-heating';
 	case Kindergarden = 'kindergarden';
 	case Kitchen = 'kitchen';
 	case LKWSlots = 'lkw-slots';
@@ -75,7 +79,10 @@ enum FeatureType: string
 	case LightingWithMotionDetection = 'lighting-with-motion-detection';
 	case MarketingWebsite = 'marketing-website';
 	case MaxFloorLoad = 'max-floor-load';
+	case MaximumSurfaceDesealing = 'maximum-surface-desealing';
 	case MeetingRooms = 'meeting-rooms';
+	case Modernized = 'modernized';
+	case MonumentProtection = 'monument-protection';
 	case NearbySports = 'nearby-sports';
 	case NeedsRenovation = 'needs-renovation';
 	case NestingBox = 'nesting-box';
@@ -92,6 +99,7 @@ enum FeatureType: string
 	case Recycling = 'recycling';
 	case RentableArea = 'rentable-area';
 	case RepresentativeFoyer = 'representative-foyer';
+	case Revitalized = 'revitalized';
 	case RollingGates = 'rolling-gates';
 	case ServerRoom = 'server-room';
 	case Shower = 'shower';
@@ -113,6 +121,7 @@ enum FeatureType: string
 	case WindEnergy = 'wind-energy';
 	case WiredWithCat7 = 'wired-with-cat7';
 	case WoodHybridConstruction = 'wood-hybrid-construction';
+	case WoodenFacade = 'wooden-façade';
 	case YearOfConstruction = 'year-of-construction';
 	case YearOfRenovation = 'year-of-renovation';
 
@@ -150,14 +159,17 @@ enum FeatureType: string
 			static::DressingRoom => 'Umkleideraum',
 			static::ElectricHeating => 'Elektroheizung',
 			static::ElectricVehicleChargingStation => 'E-Ladestation',
+			static::ElectronicLock => 'Elektronische Schließanlage',
 			static::Elevators => 'Personenaufzüge',
 			static::FiberglassConnection => 'Glasfaseranschluss',
 			static::FloorHeating => 'Fußbodenheizung',
 			static::FlooredWindows => 'Bodentiefe Fenster',
 			static::Floors => 'Etagen',
 			static::GasHeating => 'Gasheizung',
+			static::GastronomyOnSite => 'Gastronomie auf dem Gelände',
 			static::GeoThermal => 'Geothermie',
 			static::GreenCourtyard => 'Grüner Innenhof',
+			static::GreenLeaseContracts => 'Green Lease Mietverträge',
 			static::GreenedFacade => 'Begrünte Fassade',
 			static::GreenedRoof => 'Begrünte Dachfläche',
 			static::GroundLevelAccess => 'Ebenerdige Andienung',
@@ -173,6 +185,7 @@ enum FeatureType: string
 			static::HighVoltageOutlet => 'Starkstromanschluss',
 			static::HydraulicLift => 'Hydraulische Hebebühne',
 			static::IndividuallyExpandable => 'Individuell ausbaubar',
+			static::InfraredHeating => 'Infrarot Heizung',
 			static::Kindergarden => 'Kita auf der Liegenschaft',
 			static::Kitchen => 'Küche',
 			static::LKWSlots => 'LKW-Stellplätze',
@@ -182,9 +195,12 @@ enum FeatureType: string
 			static::LightingWithMotionDetection => 'Beleuchtung mit Bewegungsmelder',
 			static::MarketingWebsite => 'Webseite',
 			static::MaxFloorLoad => 'Hohe Bodentraglast',
+			static::MaximumSurfaceDesealing => 'Maximale Flächenentsieglung',
 			static::MeetingRooms => 'Meetingräume',
+			static::Modernized => 'Modernisiert',
+			static::MonumentProtection => 'Denkmalschutz',
 			static::NearbySports => 'Sportangebot in der Nähe',
-			static::NeedsRenovation => 'Renovierungsbedürftig',
+			static::NeedsRenovation => 'Renovierung nötig',
 			static::NestingBox => 'Nistkästen',
 			static::NumberOfWorkplaces => 'Arbeitsplätze',
 			static::OpenRooms => 'offene Raumstruktur',
@@ -199,6 +215,7 @@ enum FeatureType: string
 			static::Recycling => 'Recycling Konzept',
 			static::RentableArea => 'Gesamtmietfläche',
 			static::RepresentativeFoyer => 'Repräsentatives Foyer',
+			static::Revitalized => 'Revitalisiert',
 			static::RollingGates => 'Sektional- & Rolltore',
 			static::ServerRoom => 'Serverraum',
 			static::Shower => 'Duschen',
@@ -220,8 +237,9 @@ enum FeatureType: string
 			static::WindEnergy => 'Windenergie',
 			static::WiredWithCat7 => 'CAT7-Verkabelung',
 			static::WoodHybridConstruction => 'Holzhybridbauweise',
+			static::WoodenFacade => 'Holzfassade',
 			static::YearOfConstruction => 'Baujahr',
-			static::YearOfRenovation => 'Renovierung',
+			static::YearOfRenovation => 'Renoviert',
 		};
 	}
 
@@ -259,14 +277,17 @@ enum FeatureType: string
 			static::DressingRoom => 'lockers',
 			static::ElectricHeating => 'electric-heating',
 			static::ElectricVehicleChargingStation => 'electric-vehicle',
+			static::ElectronicLock => 'electric-key',
 			static::Elevators => 'elevator',
 			static::FiberglassConnection => 'globe-secure',
 			static::FloorHeating => 'floor-heating',
 			static::FlooredWindows => 'expand',
 			static::Floors => 'building-floors',
 			static::GasHeating => 'gas-heating',
+			static::GastronomyOnSite => 'cutlery',
 			static::GeoThermal => 'renewable-energy',
 			static::GreenCourtyard => 'row-of-trees',
+			static::GreenLeaseContracts => 'planet-earth',
 			static::GreenedFacade => 'greened-facade',
 			static::GreenedRoof => 'greened-roof',
 			static::GroundLevelAccess => 'flat',
@@ -282,6 +303,7 @@ enum FeatureType: string
 			static::HighVoltageOutlet => 'electric-outlet',
 			static::HydraulicLift => 'hydraulic-lift',
 			static::IndividuallyExpandable => 'floorplan',
+			static::InfraredHeating => 'warning-light',
 			static::Kindergarden => 'baby-stroller',
 			static::Kitchen => 'kitchen',
 			static::LKWSlots => 'lkw',
@@ -291,7 +313,10 @@ enum FeatureType: string
 			static::LightingWithMotionDetection => 'smart-lighting',
 			static::MarketingWebsite => 'real-estate-website',
 			static::MaxFloorLoad => 'weight-scale',
+			static::MaximumSurfaceDesealing => 'nature-space',
 			static::MeetingRooms => 'conference-room',
+			static::Modernized => 'hammer-with-screwdriver',
+			static::MonumentProtection => 'secure-law',
 			static::NearbySports => 'biceps',
 			static::NeedsRenovation => 'wallpaper',
 			static::NestingBox => 'nesting-box',
@@ -308,6 +333,7 @@ enum FeatureType: string
 			static::Recycling => 'recycling',
 			static::RentableArea => 'area-cube',
 			static::RepresentativeFoyer => 'magic-mirror',
+			static::Revitalized => 'builder-with-plan',
 			static::RollingGates => 'garage',
 			static::ServerRoom => 'server-room',
 			static::Shower => 'water-droplets',
@@ -329,6 +355,7 @@ enum FeatureType: string
 			static::WindEnergy => 'windmill',
 			static::WiredWithCat7 => 'arrow-crossing',
 			static::WoodHybridConstruction => 'hammer',
+			static::WoodenFacade => 'timber',
 			static::YearOfConstruction => 'crane',
 			static::YearOfRenovation => 'hotel',
 		};
@@ -352,7 +379,7 @@ enum FeatureType: string
 			static::CentralFireAlarmSystem => FeatureCategoryType::SocialAffairs,
 			static::CentralFireAlarmSystemFireDepartment => FeatureCategoryType::SocialAffairs,
 			static::CentralHeating => FeatureCategoryType::TechnicalBuildingEquipment,
-			static::CeramicFacade => FeatureCategoryType::Ecology,
+			static::CeramicFacade => FeatureCategoryType::Architecture,
 			static::CleaningService => FeatureCategoryType::SocialAffairs,
 			static::CloseToPublicTransport => FeatureCategoryType::Mobility,
 			static::CompletelyRenovated => FeatureCategoryType::Basic,
@@ -368,14 +395,17 @@ enum FeatureType: string
 			static::DressingRoom => FeatureCategoryType::Logistics,
 			static::ElectricHeating => FeatureCategoryType::EnergyEfficiency,
 			static::ElectricVehicleChargingStation => FeatureCategoryType::Mobility,
+			static::ElectronicLock => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::Elevators => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::FiberglassConnection => FeatureCategoryType::SocialAffairs,
 			static::FloorHeating => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::FlooredWindows => FeatureCategoryType::Architecture,
 			static::Floors => FeatureCategoryType::Basic,
 			static::GasHeating => FeatureCategoryType::EnergyEfficiency,
+			static::GastronomyOnSite => FeatureCategoryType::SocialAffairs,
 			static::GeoThermal => FeatureCategoryType::EnergyEfficiency,
 			static::GreenCourtyard => FeatureCategoryType::Ecology,
+			static::GreenLeaseContracts => FeatureCategoryType::Ecology,
 			static::GreenedFacade => FeatureCategoryType::Ecology,
 			static::GreenedRoof => FeatureCategoryType::Ecology,
 			static::GroundLevelAccess => FeatureCategoryType::Logistics,
@@ -390,7 +420,8 @@ enum FeatureType: string
 			static::HighCeilings => FeatureCategoryType::Architecture,
 			static::HighVoltageOutlet => FeatureCategoryType::Logistics,
 			static::HydraulicLift => FeatureCategoryType::Logistics,
-			static::IndividuallyExpandable => FeatureCategoryType::Architecture,
+			static::IndividuallyExpandable => FeatureCategoryType::Basic,
+			static::InfraredHeating => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::Kindergarden => FeatureCategoryType::SocialAffairs,
 			static::Kitchen => FeatureCategoryType::Architecture,
 			static::LKWSlots => FeatureCategoryType::Mobility,
@@ -400,7 +431,10 @@ enum FeatureType: string
 			static::LightingWithMotionDetection => FeatureCategoryType::EnergyEfficiency,
 			static::MarketingWebsite => FeatureCategoryType::Basic,
 			static::MaxFloorLoad => FeatureCategoryType::Logistics,
+			static::MaximumSurfaceDesealing => FeatureCategoryType::Ecology,
 			static::MeetingRooms => FeatureCategoryType::Architecture,
+			static::Modernized => FeatureCategoryType::Basic,
+			static::MonumentProtection => FeatureCategoryType::Basic,
 			static::NearbySports => FeatureCategoryType::SocialAffairs,
 			static::NeedsRenovation => FeatureCategoryType::Basic,
 			static::NestingBox => FeatureCategoryType::Ecology,
@@ -417,6 +451,7 @@ enum FeatureType: string
 			static::Recycling => FeatureCategoryType::Ecology,
 			static::RentableArea => FeatureCategoryType::Basic,
 			static::RepresentativeFoyer => FeatureCategoryType::Architecture,
+			static::Revitalized => FeatureCategoryType::Basic,
 			static::RollingGates => FeatureCategoryType::Logistics,
 			static::ServerRoom => FeatureCategoryType::Architecture,
 			static::Shower => FeatureCategoryType::Architecture,
@@ -438,8 +473,9 @@ enum FeatureType: string
 			static::WindEnergy => FeatureCategoryType::EnergyEfficiency,
 			static::WiredWithCat7 => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::WoodHybridConstruction => FeatureCategoryType::Ecology,
+			static::WoodenFacade => FeatureCategoryType::Architecture,
 			static::YearOfConstruction => FeatureCategoryType::Architecture,
-			static::YearOfRenovation => FeatureCategoryType::Architecture,
+			static::YearOfRenovation => FeatureCategoryType::Basic,
 		};
 	}
 }

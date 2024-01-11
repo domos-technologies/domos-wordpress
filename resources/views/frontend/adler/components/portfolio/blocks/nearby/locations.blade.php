@@ -90,7 +90,7 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
 		},
 
 		get showMoreButtonVisible() {
-			return this.filteredLocations.length > this.maxItems;
+			return this.limitedLocations.length > this.maxItems;
 		},
 
 		formatDistance(kilometers) {

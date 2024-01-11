@@ -26,9 +26,9 @@ $video = $block->video;
 					class="aspect-video relative shadow-lg w-full"
 					controls
 
-					@if($thumbnail = $block->video->thumbnail_url)
-						poster="{{ $thumbnail }}"
-					@endif
+{{--					@if($thumbnail = $block->video->thumbnail_url)--}}
+{{--						poster="{{ $thumbnail }}"--}}
+{{--					@endif--}}
 				>
                     @foreach($block->video->sources as $source)
                         <?php /** @var \SchemaImmo\Media\Video\DirectVideo\VideoSource $source */ ?>

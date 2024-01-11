@@ -14,7 +14,7 @@
 			email: '',
 			phone: '',
 			message: '',
-			privacy: true
+			privacy: false
 		},
 
 		errors: {
