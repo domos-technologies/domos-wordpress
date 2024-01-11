@@ -40,8 +40,13 @@ class URLResolver
 	{
 		$domosUrl = DOMOS::instance()->url();
 
-		$type = FeatureType::from($featureType);
-		$icon = $type->icon();
+		$type = FeatureType::tryFrom($featureType);
+
+		if ($type) {
+			$icon = $type->icon();
+		} else {
+			$icon = 'unknown';
+		}
 
 		return "{$domosUrl}/images/lottie/{$icon}.json.template";
 	}

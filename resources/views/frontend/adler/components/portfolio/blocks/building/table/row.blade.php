@@ -127,7 +127,13 @@
 							@foreach($rentable->features as $name => $data)
 								<?php
 									$name = str_replace('_', '-', $name);
-									$label = \Domos\Core\FeatureType::from($name)->label();
+									$type = \Domos\Core\FeatureType::tryFrom($name);
+
+									if (!$type) {
+										continue;
+									}
+
+									$label = $type->label();
 								?>
 								<div class="flex flex-col items-center max-w-[100px]">
 									<x-icons.feature :type="$name" class="w-14 aspect-square mb-1" />
