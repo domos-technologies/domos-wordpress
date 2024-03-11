@@ -503,6 +503,8 @@ video {
   aspect-ratio: 16 / 9;
 }.\!h-0 {
   height: 0px !important;
+}.\!h-full {
+  height: 100% !important;
 }.h-10 {
   height: 2.5rem;
 }.h-14 {

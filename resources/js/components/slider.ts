@@ -1,44 +1,39 @@
 import Splide from '@splidejs/splide';
 
+/*
+ * DO NOT REMOVE THIS "EMPTY" ALPINE COMPONENT.
+ *
+ * This is because we use seperate slider implementations for domos-native web expose and the WordPress one.
+ * We use the SAME HTML for both, but different JS implementations.
+ *
+ * Why? Well, Alpine does not 100% work correctly with shadow DOM, and the Splide slider does not work correctly
+ * in the component lifecycle when used in a shadow DOM. So, we use a web component in the WordPress implementation
+ * and a regular Alpine component in the domos-native web expose.
+ *
+ * BUT, we need to keep an empty component around to avoid causing errors when x-data="slider" is executed (as it's
+ * part of the HTML). However the <splide-slider>-HTML is simply ignored by Alpine, so it's fine!.
+ */
 export function plugin(Alpine) {
-    Alpine.data('slider', (name: string) => ({
-		splide: null,
-		currentSliderIndex: 0,
-
-		init() {
-			/*
-			 * TODO: reinvestigate slider timeout in the future
-			 * 2024-03-07: This is a workaround for the issue where the slider is not
-			 * initialized properly when the component is first rendered.
-			 *
-			 * The error: [splide] A track/list element is missing.
-			 *
-			 * This has to do with the slides being inside a shadow root for style encapsulation.
-			 * However, the slider library is not aware of this and cannot find the slides for a little bit of time.
-			 *
-			 * In the future we can replace the slider or find a better solution. But tomorrow is launch day and this needs to ship.
-			 */
-			setTimeout(() => {
-				this.splide = new Splide(this.$el, {
-					type: 'slide',
-					perPage: 1,
-					pagination: false,
-				});
-
-				this.splide.on('move', (newIndex: number) => {
-					this.currentSliderIndex = newIndex;
-				});
-
-				this.splide.mount();
-			}, 800);
-		},
-
-		destroy() {
-			this.splide.destroy();
-		},
-
-		go(to: number) {
-			this.splide.go(to);
-		},
-	}));
+    Alpine.data('slider', (name: string) => ({}));
 }
+
+// Web component version of the slider
+class SplideSlider extends HTMLElement {
+	constructor() {
+		super();
+	}
+
+	connectedCallback() {
+		console.log('SplideSlider connected');
+
+		const splide = new Splide(this, {
+			type: 'slide',
+			perPage: 1,
+			pagination: false,
+		});
+
+		splide.mount();
+	}
+}
+
+customElements.define('splide-slider', SplideSlider);

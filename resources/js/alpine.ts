@@ -18,6 +18,8 @@ window.addEventListener('alpine:init', () => {
 	const domosEstatesElements = Array.from(document.querySelectorAll('.domos-estate'));
 
 	for (const element of domosEstatesElements) {
+		console.info('Initializing Alpine for domos-estate', element);
+
 		// @ts-ignore
 		Alpine.initTree(element.shadowRoot);
 	}
