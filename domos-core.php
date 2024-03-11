@@ -3,7 +3,7 @@
  * Plugin Name:     domos für WordPress
  * Plugin URI:      https://domos.de
  * Description:     Die domos WordPress-Integration
- * Version:         2.0.0
+ * Version:         2.0.1
  * Author:          domos GmbH
  * Author URI:      https://domos.de
  * Text Domain:     domos
@@ -14,7 +14,7 @@ require_once __DIR__.'/vendor/autoload.php';
 define('DOMOS_CORE_ROOT', __DIR__);
 define('DOMOS_CORE_ROOT_FILE', __FILE__);
 define('DOMOS_CORE_URL', plugin_dir_url(__FILE__));
-define('DOMOS_CORE_VERSION', '2.0.0');
+define('DOMOS_CORE_VERSION', '2.0.1');
 define('DOMOS_CORE_SLUG', 'domos-core');
 
 $plugin = new Domos\Core\Providers\DomosCoreServiceProvider;
