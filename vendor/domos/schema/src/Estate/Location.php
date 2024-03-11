@@ -16,8 +16,12 @@ class Location implements Arrayable
 	{
 		$location = new self;
 
-		foreach ($data['places'] as $place) {
-			$location->places[] = Place::from($place);
+		foreach ($data['places'] as $placeData) {
+            $place = Place::tryFrom($placeData);
+
+            if ($place) {
+                $location->places[] = $place;
+            }
 		}
 
 		return $location;

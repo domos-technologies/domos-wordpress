@@ -231,13 +231,15 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 						])
 						:href="`/objekte/${estate.slug}`"
 					>
-						<figure class="relative w-full mb-5 aspect-video min-h-[12rem] bg-primary-100">
+						<figure class="relative w-full mb-5 min-h-[12rem] bg-primary-100" style="aspect-ratio: 4/3; margin-bottom: 1.25rem;">
 							<template x-if="estate.media.thumbnail">
 								<img
-									class="absolute h-full w-full object-cover object-center group-hover:opacity-80"
+									class="absolute !h-full w-full object-cover object-center group-hover:opacity-80"
 									:src="estate.media.thumbnail.src"
 									:alt="estate.media.thumbnail.alt"
 									loading="lazy"
+									{{-- sometimes Wordpress plugins like elementor use custom CSS which fucks up image height --}}
+									style="height: 100% !important;"
 								/>
 							</template>
 						</figure>

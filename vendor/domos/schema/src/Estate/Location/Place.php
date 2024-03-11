@@ -17,8 +17,45 @@ class Place implements \SchemaImmo\Arrayable
 
 	public ?Directions $directions_from_estate = null;
 
+    public static function tryFrom(array $data): ?self
+    {
+        try {
+            return self::from($data);
+        } catch (\SchemaImmo\Exceptions\InvalidDataException $e) {
+            return null;
+        }
+    }
+
     public static function from(array $data): self
     {
+        if (!isset($data['type'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.type', 'Missing type');
+        }
+
+        if (!Place\Type::tryFrom($data['type'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.type', "Invalid type '{$data['type']}'");
+        }
+
+        if (!isset($data['name'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.name', 'Missing name');
+        }
+
+        if (!isset($data['coordinates'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.coordinates', 'Missing coordinates');
+        }
+
+        if (!is_array($data['coordinates'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.coordinates', 'Coordinates must be an array');
+        }
+
+        if (isset($data['address']) && !is_array($data['address'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.address', 'Address must be an array');
+        }
+
+        if (isset($data['directions_from_estate']) && !is_array($data['directions_from_estate'])) {
+            throw new \SchemaImmo\Exceptions\InvalidDataException('place.directions_from_estate', 'Directions must be an array');
+        }
+
 		$place = new self;
 		$place->id = $data['id'] ?? null;
 		$place->type = Place\Type::from($data['type']);

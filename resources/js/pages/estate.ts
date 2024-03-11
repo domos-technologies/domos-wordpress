@@ -10,4 +10,3 @@ Alpine.plugin(lightboxPlugin);
 Alpine.plugin(Autosize);
 
 startWhenReady();
-

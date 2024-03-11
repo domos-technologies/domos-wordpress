@@ -218,8 +218,11 @@ class EstatePost
 
         /* Checks for single template by post type */
         if ($post->post_type == self::POST_TYPE) {
-			wp_enqueue_style('domos-frontend');
+			// We don't enqueue any styles here, as we're using shadow DOM for block encapsulation.
+			// Thus, style tags need to be placed inside the template manually.
+
 			wp_enqueue_script('domos-frontend--estate');
+//			wp_enqueue_script('domos-frontend--estate-external');
 
             return DOMOS_CORE_ROOT . '/resources/views/frontend/estate.php';
         }

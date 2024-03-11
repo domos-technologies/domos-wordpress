@@ -8,23 +8,41 @@ use SchemaImmo\WebExpose\BlockType;
 
 class CustomBlock extends Block
 {
-	public function __construct(
-		array $data = [],
+    /** @var string|null */
+    public $html;
 
-		/** @var string|null */
-		$id = null,
-	)
-	{
-		parent::__construct(
-			BlockType::Custom,
-			$id,
-		);
+    public function __construct(
+        array $data = [],
 
-		$this->extra = $data;
-	}
+        /** @var string|null */
+        $id = null,
 
-	public function toArrayWithoutExtra(): array
-	{
-		return [];
-	}
+        /** @var string|null */
+        $html = null,
+    )
+    {
+        parent::__construct(
+            BlockType::Custom,
+            $id,
+        );
+
+        $this->html = $html;
+        $this->extra = $data;
+    }
+
+    public function fill(array $data): static
+    {
+        parent::fill($data);
+
+        $this->html = $data['html'] ?? null;
+
+        return $this;
+    }
+
+    public function toArrayWithoutExtra(): array
+    {
+        return [
+            'html' => $this->html,
+        ];
+    }
 }

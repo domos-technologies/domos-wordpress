@@ -1,8 +1,11 @@
-import {colorToRgb, RGB, type TailwindColor, type TailwindShade} from "@/helpers/colors";
-import {Brand} from "@/helpers/brand";
-
-// hex, rgb, rgba
-type AnyColorString = Brand<string, 'AnyColorString'>;
+import {
+	AnyColorString,
+	colorToRgb,
+	LottieColor,
+	makeLottieColor,
+	type TailwindColor,
+	type TailwindShade
+} from "@/helpers/colors";
 
 declare global {
 	interface Window {
@@ -10,6 +13,7 @@ declare global {
 			lightbox: boolean;
 			colors: {
 				primary: Record<TailwindShade, AnyColorString>;
+				gray: Record<TailwindShade, AnyColorString>;
 
 				lottie: {
 					color1: AnyColorString;
@@ -21,7 +25,7 @@ declare global {
 }
 
 export function isLightboxEnabled() {
-	return window.DOMOS && window.DOMOS.lightbox;
+	return window.DOMOS?.lightbox ?? false;
 }
 
 export function getPrimaryColors(): TailwindColor {
@@ -44,21 +48,22 @@ export function getPrimaryColors(): TailwindColor {
 	};
 }
 
-export function getLottieColors(): { color1: RGB, color2: RGB } {
+export function getLottieColors(): { color1: LottieColor, color2: LottieColor } {
 	const lottie = window.DOMOS?.colors?.lottie;
 
-	if (lottie) {
-		return {
-			color1: colorToRgb(lottie.color1),
-			color2: colorToRgb(lottie.color2),
-		};
-	} else {
-		const primary = getPrimaryColors();
+	const defaultColor = ('#000' as AnyColorString);
+	const color1Hex = lottie?.color1 ?? defaultColor;
+	const color2Hex = lottie?.color2 ?? defaultColor;
 
-		return {
-			color1: primary['900'],
-			color2: primary['500'],
-		};
-	}
+	const color1Rgb = colorToRgb(color1Hex);
+	const color2Rgb = colorToRgb(color2Hex);
+
+	const color1Lottie = makeLottieColor(color1Rgb);
+	const color2Lottie = makeLottieColor(color2Rgb);
+
+	return {
+		color1: color1Lottie,
+		color2: color2Lottie,
+	};
 }
 

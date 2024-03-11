@@ -14,7 +14,7 @@ class CronServiceProvider implements Provider
 
 	public function boot()
 	{
-		if (!wp_next_scheduled( 'domos_cron_hook' ) ) {
+		if (!wp_next_scheduled('domos_cron_hook')) {
 		    wp_schedule_event(time(), 'daily', 'domos_cron_hook');
 		}
 	}
@@ -23,8 +23,13 @@ class CronServiceProvider implements Provider
 	{
 		try {
 			DOMOS::instance()->sync->synchronize();
-		} catch (\Exception $e) {
-			error_log($e->getMessage());
+		} catch (\Throwable $th) {
+			error_log(print_r([
+				'message' => $th->getMessage(),
+				'file' => $th->getFile(),
+				'line' => $th->getLine(),
+				'trace' => $th->getTrace(),
+			], true));
 		}
 	}
 }

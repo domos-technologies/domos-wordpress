@@ -16,14 +16,24 @@ class Texts implements \SchemaImmo\Arrayable
 	/** @var string|null $location_text */
 	public $location_text = null;
 
+    public function __construct(
+        ?string $slogan = null,
+        ?string $description = null,
+        ?string $location_text = null,
+    )
+    {
+        $this->slogan = $slogan;
+        $this->description = $description;
+        $this->location_text = $location_text;
+    }
+
 	public static function from(array $data): self
 	{
-		$texts = new self;
-		$texts->slogan = Sanitizer::nullify_string($data['slogan'] ?? null);
-		$texts->description = Sanitizer::nullify_string($data['description'] ?? null);
-		$texts->location_text = Sanitizer::nullify_string($data['location_text'] ?? null);
-
-		return $texts;
+        return new self(
+            slogan: Sanitizer::nullify_string($data['slogan'] ?? null),
+            description: Sanitizer::nullify_string($data['description'] ?? null),
+            location_text: Sanitizer::nullify_string($data['location_text'] ?? null),
+        );
 	}
 
 	public function toArray(): array

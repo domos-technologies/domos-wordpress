@@ -1287,6 +1287,8 @@ video {
     margin-bottom: 2.5rem;
   }.lg\:block {
     display: block;
+  }.lg\:table {
+    display: table;
   }.lg\:w-1\/2 {
     width: 50%;
   }.lg\:grid-cols-12 {

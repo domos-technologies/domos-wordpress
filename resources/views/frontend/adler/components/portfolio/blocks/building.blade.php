@@ -70,7 +70,7 @@ $building = $block->building;
 			<x-adler::portfolio.blocks.building.table
 				:estate="$estate"
 				:building="$building"
-				class="col-span-4"
+				class="col-span-4 hidden lg:table"
 			/>
 		</section>
 	</article>

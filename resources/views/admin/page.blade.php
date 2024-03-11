@@ -177,7 +177,7 @@
                     </div>
                     <template x-if="sync.error">
                         <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
-                            <p><strong>Die Syncronisation ist fehlgeschlagen.</strong></p>
+                            <p><strong>Die Synchronisation ist fehlgeschlagen.</strong></p>
                             <p x-text="sync.error"></p>
                         </div>
                     </template>

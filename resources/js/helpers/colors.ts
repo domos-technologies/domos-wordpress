@@ -1,5 +1,6 @@
 import {Brand} from "@/helpers/brand";
 
+export type AnyColorString = Brand<string, 'AnyColorString'>;
 export type RGB = Brand<[number, number, number], 'RGB'>;
 export type LottieRGB = Brand<[number, number, number], 'LottieRGB'>;
 export type LottieColor = {
@@ -23,7 +24,7 @@ export type TailwindColor = { [key in TailwindShade]: RGB; };
 // 	return colorToRgb(color);
 // }
 
-export function colorToRgb(color: string): RGB {
+export function colorToRgb(color: AnyColorString): RGB {
 	if (color.startsWith('#')) {
 		return hexToRgb(color);
 	} else if (color.startsWith('rgba(')) {

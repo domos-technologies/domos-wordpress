@@ -52,22 +52,21 @@ class FrontendServiceProvider implements Provider
 
 
         wp_register_style('domos-frontend', $url->pluginUrl('public/css/frontend.css'), [], DOMOS_CORE_VERSION);
+		wp_register_style('domos-frontend-external', $url->externalWebExposeStyleUrl(), [], DOMOS_CORE_VERSION);
+
 		wp_register_script('domos-frontend--estate', $url->pluginUrl('public/js/estate.js'), [], DOMOS_CORE_VERSION, true);
+//		wp_register_script('domos-frontend--estate-external', $url->externalWebExposeScriptUrl(), [], DOMOS_CORE_VERSION, true);
 
 		// @see resources/js/options.ts
-		wp_localize_script( 'domos-frontend--estate', 'DOMOS', [
+		wp_localize_script('domos-frontend--estate', 'DOMOS', [
 			'lightbox' => $domos->isLightboxEnabled(),
 
 			'colors' => [
 				'primary' => $domos->getPrimaryShades(),
+				'gray' => $domos->getGrayShades(),
 				'lottie' => $domos->getLottieColors()
 			]
 		]);
-
-//		wp_localize_script('domos-frontend--estate', 'domos', [
-//			'ajaxUrl' => admin_url('admin-ajax.php'),
-//			'nonce' => wp_create_nonce('domos'),
-//		]);
     }
 
 	public function renderListShortcode()
@@ -77,8 +76,10 @@ class FrontendServiceProvider implements Provider
 		$options = $domos->options;
 
 		$usages = array_map(function (string $value) {
-			return Type::from($value);
+			return Type::tryFrom($value);
 		}, $options->usages->get() ?? []);
+
+		$usages = array_filter($usages);
 
 		return view('frontend.adler.shortcodes.list', [
 			'cities' => $options->cities->get() ?? [],

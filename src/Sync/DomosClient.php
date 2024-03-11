@@ -3,15 +3,12 @@
 namespace Domos\Core\Sync;
 
 use Domos\Core\DOMOS;
-use Domos\Core\EstatePost;
 use Domos\Core\Exceptions\CannotConnectToDomos;
 use Domos\Core\Exceptions\CouldNotSync;
 use Domos\Core\Exceptions\InvalidDomosResponse;
 use Domos\Core\Exceptions\InvalidInquiry;
 use Domos\Core\Exceptions\PluginNotConfigured;
-use SchemaImmo\Building;
 use SchemaImmo\Estate;
-use SchemaImmo\Rentable;
 
 class DomosClient
 {
@@ -39,10 +36,10 @@ class DomosClient
 		$this->verifyHost();
 
         try {
-            $endpoint = "https://{$this->host}/api/sync/v1/estates";
+            $endpoint = DOMOS::instance()->urlResolver->estateSyncAllUrl();
 
             $response = wp_remote_get($endpoint, [
-                'sslverify' => !str($this->host)->endsWith('.test')
+                'sslverify' => $this->shouldVerifySsl($endpoint)
             ]);
 
             if (is_wp_error($response)) {
@@ -188,10 +185,14 @@ class DomosClient
 
 	protected function shouldVerifySsl($url): bool
 	{
-		$isOurRequest = parse_url($url, PHP_URL_HOST) !== $this->host;
-		$isNotTestDomain = !str($this->host)->endsWith('.test');
+		$isOurRequest = parse_url($url, PHP_URL_HOST) === $this->host;
+		$isTestDomain = str($this->host)->endsWith('.test');
 
-		return $isOurRequest && $isNotTestDomain;
+		if ($isOurRequest && $isTestDomain) {
+			return false;
+		}
+
+		return true;
 	}
 
 	protected function logThrowable(\Throwable $th)

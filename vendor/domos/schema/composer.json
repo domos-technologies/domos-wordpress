@@ -1,6 +1,6 @@
 {
 	"name": "domos/schema",
-	"description": "description",
+	"description": "Not ready for public use. domos/schema is the reference implementation of the domos real estate data schema written in PHP.",
 	"minimum-stability": "stable",
 	"license": "proprietary",
 	"authors": [
@@ -14,7 +14,24 @@
 			"SchemaImmo\\": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		},
+		"files": [
+			"tests/fakers.php"
+		]
+	},
 	"require": {
 		"php": ">=7.1"
+	},
+	"require-dev": {
+		"pestphp/pest": "^2.24",
+		"fakerphp/faker": "^1.23"
+	},
+	"config": {
+		"allow-plugins": {
+			"pestphp/pest-plugin": true
+		}
 	}
 }

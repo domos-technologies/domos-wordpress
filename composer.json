@@ -1,51 +1,57 @@
 {
-  "name": "domos/wordpress-core",
-  "type": "wordpress-plugin",
-  "description": "Die domos WordPress-Integration",
-  "homepage": "https://domos.de",
-  "authors": [
-    {
-      "name": "Lukas Mateffy (domos GmbH)",
-      "email": "lukas@domos.de",
-      "homepage": "https://domos.de"
-    }
-  ],
-  "keywords": [
-    "wordpress"
-  ],
-  "support": {
-    "issues": "https://github.com/roots/clover/issues",
-    "forum": "https://discourse.roots.io/"
-  },
-  "autoload": {
-    "psr-4": {
-      "Domos\\Core\\": "src/"
-    },
-    "files": [
-      "src/helpers.php"
-    ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Domos\\Core\\Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3||^8.0",
-    "roots/acorn": "^3.2.0",
-    "ext-json": "*",
-    "yahnis-elsts/plugin-update-checker": "^5.2",
-    "domos/schema": "^0.0.2"
-  },
-  "scripts": {
-    "lint": "pint",
-    "test": "echo 'The road to hell is paved with good intentions.'",
-    "post-autoload-dump": [
-      "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
-    ]
-  },
-  "require-dev": {
-    "laravel/pint": "^1.2"
-  },
-  "minimum-stability": "dev"
+	"name": "domos/wordpress-core",
+	"type": "wordpress-plugin",
+	"description": "Die domos WordPress-Integration",
+	"homepage": "https://domos.de",
+	"authors": [
+		{
+			"name": "Lukas Mateffy (domos GmbH)",
+			"email": "lukas@domos.de",
+			"homepage": "https://domos.de"
+		}
+	],
+	"keywords": [
+		"wordpress"
+	],
+	"support": {
+		"issues": "https://github.com/roots/clover/issues",
+		"forum": "https://discourse.roots.io/"
+	},
+	"autoload": {
+		"psr-4": {
+			"Domos\\Core\\": "src/"
+		},
+		"files": [
+			"src/helpers.php"
+		]
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Domos\\Core\\Tests\\": "tests/"
+		}
+	},
+	"require": {
+		"php": "^8.1",
+		"roots/acorn": "^3.2.0",
+		"ext-json": "*",
+		"yahnis-elsts/plugin-update-checker": "^5.2",
+		"domos/schema": "0.0.6"
+	},
+	"scripts": {
+		"lint": "pint",
+		"test": "echo 'The road to hell is paved with good intentions.'",
+		"post-autoload-dump": [
+			"Roots\\Acorn\\ComposerScripts::postAutoloadDump"
+		]
+	},
+	"require-dev": {
+		"laravel/pint": "^1.2"
+	},
+	"minimum-stability": "dev",
+	"__repositories": [
+		{
+			"type": "path",
+			"url": "../../schema.immo"
+		}
+	]
 }

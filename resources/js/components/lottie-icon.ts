@@ -1,62 +1,55 @@
 import lottie from 'lottie-web';
-import {makeLottieColor, type LottieColor} from "@/helpers/colors";
 import {getLottieColors} from "@/options";
 
-function replaceColors(icon: string, color1: LottieColor, color2: LottieColor): string {
-	return String(icon)
-		.replaceAll('["color1"]', JSON.stringify(color1))
-		.replaceAll('["color2"]', JSON.stringify(color2));
-}
+async function fetchIconData(src: string): Promise<object> {
+	const json = await fetch(src).then((res) => res.text());
 
-async function fetchIconData(src: string): Promise<object>
-{
-	const json = await fetch(src)
-		.then((res) => res.text());
+	const colors = getLottieColors();
 
-	const { color1, color2 } = getLottieColors();
+	const replaced = String(json)
+		.replaceAll('["color1"]', JSON.stringify(colors.color1))
+		.replaceAll('["color2"]', JSON.stringify(colors.color2));
 
-	const lottieColor1: LottieColor = makeLottieColor(color1);
-	const lottieColor2: LottieColor = makeLottieColor(color2);
-
-	// console.log('Colors', {
-	// 	color1,
-	// 	color2,
-	// 	lottieColor1,
-	// 	lottieColor2,
-	// });
-
-	const replaced = replaceColors(json, lottieColor1, lottieColor2);
+	// style the console output with the given color
+	// console.log('%cThis is a color1', primary800, `color: rgb(${primary800})`);
+	// console.log('%cThis is a color2', primary400, `color: rgb(${primary400})`);
 
 	return JSON.parse(replaced);
 }
 
-function lottieIcon(props: {
-	src: string;
+export default function lottieIcons(props: {
+	src?: string;
+	data?: any;
 	autoplay: boolean;
 	loop: boolean;
 }) {
 	return {
 		initialized: false,
 		src: props.src,
+		data: props.data,
 
 		init() {
-			if (!this.$refs.container.getAttribute('data-lottie-initialized')) {
-				this.create(
-					this.$refs.container,
-					this.src,
-					props.autoplay,
-					props.loop
-				);
-			}
+			const container = this.$el.querySelector('.lottie-container');
+
+			this.create(
+				container,
+				this.src,
+				this.data,
+				props.autoplay,
+				props.loop
+			);
 		},
 
 		async create(
 			container,
 			src?: string,
+			data?: any,
 			autoplay = false,
 			loop = false
 		) {
-			const data = await fetchIconData(src);
+			if (!data) {
+				data = await fetchIconData(src);
+			}
 
 			const animation = lottie.loadAnimation({
 				container,
@@ -72,6 +65,17 @@ function lottieIcon(props: {
 				},
 			});
 
+			const DURATION = 500;
+
+			// get current time
+			const currentTime = new Date().getTime();
+
+			animation.addEventListener('DOMLoaded', () => {
+				const time = new Date().getTime() - currentTime;
+
+				// container.style.opacity = '1';
+			});
+
 			container.setAttribute('data-lottie-initialized', true);
 
 			const animateBackToo = false;
@@ -80,20 +84,15 @@ function lottieIcon(props: {
 			container.addEventListener('mouseenter', () => {
 				animation.setDirection(1);
 
-				if (animation.isPaused && !animateBackToo) {
+				if (animation.isPaused && !animateBackToo)
 					animation.goToAndPlay(0);
-				} else if (animation.isPaused && animateBackToo) {
-					animation.play();
-				}
+				else if (animation.isPaused && animateBackToo) animation.play();
 			});
 
 			if (animateBackToo) {
 				container.addEventListener('mouseleave', () => {
 					animation.setDirection(-1);
-
-					if (animation.isPaused) {
-						animation.play();
-					}
+					if (animation.isPaused) animation.play();
 				});
 			}
 		},
@@ -101,5 +100,5 @@ function lottieIcon(props: {
 }
 
 export function plugin(Alpine) {
-	Alpine.data('lottie', lottieIcon);
+	Alpine.data('lottie', lottieIcons);
 }

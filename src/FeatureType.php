@@ -86,6 +86,8 @@ enum FeatureType: string
 	case NearbySports = 'nearby-sports';
 	case NeedsRenovation = 'needs-renovation';
 	case NestingBox = 'nesting-box';
+	case NewConstruction = 'new-construction';
+	case NumberOfRooms = 'number-of-rooms';
 	case NumberOfWorkplaces = 'number-of-workplaces';
 	case OpenRooms = 'open-rooms';
 	case OutdoorSunshade = 'outdoor-sunshade';
@@ -101,6 +103,7 @@ enum FeatureType: string
 	case RepresentativeFoyer = 'representative-foyer';
 	case Revitalized = 'revitalized';
 	case RollingGates = 'rolling-gates';
+	case RoofTerrace = 'roof-terrace';
 	case ServerRoom = 'server-room';
 	case Shower = 'shower';
 	case SmartMetering = 'smart-metering';
@@ -202,6 +205,8 @@ enum FeatureType: string
 			static::NearbySports => 'Sportangebot in der Nähe',
 			static::NeedsRenovation => 'Renovierung nötig',
 			static::NestingBox => 'Nistkästen',
+			static::NewConstruction => 'Neubau',
+			static::NumberOfRooms => 'Anzahl der Zimmer',
 			static::NumberOfWorkplaces => 'Arbeitsplätze',
 			static::OpenRooms => 'offene Raumstruktur',
 			static::OutdoorSunshade => 'Sonnenschutz',
@@ -217,6 +222,7 @@ enum FeatureType: string
 			static::RepresentativeFoyer => 'Repräsentatives Foyer',
 			static::Revitalized => 'Revitalisiert',
 			static::RollingGates => 'Sektional- & Rolltore',
+			static::RoofTerrace => 'Dachterrasse',
 			static::ServerRoom => 'Serverraum',
 			static::Shower => 'Duschen',
 			static::SmartMetering => 'Smart Metering',
@@ -320,6 +326,8 @@ enum FeatureType: string
 			static::NearbySports => 'biceps',
 			static::NeedsRenovation => 'wallpaper',
 			static::NestingBox => 'nesting-box',
+			static::NewConstruction => 'banner-with-stars',
+			static::NumberOfRooms => 'door',
 			static::NumberOfWorkplaces => 'workplace',
 			static::OpenRooms => 'therapy',
 			static::OutdoorSunshade => 'sun',
@@ -335,6 +343,7 @@ enum FeatureType: string
 			static::RepresentativeFoyer => 'magic-mirror',
 			static::Revitalized => 'builder-with-plan',
 			static::RollingGates => 'garage',
+			static::RoofTerrace => 'house-with-terrace',
 			static::ServerRoom => 'server-room',
 			static::Shower => 'water-droplets',
 			static::SmartMetering => 'smart-home',
@@ -438,6 +447,8 @@ enum FeatureType: string
 			static::NearbySports => FeatureCategoryType::SocialAffairs,
 			static::NeedsRenovation => FeatureCategoryType::Basic,
 			static::NestingBox => FeatureCategoryType::Ecology,
+			static::NewConstruction => FeatureCategoryType::Basic,
+			static::NumberOfRooms => FeatureCategoryType::Architecture,
 			static::NumberOfWorkplaces => FeatureCategoryType::Architecture,
 			static::OpenRooms => FeatureCategoryType::Architecture,
 			static::OutdoorSunshade => FeatureCategoryType::TechnicalBuildingEquipment,
@@ -453,6 +464,7 @@ enum FeatureType: string
 			static::RepresentativeFoyer => FeatureCategoryType::Architecture,
 			static::Revitalized => FeatureCategoryType::Basic,
 			static::RollingGates => FeatureCategoryType::Logistics,
+			static::RoofTerrace => FeatureCategoryType::Architecture,
 			static::ServerRoom => FeatureCategoryType::Architecture,
 			static::Shower => FeatureCategoryType::Architecture,
 			static::SmartMetering => FeatureCategoryType::EnergyEfficiency,
@@ -474,7 +486,7 @@ enum FeatureType: string
 			static::WiredWithCat7 => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::WoodHybridConstruction => FeatureCategoryType::Ecology,
 			static::WoodenFacade => FeatureCategoryType::Architecture,
-			static::YearOfConstruction => FeatureCategoryType::Architecture,
+			static::YearOfConstruction => FeatureCategoryType::Basic,
 			static::YearOfRenovation => FeatureCategoryType::Basic,
 		};
 	}

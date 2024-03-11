@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	important: true,
+	important: false,
 	content: [
 		'resources/views/frontend/**/*.blade.php',
 		'resources/views/components/**/*.blade.php',

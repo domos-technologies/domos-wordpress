@@ -17,6 +17,21 @@ class URLResolver
         return $pluginUrl . $path;
     }
 
+	public function externalWebExposeScriptUrl(): string
+	{
+		$domosUrl = DOMOS::instance()->url();
+
+		return "{$domosUrl}/build/assets/web-expose.js";
+	}
+
+	public function externalWebExposeStyleUrl(): string
+	{
+		$domosUrl = DOMOS::instance()->url();
+
+		return "{$domosUrl}/build/assets/web-expose.css";
+	}
+
+
     public function privacyUrl(): string
     {
         return "/datenschutz";
@@ -61,6 +76,13 @@ class URLResolver
 	{
 		$domosUrl = DOMOS::instance()->url();
 
-		return "{$domosUrl}/api/sync/v1/search";
+		return "{$domosUrl}/api/sync/v2/search";
+	}
+
+	public function estateSyncAllUrl(): string
+	{
+		$domosUrl = DOMOS::instance()->url();
+
+		return "{$domosUrl}/api/sync/v2/estates";
 	}
 }
