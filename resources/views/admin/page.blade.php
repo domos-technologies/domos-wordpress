@@ -12,6 +12,8 @@
         url: '{{ $url }}',
         token: {{ $token ? "'$token'" : 'null'}},
 
+        nonce: '{{ wp_create_nonce('wp_rest') }}',
+
         sync: {
         	synchronizing: false,
         	error: null,
@@ -38,7 +40,7 @@
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': wpApiSettings.nonce,
+						'X-WP-Nonce': this.nonce,
 					},
 				});
 
@@ -77,7 +79,7 @@
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': wpApiSettings.nonce,
+						'X-WP-Nonce': this.nonce,
 					},
 					body: JSON.stringify({
 						url: this.url,
