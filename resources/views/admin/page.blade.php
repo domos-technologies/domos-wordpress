@@ -3,7 +3,7 @@
 /** @var ?string $token */
 ?>
 
-<script src="https://unpkg.com/alpinejs@3.13.1"></script>
+<script src="{{ domos_plugin_url('resources/js/cdn/alpine-3.13.8.min.js') }}"></script>
 <link rel="stylesheet" href="{{ domos_plugin_url('public/css/admin.css') }}" />
 
 <div
