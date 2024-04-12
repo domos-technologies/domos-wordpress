@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.3
+- Fixes script conflict with Elementor
+
 ## 2.0.2
 - Fixed Admin UI not saving properly in some WP configurations due to nonce issues
 
