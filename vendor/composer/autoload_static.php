@@ -27,7 +27,7 @@ class ComposerStaticInit61373437273cc2a0f209307a9404edc2
         '7018e3dbeb54682c59da60bb2ff4f971' => __DIR__ . '/..' . '/roots/support/helpers.php',
         '1d3e394e13b0f60fc9509fa2e09fa96e' => __DIR__ . '/..' . '/roots/acorn/src/Roots/helpers.php',
         '343d14c26e6742d3d4650d589923312e' => __DIR__ . '/..' . '/roots/acorn/src/Roots/globals.php',
-        'efd9d646f43178e7ba3f07758c02ce1d' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p2.php',
+        'd05ecc14ff93fd612a81ec7e8ab4c2c9' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p4.php',
         '4b37224bb85e00e1e88c60d5e0452814' => __DIR__ . '/../..' . '/src/helpers.php',
     );
 
