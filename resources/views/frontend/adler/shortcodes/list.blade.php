@@ -7,7 +7,7 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 ?>
 
 <link rel="stylesheet" href="{{ $cssUrl }}" />
-<script src="{{ $jsUrl }}" defer></script>
+<script src="{{ $jsUrl }}" defer type="module"></script>
 
 <article
 	class="domos-list max-w-7xl mx-auto px-5 md:px-10 lg:px-20 py-10"
