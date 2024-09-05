@@ -18,6 +18,7 @@ enum FeatureType: string
 	case AirConditioning = 'air-conditioning';
 	case Balcony = 'balcony';
 	case Bees = 'bees';
+	case BikeSharing = 'bikesharing';
 	case BikeSlots = 'bike-slots';
 	case BlockHeating = 'block-heating';
 	case CCTV = 'cctv';
@@ -41,6 +42,7 @@ enum FeatureType: string
 	case DistrictHeating = 'district-heating';
 	case DoubleFloor = 'double-floor';
 	case DressingRoom = 'dressing-room';
+	case EcoEnergy = 'ecoenergy';
 	case ElectricHeating = 'electric-heating';
 	case ElectricVehicleChargingStation = 'electric-vehicle-charging-station';
 	case ElectronicLock = 'electronic-lock';
@@ -70,6 +72,7 @@ enum FeatureType: string
 	case HydraulicLift = 'hydraulic-lift';
 	case IndividuallyExpandable = 'individually-expandable';
 	case InfraredHeating = 'infrared-heating';
+	case Janitor = 'janitor';
 	case Kindergarden = 'kindergarden';
 	case Kitchen = 'kitchen';
 	case LKWSlots = 'lkw-slots';
@@ -83,6 +86,7 @@ enum FeatureType: string
 	case MeetingRooms = 'meeting-rooms';
 	case Modernized = 'modernized';
 	case MonumentProtection = 'monument-protection';
+	case NearWater = 'near-water';
 	case NearbySports = 'nearby-sports';
 	case NeedsRenovation = 'needs-renovation';
 	case NestingBox = 'nesting-box';
@@ -137,6 +141,7 @@ enum FeatureType: string
 			static::AirConditioning => 'Klimatisierung',
 			static::Balcony => 'Balkon',
 			static::Bees => 'Bienenvölker',
+			static::BikeSharing => 'Bikesharing',
 			static::BikeSlots => 'Fahrradstellplätze',
 			static::BlockHeating => 'Blockheizkraftwerk',
 			static::CCTV => 'Video-Überwachung',
@@ -160,6 +165,7 @@ enum FeatureType: string
 			static::DistrictHeating => 'Fernwärme',
 			static::DoubleFloor => 'Doppelbodentrassen',
 			static::DressingRoom => 'Umkleideraum',
+			static::EcoEnergy => 'Öko-Strom',
 			static::ElectricHeating => 'Elektroheizung',
 			static::ElectricVehicleChargingStation => 'E-Ladestation',
 			static::ElectronicLock => 'Elektronische Schließanlage',
@@ -189,6 +195,7 @@ enum FeatureType: string
 			static::HydraulicLift => 'Hydraulische Hebebühne',
 			static::IndividuallyExpandable => 'Individuell ausbaubar',
 			static::InfraredHeating => 'Infrarot Heizung',
+			static::Janitor => 'Hausmeister',
 			static::Kindergarden => 'Kita auf der Liegenschaft',
 			static::Kitchen => 'Küche',
 			static::LKWSlots => 'LKW-Stellplätze',
@@ -202,6 +209,7 @@ enum FeatureType: string
 			static::MeetingRooms => 'Meetingräume',
 			static::Modernized => 'Modernisiert',
 			static::MonumentProtection => 'Denkmalschutz',
+			static::NearWater => 'Lage am Wasser',
 			static::NearbySports => 'Sportangebot in der Nähe',
 			static::NeedsRenovation => 'Renovierung nötig',
 			static::NestingBox => 'Nistkästen',
@@ -243,7 +251,7 @@ enum FeatureType: string
 			static::WindEnergy => 'Windenergie',
 			static::WiredWithCat7 => 'CAT7-Verkabelung',
 			static::WoodHybridConstruction => 'Holzhybridbauweise',
-			static::WoodenFacade => 'Holzfassade',
+			static::WoodenFacade => 'Fassade aus Holz',
 			static::YearOfConstruction => 'Baujahr',
 			static::YearOfRenovation => 'Renoviert',
 		};
@@ -258,6 +266,7 @@ enum FeatureType: string
 			static::AirConditioning => 'air-conditioning',
 			static::Balcony => 'balcony',
 			static::Bees => 'bees',
+			static::BikeSharing => 'bike',
 			static::BikeSlots => 'bike',
 			static::BlockHeating => 'block-heating',
 			static::CCTV => 'cctv',
@@ -281,6 +290,7 @@ enum FeatureType: string
 			static::DistrictHeating => 'green-energy',
 			static::DoubleFloor => 'layer-scale',
 			static::DressingRoom => 'lockers',
+			static::EcoEnergy => 'clean-energy',
 			static::ElectricHeating => 'electric-heating',
 			static::ElectricVehicleChargingStation => 'electric-vehicle',
 			static::ElectronicLock => 'electric-key',
@@ -310,6 +320,7 @@ enum FeatureType: string
 			static::HydraulicLift => 'hydraulic-lift',
 			static::IndividuallyExpandable => 'floorplan',
 			static::InfraredHeating => 'warning-light',
+			static::Janitor => 'janitor',
 			static::Kindergarden => 'baby-stroller',
 			static::Kitchen => 'kitchen',
 			static::LKWSlots => 'lkw',
@@ -323,6 +334,7 @@ enum FeatureType: string
 			static::MeetingRooms => 'conference-room',
 			static::Modernized => 'hammer-with-screwdriver',
 			static::MonumentProtection => 'secure-law',
+			static::NearWater => 'lake',
 			static::NearbySports => 'biceps',
 			static::NeedsRenovation => 'wallpaper',
 			static::NestingBox => 'nesting-box',
@@ -379,6 +391,7 @@ enum FeatureType: string
 			static::AirConditioning => FeatureCategoryType::TechnicalBuildingEquipment,
 			static::Balcony => FeatureCategoryType::Architecture,
 			static::Bees => FeatureCategoryType::Ecology,
+			static::BikeSharing => FeatureCategoryType::Mobility,
 			static::BikeSlots => FeatureCategoryType::Mobility,
 			static::BlockHeating => FeatureCategoryType::EnergyEfficiency,
 			static::CCTV => FeatureCategoryType::SocialAffairs,
@@ -402,6 +415,7 @@ enum FeatureType: string
 			static::DistrictHeating => FeatureCategoryType::EnergyEfficiency,
 			static::DoubleFloor => FeatureCategoryType::Architecture,
 			static::DressingRoom => FeatureCategoryType::Logistics,
+			static::EcoEnergy => FeatureCategoryType::EnergyEfficiency,
 			static::ElectricHeating => FeatureCategoryType::EnergyEfficiency,
 			static::ElectricVehicleChargingStation => FeatureCategoryType::Mobility,
 			static::ElectronicLock => FeatureCategoryType::TechnicalBuildingEquipment,
@@ -430,7 +444,8 @@ enum FeatureType: string
 			static::HighVoltageOutlet => FeatureCategoryType::Logistics,
 			static::HydraulicLift => FeatureCategoryType::Logistics,
 			static::IndividuallyExpandable => FeatureCategoryType::Basic,
-			static::InfraredHeating => FeatureCategoryType::TechnicalBuildingEquipment,
+			static::InfraredHeating => FeatureCategoryType::Logistics,
+			static::Janitor => FeatureCategoryType::SocialAffairs,
 			static::Kindergarden => FeatureCategoryType::SocialAffairs,
 			static::Kitchen => FeatureCategoryType::Architecture,
 			static::LKWSlots => FeatureCategoryType::Mobility,
@@ -444,6 +459,7 @@ enum FeatureType: string
 			static::MeetingRooms => FeatureCategoryType::Architecture,
 			static::Modernized => FeatureCategoryType::Basic,
 			static::MonumentProtection => FeatureCategoryType::Basic,
+			static::NearWater => FeatureCategoryType::Ecology,
 			static::NearbySports => FeatureCategoryType::SocialAffairs,
 			static::NeedsRenovation => FeatureCategoryType::Basic,
 			static::NestingBox => FeatureCategoryType::Ecology,
