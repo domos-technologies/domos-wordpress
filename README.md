@@ -40,6 +40,22 @@ Um die Objekte zu synchronisieren, musst du die URL deiner domos-Instanz angeben
 
 ---
 
+## Einbettung der Objektsuche/-karte
+
+Die einfache Objektsuche/-karte kann über den 
+Shortcode `[domos-list]` in eine beliebige Seite eingebettet werden.
+
+---
+
+## Überschreiben des Theme-Layouts für Exposés
+WordPress Post Name: domos_estate
+Wenn du ein Theme verwendest, dass ein eigenes Layout für Objekte oder die Standard WordPress-Post-Liste verwendest, kannst du in deinem Theme die Datei `single-domos_estate.php` oder `archive-domos_estate.php` überschreiben.
+
+- `single-domos_estate.php` wird für einzelne Exposés verwendet.
+- `archive-domos_estate.php` wird für die Standard WordPress-Post-Liste verwendet.
+
+---
+
 ## Weitere Konfigurationen via WordPress-Filter
 
 ### 1. `domos_primary_shades`
@@ -112,7 +128,8 @@ add_filter('domos_privacy_policy_url', fn () => '/neue-datenschutzrichtlinie');
 
 ### 5. `domos_default_navbar_height`
 
-Legt die Standardhöhe für die Navigationsleiste fest (HTML-Einheiten wie `px`, `em` oder `rem` möglich).
+Die Kopfbereiche der Exposés können "Full-Height"-Varianten verwenden, welche den Kopfbereich auf die gesamte Höhe des Bildschirms bringen.
+Legt die Höhe für die Navigationsleiste fest, damit diese von der "Full-Height" abgezogen werden kann. (HTML-Einheiten wie `px`, `em` oder `rem` möglich).
 
 **Standardwert:** `80px`
 
