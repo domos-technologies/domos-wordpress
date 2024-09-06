@@ -22,13 +22,14 @@ $primaryColors = \Domos\Core\DOMOS::instance()->getPrimaryShades();
 $grayColors = \Domos\Core\DOMOS::instance()->getGrayShades();
 $isUsingDarkMode = \Domos\Core\DOMOS::instance()->isUsingDarkMode();
 $defaultNavbarHeight = \Domos\Core\DOMOS::instance()->getDefaultNavbarHeight();
+$fontFamilies = \Domos\Core\DOMOS::instance()->getFontFamilyString();
 
 global $wp_styles;
 ?>
 
 <div class="domos-estate" id="domos-estate">
 	<template shadowrootmode="open">
-		<div class="{{ $isUsingDarkMode ? 'dark' : '' }}">
+		<div class="domos-expose-container {{ $isUsingDarkMode ? 'dark' : '' }}">
 			<style>
 				/* set root CSS variables */
 				:root, :host, .domos-estate {
@@ -49,6 +50,12 @@ global $wp_styles;
 					@endforeach
 
 					--navbar-height: {{ $defaultNavbarHeight }};
+					--font-family: {!! $fontFamilies !!};
+				}
+
+				html, :host, .domos-expose-container, .domos-estate {
+					font-family: var(--font-family, 'inherit');
+					font-weight: 400 !important;
 				}
 			</style>
 

@@ -96,6 +96,27 @@ class DOMOS
 		return apply_filters('domos_default_navbar_height', '80px');
 	}
 
+	public function getFontFamilyString(): string
+	{
+		$defaultFonts = ['sans-serif'];
+
+		// Legacy client support
+		if (get_site_url('') === 'https://adler-investment.de' || get_site_url('') === 'https://www.adler-investment.de') {
+			$defaultFonts = ['Titillium Web', 'sans-serif'];
+		}
+
+		$families = apply_filters('domos_font_families', $defaultFonts);
+		$families = array_map(function($family) {
+			if (in_array($family, ['system-ui', 'sans-serif', 'serif', 'monospace'])) {
+				return $family;
+			}
+
+			return "'$family'";
+		}, $families);
+
+		return implode(', ', $families);
+	}
+
 	/**
 	 * @return array<'color1'|'color2', string>
 	 */
