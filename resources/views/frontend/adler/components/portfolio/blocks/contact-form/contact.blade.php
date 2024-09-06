@@ -1,6 +1,6 @@
 @props(['contact'])
 
-<div class="max-w-md mx-auto bg-gray-50 text-primary-600 px-10 py-8 text-xl shadow-lg">
+<div class="max-w-md mx-auto expose-bg-card expose-text-accent px-10 py-8 text-xl shadow-lg">
 	@if ($contact->avatar)
 		<img
 			class="w-full rounded-full max-w-[13rem] mx-auto mb-10"

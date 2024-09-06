@@ -2,6 +2,8 @@
 
 @php
 /** @var \SchemaImmo\Estate $estate */
+
+$privacyPolicyUrl = \Domos\Core\DOMOS::instance()->getPrivacyPolicyUrl();
 @endphp
 
 <form
@@ -206,8 +208,8 @@
 				class="w-4 h-4 mr-2"
 				x-model="data.privacy"
 			/>
-			<span class="text-sm font-medium leading-6 text-gray-950">
-				Ich habe die <a class="text-primary-500 hover:opacity-70" href="https://www.adler-investment.de/datenschutz/">Datenschutzerklärung</a> gelesen und akzeptiere diese.<sup class="text-red-600 font-medium">*</sup>
+			<span class="text-sm font-medium leading-6 expose-text">
+				Ich habe die <a class="expose-text-accent hover:opacity-70" href="{{ $privacyPolicyUrl }}">Datenschutzerklärung</a> gelesen und akzeptiere diese.<sup class="text-red-600 font-medium">*</sup>
             </span>
 		</label>
 	</div>

@@ -21,3 +21,10 @@
 	// Render WordPress footer
 	get_footer();
 ?>
+
+<!--<style>-->
+<!--	body, :root, :host, .domos-estate {-->
+<!--		background: black;-->
+<!--		color: white;-->
+<!--	}-->
+<!--</style>-->

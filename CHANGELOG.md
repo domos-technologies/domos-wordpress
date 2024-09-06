@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+- Added support for dark mode brandings
+- Added custom font support
+- Privacy policy URL is now configurable
+- Recommended Estates now correctly redirect to the WordPress pages, instead of domos-hosted pages
+
 ## 2.0.3
 - Fixes script conflict with Elementor
 - Loading admin scripts (Alpine) from plugin files instead of CDN

@@ -43,10 +43,12 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
 			name = name.toLowerCase();
 {{--			.replaceAll('-', '');--}}
 {{--			const icon = this.$refs['icon' + name];--}}
-			const icon = document.querySelector('#icon-' + type + '-' + name);
+			const icon = this.$el.querySelector('#icon-' + type + '-' + name);
+
+			console.log(this.$el, document);
 
 			if (!icon) {
-                console.error('unknown icon: ' + name);
+                console.error('unknown icon: #icon-' + type + '-' + name);
                 return null;
             }
 
@@ -121,16 +123,16 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
 	<nav class="flex flex-wrap lg:flex-nowrap mb-10">
 		<button
 			@class([
-				'flex flex-col items-center mr-2 mb-2 px-2 py-1 pt-2 group',
-				$categoryButtonClasses,
+				'flex flex-col items-center mr-2 px-2 py-1 pt-2 group',
 			])
 			:class="{
+				@js($categoryButtonClasses): filter !== null,
 				@js($categoryButtonActiveClasses): filter === null
 			}"
 			type="button"
 			@click="filter = null"
 		>
-			<x-icons.places.location-dot class="w-6 h-6 mb-1" />
+			<x-icons.places.location-dot class="w-6 h-6 mb-1 fill-current" />
 
 			<span class="text-sm">Alles</span>
 		</button>
@@ -139,16 +141,30 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
 			<button
 				@class([
         			'flex flex-col items-center mr-2 px-2 py-1 pt-2 group',
-        			$categoryButtonClasses,
         		])
 				:class="{
+					@js($categoryButtonClasses): filter !== @js($category->value),
 					@js($categoryButtonActiveClasses): filter === @js($category->value)
 				}"
 				type="button"
 				@click="filter = @js($category->value)"
 			>
-                <span x-html="getIcon(@js($category->value), 'category')"></span>
+{{--                <span x-html="getIcon(@js($category->value), 'category')"></span>--}}
+{{--				@foreach ($placeTypes as $type)--}}
+{{--					<div id="icon-place-{{ $type->value }}" x-show="filter === @js($category->value)">--}}
+{{--						<x-icons.dynamic-place-icon :type="$type" class="w-5 h-5" />--}}
+{{--					</div>--}}
+{{--				@endforeach--}}
 
+{{--				@foreach ($categories as $category)--}}
+{{--					<div id="icon-category-{{ $category->value }}" x-show="filter === @js($category->value)">--}}
+{{--						<x-icons.dynamic-place-category-icon :category="$category" class="w-6 h-6 mb-1" />--}}
+{{--					</div>--}}
+{{--				@endforeach--}}
+
+				<div>
+					<x-icons.dynamic-place-category-icon :category="$category" class="w-6 h-6 mb-1" />
+				</div>
 				<span class="text-sm">{{ $category->label() }}</span>
 			</button>
 		@endforeach
@@ -161,7 +177,7 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
 		<template x-for="location of limitedLocations">
 			<button
 				:key="location.id"
-				class="bg-transparent border-0 border-transparent p-0 flex items-center w-full space-x-3 text-lg text-left hover:opacity-80 text-gray-600"
+				class="bg-transparent border-0 border-transparent p-0 flex items-center w-full space-x-3 text-lg text-left hover:opacity-80 expose-text"
 				@click="flyTo({
                     center: [
                         location.coordinates.longitude,
@@ -213,17 +229,5 @@ $categories = array_filter($categories, fn (Place\Category $category) => count($
                 }"
             />
 		</button>
-
-		@foreach ($placeTypes as $type)
-			<template id="icon-place-{{ $type->value }}">
-                <x-icons.dynamic-place-icon :type="$type" class="w-5 h-5" />
-            </template>
-		@endforeach
-
-        @foreach ($categories as $category)
-			<template id="icon-category-{{ $category->value }}">
-                <x-icons.dynamic-place-category-icon :category="$category" class="w-6 h-6 mb-1" />
-            </template>
-		@endforeach
 	</div>
 </div>

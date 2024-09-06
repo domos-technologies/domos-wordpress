@@ -20,13 +20,15 @@ $hexToRgb = function ($hex) {
 
 $primaryColors = \Domos\Core\DOMOS::instance()->getPrimaryShades();
 $grayColors = \Domos\Core\DOMOS::instance()->getGrayShades();
+$isUsingDarkMode = \Domos\Core\DOMOS::instance()->isUsingDarkMode();
+$defaultNavbarHeight = \Domos\Core\DOMOS::instance()->getDefaultNavbarHeight();
 
 global $wp_styles;
 ?>
 
 <div class="domos-estate" id="domos-estate">
 	<template shadowrootmode="open">
-		<div>
+		<div class="{{ $isUsingDarkMode ? 'dark' : '' }}">
 			<style>
 				/* set root CSS variables */
 				:root, :host, .domos-estate {
@@ -45,6 +47,8 @@ global $wp_styles;
 					@foreach($grayColors as $shade => $color)
 					--gray-{{ $shade }}: {{ $hexToRgb($color) }};
 					@endforeach
+
+					--navbar-height: {{ $defaultNavbarHeight }};
 				}
 			</style>
 

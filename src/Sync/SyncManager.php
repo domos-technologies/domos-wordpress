@@ -14,6 +14,9 @@ class SyncManager
 {
     public function synchronize()
     {
+		// Set maxium execution time to 10 minutes
+		set_time_limit(600);
+
 		$domos = DOMOS::instance();
 
         $estates = $domos->api->estates();

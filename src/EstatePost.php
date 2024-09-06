@@ -64,7 +64,9 @@ class EstatePost
         $post_data = [
             'post_title' => $data->name,
 	        'post_name' => $data->slug,
-            'post_content' => '',
+            'post_content' => $data->texts->description ?? '',
+            'post_excerpt' => $data->texts->slogan ?? '',
+
             'post_status' => 'publish',
             'post_author' => 1,
             'post_type' => self::POST_TYPE,
@@ -104,8 +106,12 @@ class EstatePost
         // Update title
         wp_update_post([
             'ID' => $post->id,
+			'comment_status' => 'closed',
+
             'post_title' => $data->name,
 	        'post_name' => $data->slug,
+			'post_content' => $data->texts->description ?? '',
+			'post_excerpt' => $data->texts->slogan ?? ''
         ], true);
 
         // Update data
@@ -114,6 +120,15 @@ class EstatePost
             'estate_data',
             $estate_data
         );
+
+		if ($data->media->thumbnail) {
+			try {
+				static::setPostThumbnailByUrl($post->id, $data->media->thumbnail->src, $data->media->thumbnail->alt);
+			} catch (\Exception $e) {
+				$class = get_class($e);
+				error_log("Error setting post thumbnail: {$class}: {$e->getMessage()}");
+			}
+		}
     }
 
     public static function delete(string $external_id)
@@ -199,8 +214,10 @@ class EstatePost
             ],
             'revisions' => false,
             'supports' => array(
+				'editor',
                 'custom-fields',
                 'title',
+				'excerpt',
                 'attachments',
                 'thumbnail'
             ),
@@ -227,4 +244,24 @@ class EstatePost
             return DOMOS_CORE_ROOT . '/resources/views/frontend/estate.php';
         }
     }
+
+	protected static function setPostThumbnailByUrl(int $post_id, string $url, ?string $alt = null)
+	{
+		self::deletePostThumbnailIfSet($post_id);
+
+		$image = media_sideload_image($url, $post_id, $alt, 'id');
+
+		set_post_thumbnail( $post_id, $image );
+	}
+
+
+
+	protected static function deletePostThumbnailIfSet(int $post_id)
+	{
+		$image_id = get_post_thumbnail_id($post_id);
+
+		if ($image_id) {
+			wp_delete_attachment($image_id);
+		}
+	}
 }

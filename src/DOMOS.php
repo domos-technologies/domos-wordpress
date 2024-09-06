@@ -81,6 +81,21 @@ class DOMOS
 		return $colors;
 	}
 
+	public function isUsingDarkMode(): bool
+	{
+		return apply_filters('domos_is_using_dark_mode', false);
+	}
+
+	public function getPrivacyPolicyUrl(): string
+	{
+		return apply_filters('domos_privacy_policy_url', '/datenschutz');
+	}
+
+	public function getDefaultNavbarHeight(): string
+	{
+		return apply_filters('domos_default_navbar_height', '80px');
+	}
+
 	/**
 	 * @return array<'color1'|'color2', string>
 	 */

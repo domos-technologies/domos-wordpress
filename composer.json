@@ -35,7 +35,7 @@
 		"roots/acorn": "^3.2.0",
 		"ext-json": "*",
 		"yahnis-elsts/plugin-update-checker": "^5.2",
-		"domos/schema": "0.0.6"
+		"domos/schema": "0.0.8"
 	},
 	"scripts": {
 		"lint": "pint",

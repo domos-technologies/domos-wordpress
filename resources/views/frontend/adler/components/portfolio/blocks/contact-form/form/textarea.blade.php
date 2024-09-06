@@ -1,3 +1,4 @@
 <textarea
-	{{ $attributes->class('w-full bg-transparent border-b-2 border-primary-600') }}
+	x-autosize
+	{{ $attributes->class('w-full bg-transparent border border-primary-600 rounded') }}
 >{{$slot}}</textarea>

@@ -154,27 +154,27 @@
         },
         {
             "name": "domos/schema",
-            "version": "0.0.6",
-            "version_normalized": "0.0.6.0",
+            "version": "0.0.8",
+            "version_normalized": "0.0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/domos-technologies/schema.git",
-                "reference": "2db8706e0b6d7519b4676e3f2ed489065284aebb"
+                "reference": "1715ce4f74d89d4f4731867018ef2fd12eea5d6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/domos-technologies/schema/zipball/2db8706e0b6d7519b4676e3f2ed489065284aebb",
-                "reference": "2db8706e0b6d7519b4676e3f2ed489065284aebb",
+                "url": "https://api.github.com/repos/domos-technologies/schema/zipball/1715ce4f74d89d4f4731867018ef2fd12eea5d6b",
+                "reference": "1715ce4f74d89d4f4731867018ef2fd12eea5d6b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "fakerphp/faker": "^1.23",
                 "pestphp/pest": "^2.24"
             },
-            "time": "2024-03-11T11:09:38+00:00",
+            "time": "2024-09-05T12:32:52+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -195,7 +195,7 @@
             "description": "Not ready for public use. domos/schema is the reference implementation of the domos real estate data schema written in PHP.",
             "support": {
                 "issues": "https://github.com/domos-technologies/schema/issues",
-                "source": "https://github.com/domos-technologies/schema/tree/0.0.6"
+                "source": "https://github.com/domos-technologies/schema/tree/0.0.8"
             },
             "install-path": "../domos/schema"
         },
