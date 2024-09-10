@@ -12,10 +12,18 @@ use SchemaImmo\Rentable;
 
 class SyncManager
 {
+	public const MAX_EXECUTION_TIME_FILTER = 'domos_sync_max_execution_time';
+
     public function synchronize()
     {
+		$maxExecutionTime = apply_filters(self::MAX_EXECUTION_TIME_FILTER, 600);
+
+		if (!is_numeric($maxExecutionTime) || $maxExecutionTime < 600) {
+			$maxExecutionTime = 600;
+		}
+
 		// Set maxium execution time to 10 minutes
-		set_time_limit(600);
+		set_time_limit($maxExecutionTime);
 
 		$domos = DOMOS::instance();
 

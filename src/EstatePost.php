@@ -249,6 +249,13 @@ class EstatePost
 	{
 		self::deletePostThumbnailIfSet($post_id);
 
+		// media_sideload_image may not be loaded
+		if(!function_exists('media_sideload_image')) {
+			require_once(ABSPATH . 'wp-admin/includes/media.php');
+			require_once(ABSPATH . 'wp-admin/includes/file.php');
+			require_once(ABSPATH . 'wp-admin/includes/image.php');
+		}
+
 		$image = \media_sideload_image($url, $post_id, $alt, 'id');
 
 		\set_post_thumbnail($post_id, $image);
