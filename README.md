@@ -18,11 +18,11 @@
 1. [Installation](#installation)
 2. [Konfiguration der Synchronisation](#konfiguration-der-synchronisation)
 3. [Einbettung der Objektsuche/-karte](#einbettung-der-objektsuche-karte)
-4. [Verwendung des Shortcodes](#verwendung-des-shortcodes)
-5. [Überschreiben des Theme-Layouts für Exposés](#%C3%BCberschreiben-des-theme-layouts-f%C3%BCr-expos%C3%A9s)
-6. [Weitere Konfigurationen via WordPress-Filter](#weitere-konfigurationen-via-wordpress-filter)
-7. [Hinweise](#hinweise)
-8. [Vollständiges Beispiel](#vollstaendiges-beispiel)
+4.[Überschreiben des Theme-Layouts für Exposés](#%C3%BCberschreiben-des-theme-layouts-f%C3%BCr-expos%C3%A9s)
+5. [Weitere Konfigurationen via WordPress-Filter](#weitere-konfigurationen-via-wordpress-filter)
+	- [`domos_primary_shades`](#domos_primary_shades)
+6. [Hinweise](#hinweise)
+7. [Vollständiges Beispiel](#vollst%C3%A4ndiges-beispiel)
 
 
 ---
