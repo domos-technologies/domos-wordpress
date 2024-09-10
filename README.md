@@ -15,6 +15,18 @@
 
 ---
 
+1. [Installation](#installation)
+2. [Konfiguration der Synchronisation](#konfiguration-der-synchronisation)
+3. [Einbettung der Objektsuche/-karte](#einbettung-der-objektsuche-karte)
+4. [Verwendung des Shortcodes](#verwendung-des-shortcodes)
+5. [Überschreiben des Theme-Layouts für Exposés](#uberschreiben-des-theme-layouts-fur-exposes)
+6. [Weitere Konfigurationen via WordPress-Filter](#weitere-konfigurationen-via-wordpress-filter)
+7. [Hinweise](#hinweise)
+8. [Vollständiges Beispiel](#vollstaendiges-beispiel)
+
+
+---
+
 ## Installation
 
 1. Lade das Plugin in das Verzeichnis `/wp-content/plugins/` hoch
@@ -154,15 +166,21 @@ add_filter('domos_lottie_colors', fn () => [
 ]);
 ```
 
-### 7. `domos_lightbox_enabled`
+### 7. `domos_font_families`
 
-Bestimmt, ob die Lightbox-Funktion aktiviert ist.
+Konfiguriert die Schriftarten, die innerhalb des Exposés verwendet werden sollen.
+Akzeptiert ein Array von Schriftarten, die von WordPress verwendet werden.
+Es werden automatisch `""` doppelte Anführungszeichen hinzugefügt, außer bei Werten wie `inherit`, `sans-serif`, etc...
 
-**Standardwert:** `false`
+> [!INFO]
+> Die Schriftarten müssen selber via normales WordPress CSS importiert werden.
+> Dieser Filter legt nur fest, welche Schriftart von den Exposé-Elementen verwendet werden soll.
+
+**Standardwert:** `['sans-serif']`
 
 **Anwendung:**
 ```php
-add_filter('domos_lightbox_enabled', fn () => true);
+add_filter('domos_font_families', fn () => ['Roboto Slab', 'serif']);
 ```
 
 
