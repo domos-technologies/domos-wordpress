@@ -201,6 +201,10 @@ Durch die Funktionsweise des Shadow DOM, kann es schwieriger sein, Inhalte inner
 
 Diese Action wird innerhalb des Shadow DOMs ausgeführt, wodurch jeder `<style>` und `<script>` Tag innerhalb des Shadow DOMs funktioniert.
 
+> [!WARNING]
+> Wir können nicht garantieren, dass die eigenen Änderungen, die du mit dem Escape Hatch vornehmen kannst, langfristig kompatibel sind.
+> Der Escape Hatch ist sehr mächtig, aber es kann sein, dass manch eigenes Styling später nachgebessert werden muss. Das ist der Trade-Off zwischen Flexibilität und Stabilität.
+
 **Anwendung:**
 
 ```php

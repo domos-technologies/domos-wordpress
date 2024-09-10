@@ -29,7 +29,7 @@ global $wp_styles;
 
 <div class="domos-estate" id="domos-estate">
 	<template shadowrootmode="open">
-		<div class="domos-expose-container domos-expose-shadow-root {{ $isUsingDarkMode ? 'dark' : '' }}">
+		<div class="antialiase domos-expose-container domos-expose-shadow-root {{ $isUsingDarkMode ? 'dark' : '' }}">
 			<style>
 				/* set root CSS variables */
 				:root, :host, .domos-estate {
