@@ -19,7 +19,7 @@
 2. [Konfiguration der Synchronisation](#konfiguration-der-synchronisation)
 3. [Einbettung der Objektsuche/-karte](#einbettung-der-objektsuche-karte)
 4. [Verwendung des Shortcodes](#verwendung-des-shortcodes)
-5. [Überschreiben des Theme-Layouts für Exposés](#uberschreiben-des-theme-layouts-fur-exposes)
+5. [Überschreiben des Theme-Layouts für Exposés](#%C3%BCberschreiben-des-theme-layouts-f%C3%BCr-expos%C3%A9s)
 6. [Weitere Konfigurationen via WordPress-Filter](#weitere-konfigurationen-via-wordpress-filter)
 7. [Hinweise](#hinweise)
 8. [Vollständiges Beispiel](#vollstaendiges-beispiel)
@@ -172,7 +172,7 @@ Konfiguriert die Schriftarten, die innerhalb des Exposés verwendet werden solle
 Akzeptiert ein Array von Schriftarten, die von WordPress verwendet werden.
 Es werden automatisch `""` doppelte Anführungszeichen hinzugefügt, außer bei Werten wie `inherit`, `sans-serif`, etc...
 
-> [!INFO]
+> [!NOTE]
 > Die Schriftarten müssen selber via normales WordPress CSS importiert werden.
 > Dieser Filter legt nur fest, welche Schriftart von den Exposé-Elementen verwendet werden soll.
 
