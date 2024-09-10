@@ -30,9 +30,9 @@
 	}"
 >
 	<ul class="flex items-center text-sm leading-tight font-semibold bg-primary-100 border divide-x h-9 text-primary-500 divide-primary-200 border-primary-200">
-		<li class="h-full">
+		<li class="h-full domos-list-pagination-previous">
 			<a :href="`?page=1`"
-			   class="relative inline-flex items-center h-full px-3 ml-0 group border-b-2 border-transparent transition-colors"
+			   class=" relative inline-flex items-center h-full px-3 ml-0 group border-b-2 border-transparent transition-colors"
 			   :class="{
 				   'opacity-50 hover:text-primary-500': pagination.currentPage === 1,
 				   'hover:text-primary-900 hover:border-primary-500': pagination.currentPage !== 1,
@@ -45,7 +45,7 @@
 		</li>
 
 		<template x-for="page in generatePagination(pagination.lastPage, pagination.currentPage)">
-			<li class="h-full">
+			<li class="h-full domos-list-pagination-number">
 				<a href="#"
 				   class="relative inline-flex items-center h-full px-3 group hover:text-primary-900 border-b-2 hover:border-primary-600 transition-colors"
 				   :class="{
@@ -105,7 +105,7 @@
 {{--					class="box-content absolute bottom-0 w-0 h-px -mx-px duration-200 ease-out translate-y-px border-transparent bg-primary-900 group-hover:border-l group-hover:border-r group-hover:border-primary-900 left-1/2 group-hover:left-0 group-hover:w-full"></span>--}}
 {{--			</a>--}}
 {{--		</li>--}}
-		<li class="h-full">
+		<li class="h-full domos-list-pagination-next">
 			<a :href="`?page=${pagination.lastPage}`"
 			   class="relative inline-flex items-center h-full px-3 ml-0 group border-b-2 border-transparent transition-colors"
 			   :class="{

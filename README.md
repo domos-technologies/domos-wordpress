@@ -165,6 +165,34 @@ Bestimmt, ob die Lightbox-Funktion aktiviert ist.
 add_filter('domos_lightbox_enabled', fn () => true);
 ```
 
+
+### 8. `domos_estate_escape_hatch`
+
+> [!TIP]
+> Dies ist kein Filter via `add_filter()`, sondern eine "Action" via `add_action()`.
+
+Diese Action dient dazu, eigenes CSS und JS innerhalb des Shadow DOM eines Exposés zu platzieren.
+Durch die Funktionsweise des Shadow DOM, kann es schwieriger sein, Inhalte innerhalb des Shadow DOMs zu stylen und zu bearbeiten.
+
+Diese Action wird innerhalb des Shadow DOMs ausgeführt, wodurch jeder `<style>` und `<script>` Tag innerhalb des Shadow DOMs funktioniert.
+
+**Anwendung:**
+
+```php
+add_action('domos_estate_escape_hatch', fn (\SchemaImmo\Estate $estate) => <<<'HTML'
+<style>
+    a {
+    	/* All links in the expose are now purple. */
+        color: purple !important;
+    }
+</style>
+<script>
+    console.log('Hello World!');
+</script>
+HTML);
+```
+
+
 ## Hinweise
 
 - Alle Filter sollten vor der Initialisierung des DOMOS Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.

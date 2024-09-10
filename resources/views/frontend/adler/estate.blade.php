@@ -63,6 +63,9 @@ global $wp_styles;
 			<?php $wp_styles->do_item('domos-frontend'); ?>
 			<?php $wp_styles->do_item('domos-frontend-external'); ?>
 
+			{{-- Run the "domos-estate-escape-hatch" action, which allows you to add custom styles to the estate. --}}
+			<?php do_action('domos_estate_escape_hatch', $estate); ?>
+
 			{{-- For tailwind purge: lg:table --}}
 			@if ($estate->expose === null)
 				<div class="bg-primary-50">

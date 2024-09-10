@@ -1,11 +1,15 @@
-@props(['estate'])
+@props([
+	/** @var \SchemaImmo\Estate $estate */
+	'estate'
+])
 
 <a href="{{ $estate->url }}" {{ $attributes->class(['relative block group']) }}>
     <div
         class="relative w-full h-full overflow-hidden min-h-[12rem]"
     >
         <img
-            src="{{ $estate->thumbnail?->thumbnailSrc }}"
+            src="{{ $estate->thumbnail?->thumbnailSrc ?? $estate->media->thumbnail }}"
+			alt="{{ $estate->name }}"
             class="absolute -z-10 h-full w-full object-cover object-center group-hover:opacity-90 transition-opacity"
             loading="lazy"
         >

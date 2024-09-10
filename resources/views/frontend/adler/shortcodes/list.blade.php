@@ -231,11 +231,11 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 						])
 						:href="`/objekte/${estate.slug}`"
 					>
-						<figure class="relative w-full mb-5 min-h-[12rem] bg-primary-100" style="aspect-ratio: 4/3; margin-bottom: 1.25rem;">
+						<figure class="domos-list-estate-thumbnail relative w-full mb-5 min-h-[12rem] bg-primary-100" style="aspect-ratio: 4/3; margin-bottom: 1.25rem;">
 							<template x-if="estate.media.thumbnail">
 								<img
 									class="absolute !h-full w-full object-cover object-center group-hover:opacity-80"
-									:src="estate.media.thumbnail.src"
+									:src="estate.media.thumbnail.thumbnailSrc ?? estate.media.thumbnail.src"
 									:alt="estate.media.thumbnail.alt"
 									loading="lazy"
 									{{-- sometimes Wordpress plugins like elementor use custom CSS which fucks up image height --}}
@@ -244,8 +244,20 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 							</template>
 						</figure>
 
-						<div class="text-gray-500 text-base uppercase mb-1 group-hover:opacity-80" x-text="estate.address.city"></div>
-						<div class="text-2xl line-clamp-2" x-text="estate.name"></div>
+						<div class="domos-list-estate-city text-gray-500 text-base uppercase mb-1 group-hover:opacity-80" x-text="estate.address.city"></div>
+						<div
+							class="domos-list-estate-name text-2xl line-clamp-2"
+							:class="{
+								'mb-1': estate.texts.slogan,
+							}"
+							x-text="estate.name"
+						></div>
+
+						<div
+							x-show="estate.texts.slogan"
+							class="domos-list-estate-slogan text-sm opacity-50"
+							x-text="estate.texts.slogan"
+						></div>
 					</a>
 				</template>
 			</div>
