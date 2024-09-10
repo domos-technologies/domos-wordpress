@@ -249,19 +249,19 @@ class EstatePost
 	{
 		self::deletePostThumbnailIfSet($post_id);
 
-		$image = media_sideload_image($url, $post_id, $alt, 'id');
+		$image = \media_sideload_image($url, $post_id, $alt, 'id');
 
-		set_post_thumbnail( $post_id, $image );
+		\set_post_thumbnail($post_id, $image);
 	}
 
 
 
 	protected static function deletePostThumbnailIfSet(int $post_id)
 	{
-		$image_id = get_post_thumbnail_id($post_id);
+		$image_id = \get_post_thumbnail_id($post_id);
 
 		if ($image_id) {
-			wp_delete_attachment($image_id);
+			\wp_delete_attachment($image_id);
 		}
 	}
 }

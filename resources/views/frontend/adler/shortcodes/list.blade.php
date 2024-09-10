@@ -255,7 +255,7 @@ $labelClass = 'block mb-2 text-sm font-bold text-primary-600';
 
 						<div
 							x-show="estate.texts.slogan"
-							class="domos-list-estate-slogan text-sm opacity-50"
+							class="domos-list-estate-slogan text-sm opacity-75"
 							x-text="estate.texts.slogan"
 						></div>
 					</a>
