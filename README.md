@@ -287,17 +287,17 @@ add_filter('domos_lottie_colors', fn () => [
 add_filter('domos_lightbox_enabled', fn () => true);
 
 add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
-	echo <<<'HTML'
-	<style>
-		a {
-			/* All links in the expose are now purple. */
-			color: purple !important;
-		}
-	</style>
-	<script>
-		console.log('Hello World!');
-	</script>
-	HTML
+    echo <<<'HTML'
+    <style>
+        a {
+            /* All links in the expose are now purple. */
+            color: purple !important;
+        }
+    </style>
+    <script>
+        console.log('Hello World!');
+    </script>
+    HTML
 );
 ```
 
