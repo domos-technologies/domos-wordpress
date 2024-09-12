@@ -209,17 +209,17 @@ Diese Action wird innerhalb des Shadow DOMs ausgeführt, wodurch jeder `<style>`
 
 ```php
 add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
-	echo <<<'HTML'
-	<style>
-		a {
-			/* All links in the expose are now purple. */
-			color: purple !important;
-		}
-	</style>
-	<script>
-		console.log('Hello World!');
-	</script>
-	HTML
+    echo <<<'HTML'
+    <style>
+        a {
+            /* All links in the expose are now purple. */
+            color: purple !important;
+        }
+    </style>
+    <script>
+        console.log('Hello World!');
+    </script>
+    HTML
 );
 ```
 
