@@ -208,17 +208,19 @@ Diese Action wird innerhalb des Shadow DOMs ausgeführt, wodurch jeder `<style>`
 **Anwendung:**
 
 ```php
-add_action('domos_estate_escape_hatch', fn (\SchemaImmo\Estate $estate) => <<<'HTML'
-<style>
-    a {
-    	/* All links in the expose are now purple. */
-        color: purple !important;
-    }
-</style>
-<script>
-    console.log('Hello World!');
-</script>
-HTML);
+add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
+	echo <<<'HTML'
+	<style>
+		a {
+			/* All links in the expose are now purple. */
+			color: purple !important;
+		}
+	</style>
+	<script>
+		console.log('Hello World!');
+	</script>
+	HTML
+);
 ```
 
 
@@ -283,6 +285,20 @@ add_filter('domos_lottie_colors', fn () => [
 
 // Lightbox-Funktion aktivieren
 add_filter('domos_lightbox_enabled', fn () => true);
+
+add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
+	echo <<<'HTML'
+	<style>
+		a {
+			/* All links in the expose are now purple. */
+			color: purple !important;
+		}
+	</style>
+	<script>
+		console.log('Hello World!');
+	</script>
+	HTML
+);
 ```
 
 Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um das Verhalten und Aussehen des DOMOS Plugins anzupassen.
