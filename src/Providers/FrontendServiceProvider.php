@@ -5,6 +5,7 @@ namespace Domos\Core\Providers;
 use Domos\Core\DOMOS;
 use Domos\Core\EstatePost;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use SchemaImmo\Rentable\Space\Type;
 
 class FrontendServiceProvider implements Provider
@@ -35,8 +36,6 @@ class FrontendServiceProvider implements Provider
 
             echo view($component, compact('class'))->render();
         });
-
-//        dd(Blade::getCustomDirectives());
     }
 
     public function enqueueScripts()

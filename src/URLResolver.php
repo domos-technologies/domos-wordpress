@@ -79,6 +79,13 @@ class URLResolver
 		return "{$domosUrl}/api/sync/v2/search";
 	}
 
+	public function estateSyncOneUrl(string $id): string
+	{
+		$domosUrl = DOMOS::instance()->url();
+
+		return "{$domosUrl}/api/sync/v2/estates/{$id}";
+	}
+
 	public function estateSyncAllUrl(): string
 	{
 		$domosUrl = DOMOS::instance()->url();

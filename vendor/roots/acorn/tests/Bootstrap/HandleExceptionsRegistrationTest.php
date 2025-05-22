@@ -9,7 +9,6 @@ use function Roots\Acorn\Tests\mock;
 
 uses(TestCase::class);
 
-
 beforeAll(function () {
     if (! defined('WP_DEBUG')) {
         define('WP_DEBUG', true);
@@ -24,7 +23,7 @@ beforeEach(function () {
         ->shouldreceive('runningInConsole')
         ->andReturn(false);
     $this->application->config = new Config(['app' => ['debug' => true]]);
-    $this->handleExceptions = new HandleExceptions();
+    $this->handleExceptions = new HandleExceptions;
 });
 
 it('registers error handler', function () {

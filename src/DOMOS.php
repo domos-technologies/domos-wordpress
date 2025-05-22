@@ -139,6 +139,11 @@ class DOMOS
 		return apply_filters('domos_lightbox_enabled', $enabled);
 	}
 
+	public function showSloganUnderSearchResults(): bool
+	{
+		return apply_filters('domos_show_slogan_in_search', false);
+	}
+
     public static self $instance;
 
     public static function instance(): self

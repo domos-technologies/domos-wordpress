@@ -4,18 +4,18 @@ namespace Domos\Core\Sync;
 
 use Domos\Core\DOMOS;
 use Domos\Core\EstatePost;
-use Domos\Core\Exceptions\CannotConnectToDomos;
-use Domos\Core\Exceptions\CouldNotSync;
-use SchemaImmo\Building;
 use SchemaImmo\Estate;
-use SchemaImmo\Rentable;
 
 class SyncManager
 {
-	public const MAX_EXECUTION_TIME_FILTER = 'domos_sync_max_execution_time';
+	public const MAX_EXECUTION_TIME_FILTER = "domos_sync_max_execution_time";
 
-    public function synchronize()
-    {
+	public function __construct()
+	{
+	}
+
+	public function synchronize()
+	{
 		$maxExecutionTime = apply_filters(self::MAX_EXECUTION_TIME_FILTER, 600);
 
 		if (!is_numeric($maxExecutionTime) || $maxExecutionTime < 600) {
@@ -26,8 +26,7 @@ class SyncManager
 		set_time_limit($maxExecutionTime);
 
 		$domos = DOMOS::instance();
-
-        $estates = $domos->api->estates();
+		$estates = $domos->api->estates();
 
 		$cities = array_map(function (Estate $estate) {
 			return $estate->address->city;
@@ -46,39 +45,39 @@ class SyncManager
 		}
 
 		// Make cities unique
-	    $cities = array_unique($cities);
+		$cities = array_unique($cities);
 		$usages = array_unique($usages);
 
 		$domos->options->cities->set($cities);
 		$domos->options->usages->set($usages);
 
-        $created = 0;
-        $deleted = 0;
-        $updated = 0;
+		$created = 0;
+		$deleted = 0;
+		$updated = 0;
 
-        foreach ($estates as $estate) {
-            $existingPost = EstatePost::find($estate->id);
+		foreach ($estates as $estate) {
+			$existingPost = EstatePost::find($estate->id);
 
-            if ($existingPost) {
-                EstatePost::update($estate->id, $estate);
-                $updated++;
-            } else {
-                EstatePost::create($estate->id, $estate);
-                $created++;
-            }
-        }
+			if ($existingPost) {
+				EstatePost::update($estate->id, $estate);
+				$updated++;
+			} else {
+				EstatePost::create($estate->id, $estate);
+				$created++;
+			}
+		}
 
-        $ids = array_map(function (Estate $estate) {
-            return $estate->id;
-        }, $estates);
+		$ids = array_map(function (Estate $estate) {
+			return $estate->id;
+		}, $estates);
 
-        $postsToDelete = EstatePost::findUnneeded($ids);
+		$postsToDelete = EstatePost::findUnneeded($ids);
 
-        foreach ($postsToDelete as $post) {
-            wp_delete_post($post->id, true);
-            $deleted++;
-        }
+		foreach ($postsToDelete as $post) {
+			wp_delete_post($post->id, true);
+			$deleted++;
+		}
 
-        return [$created, $updated, $deleted];
-    }
+		return [$created, $updated, $deleted];
+	}
 }

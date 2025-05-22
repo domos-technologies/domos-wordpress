@@ -2,6 +2,9 @@
 
 namespace Domos\Core\Providers;
 
+use Domos\Core\EstatePost;
+use Roots\Acorn\Application;
+
 class DomosCoreServiceProvider implements Provider
 {
     protected $services = [];
@@ -21,7 +24,9 @@ class DomosCoreServiceProvider implements Provider
 
     public function register()
     {
-        \Roots\bootloader()->boot();
+		$app = Application::configure()->boot();
+		$app->useNamespace('Domos\\Core\\');
+		$app['view']->addNamespace('adler', __DIR__ . '/../../resources/views/frontend/adler');
 
         foreach ($this->providers() as $service) {
             $instance = new $service;

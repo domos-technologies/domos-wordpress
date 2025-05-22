@@ -11,7 +11,7 @@ use function Roots\Acorn\Tests\temp;
 uses(TestCase::class);
 
 it('instantiates with custom paths', function () {
-    $app = new Application(null, [
+    $app = (new Application)->usePaths([
         'app' => $this->fixture('use_paths/app'),
         'config' => $this->fixture('use_paths/config'),
     ]);
@@ -21,7 +21,7 @@ it('instantiates with custom paths', function () {
 });
 
 it('rejects invalid custom path types', function () {
-    $app = new Application();
+    $app = new Application;
 
     $app->usePaths([
         'app' => $this->fixture('use_paths/app'),
@@ -83,7 +83,7 @@ it('allows specific paths to be changed', function () {
 });
 
 it('goes down for maintenance when acorn maintenance file exists', function () {
-    $app = new Application();
+    $app = new Application;
 
     expect($app->isDownForMaintenance())->toBeFalse();
 
@@ -93,7 +93,7 @@ it('goes down for maintenance when acorn maintenance file exists', function () {
 });
 
 it('goes down for maintenance when wordpress maintenance file exists', function () {
-    $app = new Application();
+    $app = new Application;
 
     expect($app->isDownForMaintenance())->toBeFalse();
 
@@ -129,16 +129,16 @@ it('allows the app namespace to changed arbitrarily', function () {
 });
 
 it('makes a thing', function () {
-    $app = new Application();
+    $app = new Application;
 
-    $app->bind('config', fn () => new ConfigRepository());
+    $app->bind('config', fn () => new ConfigRepository);
 
     expect($app->make('config'))->toBeInstanceOf(ConfigRepository::class);
 });
 
 it('boots a provider', function () {
     $provider = mock(BootableServiceProvider::class)->makePartial();
-    $app = new Application();
+    $app = new Application;
 
     $provider->shouldReceive('register', 'boot')->once();
 
@@ -150,7 +150,7 @@ it('boots a provider', function () {
 it('gracefully skips a provider that fails to boot', function () {
     $handler = mock(\Illuminate\Contracts\Debug\ExceptionHandler::class);
     $manifest = mock(\Roots\Acorn\PackageManifest::class);
-    $app = new Application();
+    $app = new Application;
 
     $app['env'] = 'not-local-dev';
 
@@ -159,10 +159,11 @@ it('gracefully skips a provider that fails to boot', function () {
 
     // the core of this test is to make sure that when a class or function is called that
     // does not exist, things don't blow up.
-    $provider = new class($app) extends BootableServiceProvider {
+    $provider = new class($app) extends BootableServiceProvider
+    {
         public function boot()
         {
-            new \kjo();
+            new \kjo;
         }
     };
 
@@ -183,7 +184,7 @@ it('gracefully skips a provider that fails to boot', function () {
 it('gracefully skips a provider that does not exist', function () {
     $handler = mock(\Illuminate\Contracts\Debug\ExceptionHandler::class);
     $manifest = mock(\Roots\Acorn\PackageManifest::class);
-    $app = new Application();
+    $app = new Application;
 
     $app['env'] = 'not-local-dev';
 
@@ -205,7 +206,7 @@ it('gracefully skips a provider that does not exist', function () {
 });
 
 it('uses custom aliases', function () {
-    $app = new Application();
+    $app = new Application;
 
     expect($app->getAlias(\Roots\Acorn\Application::class))->toBe('app');
     expect($app->getAlias(\Roots\Acorn\PackageManifest::class))->toBe(\Illuminate\Foundation\PackageManifest::class);

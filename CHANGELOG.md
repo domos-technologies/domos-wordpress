@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2.1.0
+
+## 2.1.0
 - Added support for dark mode brandings
 - Added custom font support
 - Privacy policy URL is now configurable

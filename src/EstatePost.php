@@ -11,257 +11,238 @@ use WP_Query;
 
 class EstatePost
 {
-    public const POST_TYPE = 'domos_estate';
+	public const POST_TYPE = "domos_estate";
 
-    public ?WP_Post $post = null;
-    public ?string $id = null;
-    public string $domosID;
-    public string $title;
-    public Estate $data;
+	public ?WP_Post $post = null;
+	public ?string $id = null;
+	public string $domosID;
+	public string $title;
+	public Estate $data;
 
-    public function __construct(
-        string $domosID,
-        string $title,
-        Estate $data,
-        ?WP_Post $post = null
-    )
-    {
-        $this->domosID = $domosID;
-        $this->title = $title;
-        $this->data = $data;
+	public function __construct(
+		string $domosID,
+		string $title,
+		Estate $data,
+		?WP_Post $post = null
+	) {
+		$this->domosID = $domosID;
+		$this->title = $title;
+		$this->data = $data;
 
-        if ($post) {
-            $this->post = $post;
-            $this->id = $post->ID;
-        }
-    }
-
-    public static function fromPost(WP_Post $post): self
-    {
-        $data = get_post_meta($post->ID, 'estate_data', true);
-
-        $estate = Estate::from($data);
-
-        $instance = new self(
-            get_post_meta($post->ID, 'domos_id', true),
-            $post->post_title,
-            $estate,
-            $post
-        );
-
-        return $instance;
-    }
-
-    public static function create(string $external_id, Estate $data)
-    {
-        $estate_data = $data->toArray();
-        $post = self::find($external_id);
-
-        if ($post !== null) {
-            throw new EstateAlreadyExists($external_id);
-        }
-
-        $post_data = [
-            'post_title' => $data->name,
-	        'post_name' => $data->slug,
-            'post_content' => $data->texts->description ?? '',
-            'post_excerpt' => $data->texts->slogan ?? '',
-
-            'post_status' => 'publish',
-            'post_author' => 1,
-            'post_type' => self::POST_TYPE,
-        ];
-
-        $result = wp_insert_post($post_data);
-
-        // If its an error
-        if (is_wp_error($result)) {
-            throw new CouldNotCreatePost($result->get_error_message());
-        }
-
-        update_post_meta(
-            $result,
-            'domos_id',
-            $external_id
-        );
-
-        add_post_meta(
-            $result,
-            'estate_data',
-            $estate_data,
-            true
-        );
-    }
-
-    public static function update(string $external_id, Estate $data)
-    {
-        $estate_data = $data->toArray();
-
-        $post = self::find($external_id);
-
-        if ($post === null) {
-            throw new EstateNotFound($external_id);
-        }
-
-        // Update title
-        wp_update_post([
-            'ID' => $post->id,
-			'comment_status' => 'closed',
-
-            'post_title' => $data->name,
-	        'post_name' => $data->slug,
-			'post_content' => $data->texts->description ?? '',
-			'post_excerpt' => $data->texts->slogan ?? ''
-        ], true);
-
-        // Update data
-        update_post_meta(
-            $post->id,
-            'estate_data',
-            $estate_data
-        );
-
-		if ($data->media->thumbnail) {
-			try {
-				static::setPostThumbnailByUrl($post->id, $data->media->thumbnail->src, $data->media->thumbnail->alt);
-			} catch (\Exception $e) {
-				$class = get_class($e);
-				error_log("Error setting post thumbnail: {$class}: {$e->getMessage()}");
-			}
+		if ($post) {
+			$this->post = $post;
+			$this->id = $post->ID;
 		}
-    }
+	}
 
-    public static function delete(string $external_id)
-    {
-        $post = self::find($external_id);
+	public static function fromPost(WP_Post $post): self
+	{
+		$data = get_post_meta($post->ID, "estate_data", true);
 
-        if ($post === null) {
-            throw new EstateNotFound($external_id);
-        }
+		$estate = Estate::from($data);
 
-        wp_delete_post($post->ID);
-    }
+		$instance = new self(
+			get_post_meta($post->ID, "domos_id", true),
+			$post->post_title,
+			$estate,
+			$post
+		);
 
-    /**
-     * @return EstatePost[]
-     */
-    public static function findUnneeded(array $excluded_ids): array
-    {
-        $args = [
-            'post_type'      => self::POST_TYPE,
-            'posts_per_page' => -1, // Retrieve all posts of the specified post type.
-            'meta_query'     => [
-                [
-                    'key'     => 'domos_id',
-                    'value'   => $excluded_ids,
-                    'compare' => 'NOT IN',
-                ],
-            ],
-        ];
+		return $instance;
+	}
 
-        $query = new WP_Query($args);
-        $estates = [];
+	public static function create(string $external_id, Estate $data)
+	{
+		$estate_data = $data->toArray();
+		$post = self::find($external_id);
 
-        foreach ($query->posts as $post) {
-            $estates[] = self::fromPost($post);
-        }
+		if ($post !== null) {
+			throw new EstateAlreadyExists($external_id);
+		}
 
-        return $estates;
-    }
+		$post_data = [
+			"post_title" => $data->name,
+			"post_name" => $data->slug,
+			"post_content" => $data->texts->description ?? "",
+			"post_excerpt" => $data->texts->slogan ?? "",
 
-    /**
-     * Look up a post type by external ID.
-     *
-     * @param string $external_id The external ID to search for.
-     * @return WP_Post|null The found post or null if not found.
-     */
-    public static function find(string $external_id): ?self
-    {
-        // Perform a custom query to search for the post by external ID.
-        $args = array(
-            'post_type'      => self::POST_TYPE,
-            'posts_per_page' => 1,
-            'meta_key'       => 'domos_id', // Replace with the actual meta key where you store external IDs.
-            'meta_value'     => $external_id,
-        );
+			"post_status" => "publish",
+			"post_author" => 1,
+			"post_type" => self::POST_TYPE,
+		];
 
-        $query = new WP_Query($args);
+		$result = wp_insert_post($post_data);
 
-        // Check if a post with the external ID exists.
-        if ($query->have_posts()) {
-            $post = $query->posts[0];
+		// If its an error
+		if (is_wp_error($result)) {
+			throw new CouldNotCreatePost($result->get_error_message());
+		}
 
-            return self::fromPost($post);
-        } else {
-            return null; // No post with the external ID found.
-        }
-    }
+		update_post_meta($result, "domos_id", $external_id);
 
-    public static function register()
-    {
-//        flush_rewrite_rules();
-        register_post_type('domos_estate', [
-            'labels' => [
-                'name' => 'Objekte',
-                'singular_name' => 'Objekt'
-            ],
-            'public' => true,
-            'has_archive' => true,
-            'rewrite' => [
-                'slug' => 'objekte',
-                'with_front' => false,
-                'pages' => true,
-            ],
-            'revisions' => false,
-            'supports' => array(
-				'editor',
-                'custom-fields',
-                'title',
-				'excerpt',
-                'attachments',
-                'thumbnail'
-            ),
-            'publicly_queryable' => true,
-            // icon: building
-            'menu_icon' => 'dashicons-building',
-        ]);
+		add_post_meta($result, "estate_data", $estate_data, true);
+	}
 
-//        add_action('add_meta_boxes', [$this, 'addMetaBox']);
-    }
+	public static function update(string $external_id, Estate $data)
+	{
+		$estate_data = $data->toArray();
 
-    public static function template()
-    {
-        global $post;
+		$post = self::find($external_id);
 
-        /* Checks for single template by post type */
-        if ($post->post_type == self::POST_TYPE) {
+		if ($post === null) {
+			throw new EstateNotFound($external_id);
+		}
+
+		// Update title
+		wp_update_post(
+			[
+				"ID" => $post->id,
+				"comment_status" => "closed",
+
+				"post_title" => $data->name,
+				"post_name" => $data->slug,
+				"post_content" => $data->texts->description ?? "",
+				"post_excerpt" => $data->texts->slogan ?? "",
+			],
+			true
+		);
+
+		// Update data
+		update_post_meta($post->id, "estate_data", $estate_data);
+	}
+
+	public static function delete(string $external_id)
+	{
+		$post = self::find($external_id);
+
+		if ($post === null) {
+			throw new EstateNotFound($external_id);
+		}
+
+		wp_delete_post($post->ID);
+	}
+
+	/**
+	 * @return EstatePost[]
+	 */
+	public static function findUnneeded(array $excluded_ids): array
+	{
+		$args = [
+			"post_type" => self::POST_TYPE,
+			"posts_per_page" => -1, // Retrieve all posts of the specified post type.
+			"meta_query" => [
+				[
+					"key" => "domos_id",
+					"value" => $excluded_ids,
+					"compare" => "NOT IN",
+				],
+			],
+		];
+
+		$query = new WP_Query($args);
+		$estates = [];
+
+		foreach ($query->posts as $post) {
+			$estates[] = self::fromPost($post);
+		}
+
+		return $estates;
+	}
+
+	/**
+	 * Look up a post type by external ID.
+	 *
+	 * @param string $external_id The external ID to search for.
+	 * @return WP_Post|null The found post or null if not found.
+	 */
+	public static function find(string $external_id): ?self
+	{
+		// Perform a custom query to search for the post by external ID.
+		$args = [
+			"post_type" => self::POST_TYPE,
+			"posts_per_page" => 1,
+			"meta_key" => "domos_id", // Replace with the actual meta key where you store external IDs.
+			"meta_value" => $external_id,
+		];
+
+		$query = new WP_Query($args);
+
+		// Check if a post with the external ID exists.
+		if ($query->have_posts()) {
+			$post = $query->posts[0];
+
+			return self::fromPost($post);
+		} else {
+			return null; // No post with the external ID found.
+		}
+	}
+
+	public static function register()
+	{
+		//        flush_rewrite_rules();
+		register_post_type("domos_estate", [
+			"labels" => [
+				"name" => "Objekte",
+				"singular_name" => "Objekt",
+			],
+			"public" => true,
+			"has_archive" => true,
+			"rewrite" => [
+				"slug" => "objekte",
+				"with_front" => false,
+				"pages" => true,
+			],
+			"revisions" => false,
+			"supports" => [
+				"editor",
+				"custom-fields",
+				"title",
+				"excerpt",
+				"attachments",
+				"thumbnail",
+			],
+			"publicly_queryable" => true,
+			// icon: building
+			"menu_icon" => "dashicons-building",
+		]);
+
+		//        add_action('add_meta_boxes', [$this, 'addMetaBox']);
+	}
+
+	public static function template()
+	{
+		global $post;
+
+		/* Checks for single template by post type */
+		if ($post->post_type == self::POST_TYPE) {
 			// We don't enqueue any styles here, as we're using shadow DOM for block encapsulation.
 			// Thus, style tags need to be placed inside the template manually.
 
-			wp_enqueue_script('domos-frontend--estate');
-//			wp_enqueue_script('domos-frontend--estate-external');
+			wp_enqueue_script("domos-frontend--estate");
+			//			wp_enqueue_script('domos-frontend--estate-external');
 
-            return DOMOS_CORE_ROOT . '/resources/views/frontend/estate.php';
-        }
-    }
+			return DOMOS_CORE_ROOT . "/resources/views/frontend/estate.php";
+		}
+	}
 
-	protected static function setPostThumbnailByUrl(int $post_id, string $url, ?string $alt = null)
-	{
+	public static function setPostThumbnailByUrl(
+		int $post_id,
+		string $url,
+		?string $alt = null
+	) {
 		self::deletePostThumbnailIfSet($post_id);
 
 		// media_sideload_image may not be loaded
-		if(!function_exists('media_sideload_image')) {
-			require_once(ABSPATH . 'wp-admin/includes/media.php');
-			require_once(ABSPATH . 'wp-admin/includes/file.php');
-			require_once(ABSPATH . 'wp-admin/includes/image.php');
+		if (!function_exists("media_sideload_image")) {
+			require_once ABSPATH . "wp-admin/includes/media.php";
+			require_once ABSPATH . "wp-admin/includes/file.php";
+			require_once ABSPATH . "wp-admin/includes/image.php";
 		}
 
-		$image = \media_sideload_image($url, $post_id, $alt, 'id');
+		$image = \media_sideload_image($url, $post_id, $alt, "id");
 
 		\set_post_thumbnail($post_id, $image);
 	}
-
-
 
 	protected static function deletePostThumbnailIfSet(int $post_id)
 	{
