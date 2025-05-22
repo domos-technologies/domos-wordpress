@@ -258,7 +258,6 @@
                             <input type="text" placeholder="XXXXXXXX..." id="token"
                                    value="{{ $token }}"
 								   x-model="token"
-								   disabled
                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"/>
                         </div>
                     </div>

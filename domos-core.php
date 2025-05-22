@@ -17,10 +17,10 @@ define('DOMOS_CORE_URL', plugin_dir_url(__FILE__));
 define('DOMOS_CORE_VERSION', '2.0.3');
 define('DOMOS_CORE_SLUG', 'domos-core');
 
-//$plugin = new Domos\Core\Providers\DomosCoreServiceProvider;
-//$plugin->register();
-//
-//add_action('init', [$plugin, 'boot']);
+$plugin = new Domos\Core\Providers\DomosCoreServiceProvider;
+$plugin->register();
+
+add_action('init', [$plugin, 'boot']);
 
 //$app = new \Roots\Acorn\Application(__DIR__);
 //$app->useNamespace('Domos\\Core\\');

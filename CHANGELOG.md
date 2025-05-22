@@ -1,6 +1,9 @@
 # Changelog
 
-## 2.1.0
+## 3.0.0
+- Removed image synchronization
+- Improved estate synchronization speed
+- Added API key support (will become mandatory in future versions)
 
 ## 2.1.0
 - Added support for dark mode brandings

@@ -17,7 +17,7 @@ class MainSettings implements AdminPage, HasMenuItem
     {
         return view('admin/page', [
 			'url' => DOMOS::instance()->url(),
-	        'token' => null
+	        'token' => DOMOS::instance()->options->token->get(),
         ])->render();
     }
 
