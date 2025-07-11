@@ -190,7 +190,7 @@ enum FeatureType: string
 			static::HeatedHalls => 'Beheizte Hallen',
 			static::HeavyDutyCrane => 'Schwerlastkran',
 			static::HeavyDutyElevator => 'Lastenaufzüge',
-			static::HighCeilings => 'Hohe Decken',
+			static::HighCeilings => 'Deckenhöhe',
 			static::HighVoltageOutlet => 'Starkstromanschluss',
 			static::HydraulicLift => 'Hydraulische Hebebühne',
 			static::IndividuallyExpandable => 'Individuell ausbaubar',
