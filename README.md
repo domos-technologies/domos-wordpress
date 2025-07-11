@@ -3,8 +3,8 @@
 </p>
 
 <div align="center">
-  	<img src="resources/images/domos-logo.svg" alt="domos Logo" width="200"/>
-	<h1><a href="https://domos.de">domos</a> WordPress Integration</h1>
+  	<img src="resources/images/immocore-logo.svg" alt="immocore Logo" width="200"/>
+	<h1><a href="https://immocore.com">immocore</a> WordPress Integration</h1>
 </div>
 
 ## Funktionen
@@ -34,6 +34,10 @@
 
 
 ---
+
+## Hinweis zu `domos`-Bezeichnungen
+
+Im Q1 2025 haben wir uns zu "immocore" umbenannt. Um Backwardscapability zu gewährleisten, behalten wir die Bezeichnungen im PHP-Code aber vorerst bei.
 
 ## Installation
 
