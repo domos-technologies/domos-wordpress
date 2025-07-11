@@ -37,7 +37,7 @@
 
 ## Hinweis zu `domos`-Bezeichnungen
 
-Im Q1 2025 haben wir uns zu "immocore" umbenannt. Um Backwardscapability zu gewährleisten, behalten wir die Bezeichnungen im PHP-Code aber vorerst bei.
+Im Q1 2025 haben wir uns zu "immocore" umbenannt, und wir tauschen die Bezeichnungen in der Dokumentation kontinuierlich aus. Um Backwardscapability zu gewährleisten, behalten wir die Bezeichnungen im PHP-Code aber vorerst bei. 
 
 ## Installation
 
