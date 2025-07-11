@@ -3,7 +3,7 @@
 </p>
 
 <div align="center">
-  	<img src="resources/images/immocore-logo.svg" alt="immocore Logo" width="200"/>
+  	<img src="resources/images/immocore-logo.svg" alt="immocore Logo" width="300"/>
 	<h1><a href="https://immocore.com">immocore</a> WordPress Integration</h1>
 </div>
 
