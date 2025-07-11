@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55.59 8.83">
-<style>
-    path, circle, polygon {
-    fill: black;
-    }
-    @media (prefers-color-scheme: dark) {
-    path, circle, polygon {
-    fill: white;
-    }
-    }
-  </style>
+<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55.59 8.83" fill="#0162F5">
   <g id="Ebene_1-2" data-name="Ebene 1">
     <g>
       <g>
