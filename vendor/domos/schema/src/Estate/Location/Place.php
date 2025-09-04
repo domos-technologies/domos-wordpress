@@ -5,6 +5,7 @@ namespace SchemaImmo\Estate\Location;
 use SchemaImmo\Arrayable;
 use SchemaImmo\Estate\Address;
 use SchemaImmo\Estate\Coordinates;
+use SchemaImmo\Exceptions\InvalidDataException;
 
 class Place implements \SchemaImmo\Arrayable
 {
@@ -26,7 +27,10 @@ class Place implements \SchemaImmo\Arrayable
         }
     }
 
-    public static function from(array $data): self
+	/**
+	 * @throws InvalidDataException
+	 */
+	public static function from(array $data): self
     {
         if (!isset($data['type'])) {
             throw new \SchemaImmo\Exceptions\InvalidDataException('place.type', 'Missing type');
@@ -75,13 +79,13 @@ class Place implements \SchemaImmo\Arrayable
 
     public function toArray(): array
     {
-        return [
+        return array_filter([
 			'id' => $this->id,
 			'type' => $this->type->value,
 			'name' => $this->name,
 			'coordinates' => $this->coordinates->toArray(),
-			'address' => $this->address ? $this->address->toArray() : null,
-			'directions_from_estate' => $this->directions_from_estate ? $this->directions_from_estate->toArray() : null,
-		];
+			'address' => $this->address?->toArray(),
+			'directions_from_estate' => $this->directions_from_estate?->toArray(),
+		]);
     }
 }

@@ -22,149 +22,33 @@ composer install domos/schema
 
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Accessing Estate Data in WordPress](#accessing-estate-data-in-wordpress)
-   - [Finding an Estate](#finding-an-estate)
-   - [Accessing Estate Data in WordPress Templates](#accessing-estate-data-in-wordpress-templates)
-   - [Finding Multiple Estates](#finding-multiple-estates)
-   - [Important Notes for Website Building](#important-notes-for-website-building)
-   - [Estate Management Operations (Internal Use)](#estate-management-operations-internal-use)
-3. [Core Models](#core-models)
+2. [Core Models](#core-models)
    - [Estate](#estate)
    - [Building](#building)
    - [Rentable](#rentable)
-4. [Location Models](#location-models)
+3. [Location Models](#location-models)
    - [Address](#address)
    - [Coordinates](#coordinates)
    - [Location](#location)
-5. [Media Models](#media-models)
+4. [Media Models](#media-models)
    - [Image](#image)
    - [Media](#media)
    - [Video](#video)
    - [Scan](#scan)
    - [CameraFeed](#camerafeed)
-6. [Financial Models](#financial-models)
+5. [Financial Models](#financial-models)
    - [Money](#money)
    - [Price](#price)
-7. [Web Expose Models](#web-expose-models)
+6. [Web Expose Models](#web-expose-models)
    - [WebExpose](#webexpose)
    - [Block](#block)
-8. [Utility Models](#utility-models)
+7. [Utility Models](#utility-models)
    - [Contact](#contact)
    - [Certifications](#certifications)
 
 ## Introduction
 
 This document provides a comprehensive overview of the real estate data schema implemented in PHP. The schema is designed to represent various aspects of real estate properties, including buildings, rentable spaces, locations, media assets, and web exposures. It uses modern PHP features such as typed properties, enums, and interfaces to create a robust and flexible system for managing real estate data.
-
-## Accessing Estate Data in WordPress
-
-The `EstatePost` class provides a bridge between the Estate data schema and WordPress, allowing you to retrieve and display estate information stored as WordPress posts. This section explains how to use the `EstatePost` class to access estate data within a WordPress environment, focusing on tasks relevant to building websites.
-
-### Finding an Estate
-
-To retrieve an estate by its external ID:
-
-```php
-$externalId = 'your-external-id';
-$estatePost = EstatePost::find($externalId);
-
-if ($estatePost !== null) {
-    $estate = $estatePost->data; // This is an instance of SchemaImmo\Estate
-    echo "Estate Name: " . $estate->name;
-    echo "Estate Address: " . $estate->address->street . " " . $estate->address->number;
-} else {
-    echo "Estate not found";
-}
-```
-
-### Accessing Estate Data in WordPress Templates
-
-When working with estate data in WordPress templates, you can use the `EstatePost::fromPost()` method to get the estate data from the current post:
-
-```php
-global $post;
-
-if ($post->post_type === EstatePost::POST_TYPE) {
-    $estatePost = EstatePost::fromPost($post);
-    $estate = $estatePost->data;
-
-    // Now you can access all the estate data
-    echo "<h1>{$estate->name}</h1>";
-    echo "<p>Address: {$estate->address->street} {$estate->address->number}, {$estate->address->city}</p>";
-
-    if ($estate->media->thumbnail) {
-        echo "<img src='{$estate->media->thumbnail->src}' alt='{$estate->media->thumbnail->alt}'>";
-    }
-
-    // Display features
-    if (!empty($estate->features)) {
-        echo "<h2>Features:</h2><ul>";
-        foreach ($estate->features as $feature => $value) {
-            echo "<li>{$feature}: {$value}</li>";
-        }
-        echo "</ul>";
-    }
-
-    // Display rentable spaces
-    if (!empty($estate->buildings)) {
-        foreach ($estate->buildings as $building) {
-            echo "<h2>Building: {$building->name}</h2>";
-            foreach ($building->rentables as $rentable) {
-                echo "<h3>Rentable Space: {$rentable->name}</h3>";
-                echo "<p>Area: {$rentable->area} sqm</p>";
-                echo "<p>Price: {$rentable->price->base->amount} {$rentable->price->base->currency->value}</p>";
-            }
-        }
-    }
-}
-```
-
-This example demonstrates how to access and display various aspects of the estate data within a WordPress template.
-
-### Finding Multiple Estates
-
-To retrieve multiple estates, you can use WordPress's `WP_Query` class in combination with `EstatePost::fromPost()`:
-
-```php
-$args = array(
-    'post_type' => EstatePost::POST_TYPE,
-    'posts_per_page' => 10,
-    // Add any other query arguments as needed
-);
-
-$query = new WP_Query($args);
-
-if ($query->have_posts()) {
-    while ($query->have_posts()) {
-        $query->the_post();
-        $estatePost = EstatePost::fromPost($query->post);
-        $estate = $estatePost->data;
-
-        // Display estate information
-        echo "<h2>{$estate->name}</h2>";
-        echo "<p>{$estate->address->city}, {$estate->address->country}</p>";
-        // Add more fields as needed
-    }
-    wp_reset_postdata();
-} else {
-    echo "No estates found";
-}
-```
-
-This example shows how to query for multiple estates and display basic information for each.
-
-### Estate Management Operations (Internal Use)
-
-The following operations are primarily for internal use and data management:
-
-- **Creating a new estate**: `EstatePost::create($externalId, $estateData)`
-- **Updating an existing estate**: `EstatePost::update($externalId, $updatedEstateData)`
-- **Deleting an estate**: `EstatePost::delete($externalId)`
-- **Finding unneeded estates**: `EstatePost::findUnneeded($activeIds)`
-
-These methods should be used with caution and typically within administrative interfaces or background processes, rather than in public-facing website code.
-
-By using the `EstatePost` class, you can seamlessly integrate the real estate data schema with WordPress, allowing for easy retrieval and display of complex estate information on your WordPress site.
 
 ## Core Models
 

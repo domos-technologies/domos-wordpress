@@ -9,16 +9,17 @@ use SchemaImmo\Media\Scan;
 class Media implements Arrayable
 {
 	public ?Image $thumbnail = null;
+	public ?Image $thumbnail_small = null;
 
 	/** @var Image[] $gallery */
 	public array $gallery = [];
 
 	/** @var Image|null $logo */
-	public $logo = null;
+	public ?Image $logo = null;
 
 	public array $videos = [];
 
-	/** @var Scan[] */
+	/** @var Scan[] $scans */
 	public array $scans = [];
 
 	public static function from(array $data): self
@@ -27,6 +28,10 @@ class Media implements Arrayable
 
 		if (isset($data['thumbnail'])) {
 			$images->thumbnail = Image::from($data['thumbnail']);
+		}
+
+		if (isset($data['thumbnail_small'])) {
+			$images->thumbnail_small = Image::from($data['thumbnail_small']);
 		}
 
 		if (isset($data['gallery'])) {
@@ -39,21 +44,24 @@ class Media implements Arrayable
 			$images->logo = Image::from($data['logo']);
 		}
 
+		if (isset($data['scans'])) {
+			foreach ($data['scans'] as $scan) {
+				$images->scans[] = Scan::from($scan);
+			}
+		}
+
 		return $images;
 	}
 
 	public function toArray(): array
 	{
-		return [
-			'thumbnail' => $this->thumbnail
-				? $this->thumbnail->toArray()
-				: null,
+		return array_filter([
+			'thumbnail' => $this->thumbnail?->toArray(),
+			'thumbnail_small' => $this->thumbnail_small?->toArray(),
 			'gallery' => array_map(fn (Image $image) => $image->toArray(), $this->gallery),
-			'logo' => $this->logo
-				? $this->logo->toArray()
-				: null,
+			'logo' => $this->logo?->toArray(),
 			'videos' => [], //array_map(fn (Video $video) => $video->toArray(), $this->videos),
-			'scans' => [], //array_map(fn (Scan $scan) => $scan->toArray(), $this->scans),
-		];
+			'scans' => array_map(fn (Scan $scan) => $scan->toArray(), $this->scans),
+		]);
 	}
 }

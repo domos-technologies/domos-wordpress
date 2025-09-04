@@ -19,6 +19,7 @@ class Space implements Arrayable
 	public Space\Type $type;
 	public ?float $area = null;
 	public ?Price $price = null;
+	public ?Price $price_per_m2 = null;
 
 	public ?int $floor = null;
 	public ?string $notes = null;
@@ -28,6 +29,7 @@ class Space implements Arrayable
         ?string    $id = null,
         ?float     $area = null,
         ?Price     $price = null,
+		?Price     $price_per_m2 = null,
         ?int       $floor = null,
         ?string    $notes = null
 	)
@@ -36,6 +38,7 @@ class Space implements Arrayable
 		$this->id = Sanitizer::nullify_string($id);
 		$this->area = $area;
 		$this->price = $price;
+		$this->price_per_m2 = $price_per_m2;
 		$this->floor = $floor;
 		$this->notes = Sanitizer::nullify_string($notes);
 	}
@@ -49,6 +52,9 @@ class Space implements Arrayable
 			isset($data['price'])
 				? Price::from($data['price'])
 				: null,
+			isset($data['price_per_m2'])
+				? Price::from($data['price_per_m2'])
+				: null,
 			$data['floor'] ?? null,
 			$data['notes'] ?? null,
 		);
@@ -56,15 +62,14 @@ class Space implements Arrayable
 
 	public function toArray(): array
 	{
-		return [
+		return array_filter([
 			'id' => $this->id,
 			'type' => $this->type->value,
 			'area' => $this->area,
-			'price' => $this->price
-				? $this->price->toArray()
-				: null,
+			'price' => $this->price?->toArray(),
+			'price_per_m2' => $this->price_per_m2?->toArray(),
 			'floor' => $this->floor,
 			'notes' => $this->notes,
-		];
+		]);
 	}
 }

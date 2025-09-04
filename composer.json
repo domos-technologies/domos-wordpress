@@ -35,7 +35,7 @@
 		"roots/acorn": "^5.0",
 		"ext-json": "*",
 		"yahnis-elsts/plugin-update-checker": "^5.2",
-		"domos/schema": "^0.1",
+		"domos/schema": "^1.0",
 		"deliciousbrains/wp-background-processing": "^1.4"
 	},
 	"scripts": {

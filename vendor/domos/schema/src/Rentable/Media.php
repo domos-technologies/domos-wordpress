@@ -24,33 +24,40 @@ class Media implements Arrayable
 	/**
 	 * @param Image[] $images
 	 * @param Image[] $floorplans
+	 * @param Scan[] $scans
 	 */
 	public function __construct(
 		array $images = [],
-		array $floorplans = []
+		array $floorplans = [],
+		array $scans = [],
 	)
 	{
 		$this->images = $images;
 		$this->floorplans = $floorplans;
+		$this->scans = $scans;
 	}
 
 	public static function from(array $data): self
 	{
 		return new Media(
-			array_map(
+			images: array_map(
 				fn (array $image) => Image::from($image),
 				$data['images'] ?? []
 			),
-			array_map(
+			floorplans: array_map(
 				fn (array $image) => Image::from($image),
 				$data['floorplans'] ?? []
-			)
+			),
+			scans: array_map(
+				fn (array $scan) => Scan::from($scan),
+				$data['scans'] ?? []
+			),
 		);
 	}
 
 	public function toArray(): array
 	{
-		return [
+		return array_filter([
 			'images' => array_map(
 				fn (Image $image) => $image->toArray(),
 				$this->images
@@ -59,6 +66,10 @@ class Media implements Arrayable
 				fn (Image $image) => $image->toArray(),
 				$this->floorplans
 			),
-		];
+			'scans' => array_map(
+				fn (Scan $scan) => $scan->toArray(),
+				$this->scans
+			),
+		]);
 	}
 }

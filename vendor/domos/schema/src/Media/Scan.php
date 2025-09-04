@@ -15,7 +15,7 @@ abstract class Scan implements Arrayable
 	public Type $type;
 
 	/** @var string|null $provider */
-	public $provider = null;
+	public ?string $provider = null;
 
 	protected function __construct(
 		Type $type,

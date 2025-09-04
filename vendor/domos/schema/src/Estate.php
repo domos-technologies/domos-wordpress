@@ -46,11 +46,11 @@ class Estate implements Arrayable
 		/** @var Building[] $buildings */
 		array $buildings = [],
 
-		Texts $texts = new Texts,
-		Media $media = new Media,
-		Location $location = new Location,
-		Certifications $certifications = new Certifications,
-		Social $social = new Social,
+		?Texts $texts = null,
+		?Media $media = null,
+		?Location $location = null,
+		?Certifications $certifications = null,
+		?Social $social = null,
 		?WebExpose $expose = null,
 	)
 	{
@@ -73,11 +73,11 @@ class Estate implements Arrayable
 		$this->features = $features;
 		$this->buildings = $buildings;
 
-		$this->texts = $texts;
-		$this->media = $media;
-		$this->location = $location;
-		$this->certifications = $certifications;
-		$this->social = $social;
+		$this->texts = $texts ?? new Texts;
+		$this->media = $media ?? new Media;
+		$this->location = $location ?? new Location;
+		$this->certifications = $certifications ?? new Certifications;
+		$this->social = $social ?? new Social;
 		$this->expose = $expose;
 	}
 
@@ -154,7 +154,7 @@ class Estate implements Arrayable
 
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'id' => $this->id,
 			'slug' => $this->slug,
             'name' => $this->name,
@@ -172,6 +172,6 @@ class Estate implements Arrayable
 			'social' => $this->social->toArray(),
 
 			'expose' => $this->expose?->toArray(),
-        ];
+        ]);
     }
 }
