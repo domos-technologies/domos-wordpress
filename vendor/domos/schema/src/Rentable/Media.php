@@ -4,6 +4,7 @@ namespace SchemaImmo\Rentable;
 
 use SchemaImmo\Arrayable;
 use SchemaImmo\Image;
+use SchemaImmo\Media\Documents;
 use SchemaImmo\Media\Scan;
 use SchemaImmo\Media\Video;
 
@@ -21,6 +22,8 @@ class Media implements Arrayable
 	/** @var Video[] $videos */
 	public array $videos = [];
 
+	public Documents $docs;
+
 	/**
 	 * @param Image[] $images
 	 * @param Image[] $floorplans
@@ -30,11 +33,13 @@ class Media implements Arrayable
 		array $images = [],
 		array $floorplans = [],
 		array $scans = [],
+		Documents $docs = new Documents
 	)
 	{
 		$this->images = $images;
 		$this->floorplans = $floorplans;
 		$this->scans = $scans;
+		$this->docs = $docs;
 	}
 
 	public static function from(array $data): self
@@ -52,6 +57,9 @@ class Media implements Arrayable
 				fn (array $scan) => Scan::from($scan),
 				$data['scans'] ?? []
 			),
+			docs: isset($data['docs'])
+				? Documents::from($data['docs'])
+				: new Documents,
 		);
 	}
 
@@ -70,6 +78,7 @@ class Media implements Arrayable
 				fn (Scan $scan) => $scan->toArray(),
 				$this->scans
 			),
+			'docs' => $this->docs->toArray(),
 		]);
 	}
 }

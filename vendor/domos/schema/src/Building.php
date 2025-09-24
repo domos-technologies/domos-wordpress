@@ -4,6 +4,7 @@ namespace SchemaImmo;
 
 use SchemaImmo\Estate\Address;
 use SchemaImmo\Building\Media;
+use SchemaImmo\Media\Documents;
 
 class Building implements Arrayable
 {
@@ -19,6 +20,8 @@ class Building implements Arrayable
 	/** @var Rentable[] $rentables */
 	public array $rentables = [];
 
+	public Documents $docs;
+
 	public function __construct(
 		string $id,
 		?string $name = null,
@@ -30,7 +33,8 @@ class Building implements Arrayable
 		array $features = [],
 
 		/** @var Rentable[] $rentables */
-		array $rentables = []
+		array $rentables = [],
+		Documents $docs = new Documents,
 	)
 	{
 		$this->id = $id;
@@ -40,6 +44,7 @@ class Building implements Arrayable
 		$this->media = $media;
 		$this->features = $features;
 		$this->rentables = $rentables;
+		$this->docs = $docs;
 	}
 
 	public static function from(array $data): self
@@ -64,15 +69,19 @@ class Building implements Arrayable
 			$data['rentables'] ?? []
 		);
 
+		$building->docs = isset($data['docs'])
+			? Documents::from($data['docs'])
+			: new Documents;
+
 		return $building;
 	}
 
 	public function toArray(): array
 	{
-		return [
+		return array_filter([
 			'id' => $this->id,
 			'name' => $this->name,
-			'address' => $this->address ? $this->address->toArray() : null,
+			'address' => $this->address?->toArray(),
 			'area' => $this->area,
 			'media' => $this->media->toArray(),
 			'features' => $this->features,
@@ -80,7 +89,8 @@ class Building implements Arrayable
 				fn (Rentable $rentable) => $rentable->toArray(),
 				$this->rentables
 			),
-		];
+			'docs' => $this->docs->toArray(),
+		]);
 	}
 
 	public function feature(string $type, ?string $key = null)

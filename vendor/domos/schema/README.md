@@ -39,6 +39,7 @@ composer install domos/schema
 5. [Financial Models](#financial-models)
    - [Money](#money)
    - [Price](#price)
+   - [Availability](#availability)
 6. [Web Expose Models](#web-expose-models)
    - [WebExpose](#webexpose)
    - [Block](#block)
@@ -117,17 +118,19 @@ $arrayRepresentation = $building->toArray();
 
 The `Rentable` class represents a space that can be rented or sold within a building.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| id | string | Unique identifier |
-| name | ?string | Name of the rentable space |
-| area | ?float | Area of the space in square meters |
-| description | ?string | Detailed description of the space |
-| transaction_type | [TransactionType](#transactiontype) | Type of transaction (Rent or Sale) |
-| price | ?[Price](#price) | Pricing information for the space |
-| spaces | array | List of [Space](#space) objects within the rentable area |
-| features | array | List of features and amenities specific to the rentable space |
-| media | [Rentable\Media](#rentablemedia) | Images, videos, and 3D scans related to the rentable space |
+| Property         | Type | Description                                                   |
+|------------------|------|---------------------------------------------------------------|
+| id               | string | Unique identifier                                             |
+| name             | ?string | Name of the rentable space                                    |
+| area             | ?float | Area of the space in square meters                            |
+| description      | ?string | Detailed description of the space                             |
+| transaction_type | [TransactionType](#transactiontype) | Type of transaction (Rent or Sale)                            |
+| price            | ?[Price](#price) | Pricing information for the space                             |
+| price_per_m2     | ?[Price](#price) | Pricing information per m2 for the space                      |
+| spaces           | array | List of [Space](#space) objects within the rentable area      |
+| features         | array | List of features and amenities specific to the rentable space |
+| media            | [Rentable\Media](#rentablemedia) | Images, videos, and 3D scans related to the rentable space    |
+| availability     | ?[Availability](#availability) | Availability status of the rentable space                     |
 
 Usage:
 ```php
@@ -340,6 +343,28 @@ $price = new Price(
     extra_costs: new Money(100.0, Currency::Euro)
 );
 $arrayRepresentation = $price->toArray();
+```
+
+### Availability
+
+The `Availability` class represents the availability status of a rentable space.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| status | [Status](#availability) | Availability status (Available, AvailableSoon, Unavailable, UnavailableSoon) |
+| text | string | Text description of the availability |
+| date | ?DateTimeInterface | Date when the space will be available |
+| afterTenantConstruction | bool | Indicates if the space is available after tenant construction |
+
+Usage:
+```php
+$availability = new Availability(
+    status: Status::Available,
+    text: 'Available immediately',
+    date: new DateTimeImmutable('2023-01-01'),
+    afterTenantConstruction: false
+);
+$arrayRepresentation = $availability->toArray();
 ```
 
 ## Web Expose Models

@@ -4,23 +4,28 @@ namespace SchemaImmo\Estate;
 
 use SchemaImmo\Arrayable;
 use SchemaImmo\Image;
+use SchemaImmo\Media\Documents;
 use SchemaImmo\Media\Scan;
 
 class Media implements Arrayable
 {
-	public ?Image $thumbnail = null;
-	public ?Image $thumbnail_small = null;
+	public function __construct(
+		public ?Image $thumbnail = null,
+		public ?Image $thumbnail_small = null,
 
-	/** @var Image[] $gallery */
-	public array $gallery = [];
+		/** @var Image[] $gallery */
+		public array $gallery = [],
 
-	/** @var Image|null $logo */
-	public ?Image $logo = null;
+		/** @var Image|null $logo */
+		public ?Image $logo = null,
 
-	public array $videos = [];
+		public array $videos = [],
 
-	/** @var Scan[] $scans */
-	public array $scans = [];
+		/** @var Scan[] $scans */
+		public array $scans = [],
+	)
+	{
+	}
 
 	public static function from(array $data): self
 	{

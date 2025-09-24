@@ -9,6 +9,8 @@ use SchemaImmo\Estate\Media;
 use SchemaImmo\Estate\Location;
 use SchemaImmo\Estate\Social;
 use SchemaImmo\Estate\Texts;
+use SchemaImmo\Estate\Usage;
+use SchemaImmo\Media\Documents;
 
 class Estate implements Arrayable
 {
@@ -32,7 +34,9 @@ class Estate implements Arrayable
 	public Location $location;
 	public Certifications $certifications;
 	public Social $social;
+	public Usage $usage;
 	public ?WebExpose $expose = null;
+	public Documents $docs;
 
 	public function __construct(
 		?string $id = null,
@@ -51,7 +55,9 @@ class Estate implements Arrayable
 		?Location $location = null,
 		?Certifications $certifications = null,
 		?Social $social = null,
+		?Usage $usage = null,
 		?WebExpose $expose = null,
+		?Documents $docs = null
 	)
 	{
 		if ($id !== null) {
@@ -78,7 +84,9 @@ class Estate implements Arrayable
 		$this->location = $location ?? new Location;
 		$this->certifications = $certifications ?? new Certifications;
 		$this->social = $social ?? new Social;
+		$this->usage = $usage ?? new Usage;
 		$this->expose = $expose;
+		$this->docs = $docs ?? new Documents;
 	}
 
 	public static function fake(): self
@@ -145,8 +153,16 @@ class Estate implements Arrayable
 			? Social::from($data['social'])
 			: new Social;
 
+		$estate->usage = isset($data['usage'])
+			? Usage::from($data['usage'])
+			: new Usage;
+
 		if (isset($data['expose'])) {
 			$estate->expose = WebExpose::from($data['expose']);
+		}
+
+		if (isset($data['docs'])) {
+			$estate->docs = Documents::from($data['docs']);
 		}
 
         return $estate;
@@ -159,7 +175,7 @@ class Estate implements Arrayable
 			'slug' => $this->slug,
             'name' => $this->name,
             'address' => $this->address->toArray(),
-
+			'usage' => $this->usage->toArray(),
 			'features' => $this->features,
 			'buildings' => array_map(function (Building $building) {
 				return $building->toArray();
@@ -170,7 +186,7 @@ class Estate implements Arrayable
 			'location' => $this->location->toArray(),
 			'certifications' => $this->certifications->toArray(),
 			'social' => $this->social->toArray(),
-
+			'docs' => $this->docs->toArray(),
 			'expose' => $this->expose?->toArray(),
         ]);
     }

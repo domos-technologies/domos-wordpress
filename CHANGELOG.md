@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.0
+- Updated version of domos/schema to 1.2
+
 ## 3.1.0
 - Updated version of domos/schema to 1.0
 

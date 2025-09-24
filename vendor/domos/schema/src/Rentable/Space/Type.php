@@ -44,8 +44,12 @@ class Type
         return new static($value);
     }
 
-    public static function tryFrom(string $value): static
+    public static function tryFrom(string $value): ?static
     {
-        return new static($value);
+		try {
+			return new static($value);
+		} catch (\Throwable $e) {
+			return null;
+		}
     }
 }
