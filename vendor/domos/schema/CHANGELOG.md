@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2
+- fix: Document returned Enum class in toArray method instead of string value
+
 ## 1.2.1
 - fix: correct wrong function call
 

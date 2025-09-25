@@ -30,7 +30,7 @@ class Document implements Arrayable
 	{
 		return array_filter([
 			'url' => $this->url,
-			'type' => $this->type,
+			'type' => $this->type->value,
 			'mime' => $this->mime,
 			'language' => $this->language,
 			'title' => $this->title,
