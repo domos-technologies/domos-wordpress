@@ -23,7 +23,7 @@ class EstatePost
 		string $domosID,
 		string $title,
 		Estate $data,
-		?WP_Post $post = null
+		?WP_Post $post = null,
 	) {
 		$this->domosID = $domosID;
 		$this->title = $title;
@@ -39,13 +39,28 @@ class EstatePost
 	{
 		$data = get_post_meta($post->ID, "estate_data", true);
 
-		$estate = Estate::from($data);
+		// If for some reason the data transfer into WordPress broke and we get invalid data here,
+		// then we try to fail somewhat gracefully and just return an empty Estate.
+		// This will ensure estates can still be synchronized!
+		if (is_string($data) || empty($data)) {
+			$estate = new Estate(
+				id: get_post_meta($post->ID, "domos_id", true),
+				slug: get_post_meta($post->ID, "domos_id", true),
+				name: $post->post_title,
+			);
+
+			error_log(
+				"[Immocore EstatePost::fromPost] get_post_meta returned invalid data: \n\n{$data}",
+			);
+		} else {
+			$estate = Estate::from($data);
+		}
 
 		$instance = new self(
 			get_post_meta($post->ID, "domos_id", true),
 			$post->post_title,
 			$estate,
-			$post
+			$post,
 		);
 
 		return $instance;
@@ -104,7 +119,7 @@ class EstatePost
 				"post_content" => $data->texts->description ?? "",
 				"post_excerpt" => $data->texts->slogan ?? "",
 			],
-			true
+			true,
 		);
 
 		// Update data
@@ -228,7 +243,7 @@ class EstatePost
 	public static function setPostThumbnailByUrl(
 		int $post_id,
 		string $url,
-		?string $alt = null
+		?string $alt = null,
 	) {
 		self::deletePostThumbnailIfSet($post_id);
 
