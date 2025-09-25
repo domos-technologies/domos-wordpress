@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.1
+- Updated version of domos/schema to 1.2.2
+- Make EstatePost::find fail gracefully to avoid sync-lock
+
 ## 3.2.0
 - Updated version of domos/schema to 1.2
 
