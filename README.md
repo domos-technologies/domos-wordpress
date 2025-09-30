@@ -39,13 +39,13 @@
 
 ## Hinweis zu `domos`-Bezeichnungen
 
-Im Q1 2025 haben wir uns zu "immocore" umbenannt, und wir tauschen die Bezeichnungen in der Dokumentation kontinuierlich aus. Um Backwardscapability zu gewährleisten, behalten wir die Bezeichnungen im PHP-Code aber vorerst bei. 
+Im Q1 2025 haben wir uns zu "immocore" umbenannt, und wir tauschen die Bezeichnungen in der Dokumentation kontinuierlich aus. Um Backwards-Compatibility zu gewährleisten, behalten wir die Bezeichnungen im PHP-Code aber vorerst bei.
 
 ## Installation
 
 1. Lade das Plugin in das Verzeichnis `/wp-content/plugins/` hoch
 2. Aktiviere das Plugin "domos Core" im Menü 'Plugins' in WordPress
-3. Konfiguriere das Plugin im Menü 'domos', indem du die URL zu deiner domos-Instanz angibst
+3. Konfiguriere das Plugin im Menü 'domos', indem du die URL zu deiner immocore-Instanz angibst
 4. Füge den Shortcode `[domos-list]` in eine Seite ein, um eine Liste der Objekte anzuzeigen
 5. Syncronisiere die Objekte im Menü 'domos'
 6. Fertig! Die Objekte werden nun regelmäßig synchronisiert
@@ -54,13 +54,14 @@ Im Q1 2025 haben wir uns zu "immocore" umbenannt, und wir tauschen die Bezeichnu
 
 ## Konfiguration der Synchronisation
 
-Um die Objekte zu synchronisieren, musst du die URL deiner domos-Instanz angeben. Dies kannst du in den Einstellungen des Plugins machen.
+Um die Objekte zu synchronisieren, musst du die URL deiner immocore-Instanz angeben. Dies kannst du in den Einstellungen des Plugins machen.
 
 | Einstellung                                                 | Wert                                                                                                                     |
-|-------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| ![Einstellungen](resources/images/docs/domos-menu-item.png) | Die domos Einstellungen findest du im WordPress-Admin-Bereich unten im Menü 'domos'.                                     |
-| ![Einstellungen](resources/images/docs/settings-2.png)      | Du kannst die URL deiner domos-Instanz hier angeben.                                                                     |
-| ![Einstellungen](resources/images/docs/settings-3.png)      | Nach dem Speichern wird die Verbindung zu deiner domos-Instanz hergestellt und gespeichert.                              |
+|:-----------------------------------------------------------:|--------------------------------------------------------------------------------------------------------------------------|
+| ![Einstellungen](resources/images/docs/immocore-menu-item.png) | Die domos Einstellungen findest du im WordPress-Admin-Bereich unten im Menü 'domos'.                                     |
+| ![Einstellungen](resources/images/docs/settings-2.png)      | Du kannst die URL deiner immocore-Instanz hier angeben.                                                                     |
+| ![Einstellungen](resources/images/docs/settings-3.png)      | Nach dem Speichern wird die Verbindung zu deiner immocore-Instanz hergestellt und gespeichert.                              |
+| ![Einstellungen](resources/images/docs/settings-6.png)      | Du kannst außerdem weitere Sprachen konfigurieren, die synchronisiert werden sollen. So kannst du übersetzte auch Inahlte & Exposés auf deiner Website anzeigen. |
 | ![Einstellungen](resources/images/docs/settings-4.png)      | Unter dem Menüpunkt "Sync" kannst du die Objekte nun synchronisieren. Dies erfolgt automatisch jeden Tag um Mitternacht. |
 | ![Einstellungen](resources/images/docs/settings-5.png)      | Wenn alles geklappt hat, siehst du, was synchronisiert wurde.                                                            |
 
@@ -373,7 +374,7 @@ add_filter('domos_should_fallback_to_default_language_expose', fn () => false);
 
 ## Hinweise
 
-- Alle Filter sollten vor der Initialisierung des DOMOS Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
+- Alle Filter sollten vor der Initialisierung des immocore Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
 - Bei der Modifizierung von Farbarrays stellen Sie bitte sicher, dass Sie die gleiche Struktur (50 bis 950) beibehalten, um Fehler zu vermeiden. Für inspiration kannst du dir die [Tailwind-Palette](https://tailwindcss.com/docs/customizing-colors#color-palette-reference) anschauen.
 - Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.0. Ältere PHP-Versionen werden nicht mehr unterstützt.
 
@@ -383,7 +384,7 @@ Hier ist ein vollständiges Beispiel, das zeigt, wie alle Filter zusammen verwen
 
 ```php
 <?php
-// DOMOS Plugin Filter anpassen
+// immocore Plugin Filter anpassen
 
 // Primäre Schattierungen modifizieren
 add_filter('domos_primary_shades', fn () => [
@@ -448,4 +449,4 @@ add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
 );
 ```
 
-Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um das Verhalten und Aussehen des DOMOS Plugins anzupassen.
+Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um das Verhalten und Aussehen des immocore Plugins anzupassen.
