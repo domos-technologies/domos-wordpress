@@ -47,6 +47,11 @@ class EstatePost
 		return "estate_data";
 	}
 
+	public static function hasLanguage(string $post_id, string $language): bool
+	{
+		return !!get_post_meta($post_id, self::getEstateDataMetaKey($language), true);
+	}
+
 	public static function fromPost(WP_Post $post, ?string $language = null): self
 	{
 		$data = get_post_meta($post->ID, self::getEstateDataMetaKey($language), true);
