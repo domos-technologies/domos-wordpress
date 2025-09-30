@@ -155,9 +155,11 @@ Dieses Beispiel zeigt, wie auf verschiedene Aspekte der Immobiliendaten in einem
 
 #### Zugriff auf übersetzte Immobiliendaten
 
-Wenn andere Sprachen synchronisiert wurden, kann der `fromPost`-Methode eine Sprache übergeben werden, um die übersetzten Daten zu erhalten:
+Wenn andere Sprachen synchronisiert wurden, kann der `find`- und `fromPost`-Methode eine Sprache übergeben werden, um übersetzte Daten zu erhalten (solange diese vorhanden sind).
+Sind sie es nicht, wird die Standardsprache verwendet.
 
 ```php
+$estatePost = \Domos\Core\EstatePost::find($externalId, language: 'en');
 $estatePost = \Domos\Core\EstatePost::fromPost($post, language: 'en');
 $estate = $estatePost->data;
 
