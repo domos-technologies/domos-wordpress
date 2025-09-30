@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.0
+- added: multi-language support. Configure other languages in the plugin settings.
+- fix: remove old domos logo
+
 ## 3.2.1
 - Updated version of domos/schema to 1.2.2
 - Make EstatePost::find fail gracefully to avoid sync-lock
