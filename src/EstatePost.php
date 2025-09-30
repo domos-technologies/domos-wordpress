@@ -6,6 +6,7 @@ use Domos\Core\Exceptions\CouldNotCreatePost;
 use Domos\Core\Exceptions\EstateAlreadyExists;
 use Domos\Core\Exceptions\EstateNotFound;
 use SchemaImmo\Estate;
+use SchemaImmo\Estate\UsageByType;
 use WP_Post;
 use WP_Query;
 
@@ -111,6 +112,8 @@ class EstatePost
 		update_post_meta($result, "domos_id", $external_id);
 
 		add_post_meta($result, self::getEstateDataMetaKey($language), $estate_data, true);
+
+		self::setSearchableMeta($result, $data);
 	}
 
 	public static function update(string $external_id, Estate $data, ?string $language = null)
@@ -123,8 +126,6 @@ class EstatePost
 		if ($post === null) {
 			throw new EstateNotFound($external_id);
 		}
-
-		
 
 		if ($language === $default_language) {
 			$default_language_data = [
@@ -150,6 +151,40 @@ class EstatePost
 
 		// Update data
 		update_post_meta($post->id, self::getEstateDataMetaKey($language), $estate_data);
+
+		// Only set searchable meta for the default language
+		if ($language === $default_language) {
+			self::setSearchableMeta($post->id, $data);
+		}
+	}
+
+	protected static function setSearchableMeta(string $post_id, Estate $data)
+	{
+		if ($data->address?->city) {
+			update_post_meta($post_id, "estate_city", $data->address?->city);
+		} else {
+			delete_post_meta($post_id, "estate_city");
+		}
+
+		if ($data->address?->country) {
+			update_post_meta($post_id, "estate_country", $data->address?->country);
+		} else {
+			delete_post_meta($post_id, "estate_country");
+		}
+
+		if ($data->usage->main?->value) {
+			update_post_meta($post_id, "estate_main_usage", $data->usage->main?->value);
+		} else {
+			delete_post_meta($post_id, "estate_main_usage");
+		}
+
+		if (count($data->usage->all) > 0) {
+			$usages = array_keys($data->usage->all);
+
+			update_post_meta($post_id, "estate_usages", json_encode($usages));
+		} else {
+			delete_post_meta($post_id, "estate_usages");
+		}
 	}
 
 	public static function delete(string $external_id)

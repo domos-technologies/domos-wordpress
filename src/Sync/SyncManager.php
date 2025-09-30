@@ -56,7 +56,7 @@ class SyncManager
 		$updated = 0;
 
 		foreach ($estates as $estate) {
-			$existingPost = EstatePost::find($estate->id);
+			$existingPost = EstatePost::find($estate->id, language: $language);
 
 			if ($existingPost) {
 				EstatePost::update($estate->id, $estate, language: $language);

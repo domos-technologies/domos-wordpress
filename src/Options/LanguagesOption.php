@@ -9,6 +9,8 @@ class LanguagesOption extends Option
 {
 	protected const OPTION = 'immocore_languages';
 
+	protected $default = [];
+
 	public static function getSuggestions(): array
 	{
 		return [

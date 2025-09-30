@@ -45,16 +45,18 @@
                 this.sync.languages[language] = false;
             }
 
-            let response;
-
             try {
 				for (const language of Object.keys(this.sync.languages)) {
                     this.sync.languages[language] = true;
 
-					response = await this.syncLanguage(language);
+					const response = await this.syncLanguage(language);
 
                     if (response instanceof Error) {
                         this.sync.languages[language] = response.message;
+
+                        if (!this.sync.error) {
+                            this.sync.error = response.message;
+                        }
                     } else {
                         this.sync.execution = response;
                         this.sync.languages[language] = response;
@@ -219,12 +221,6 @@
                             <span x-show="sync.synchronizing">Synchronisiert...</span>
                         </button>
                     </div>
-                    <template x-if="sync.error">
-                        <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
-                            <p><strong>Die Synchronisation ist fehlgeschlagen.</strong></p>
-                            <p x-text="sync.error"></p>
-                        </div>
-                    </template>
                     <template x-if="sync.synchronizing">
                         <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 ">
                             <div class="flex justify-between items-center gap-1">
@@ -252,44 +248,60 @@
                                                 </span>
                                             </template>
                                         </div>
-
-                                        <template x-if="typeof response === 'string'">
-                                            <span x-text="response" class="text-rose-500 font-semibold"></span>
-                                        </template>
                                     </li>
                                 </template>
                             </ul>
                         </div>
                     </template>
-                    <template x-if="sync.execution && !sync.synchronizing">
-                        <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
-                            <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert.</p>
+                    <template x-if="!sync.synchronizing">
+                        <template x-for="[language, response] in Object.entries(sync.languages).filter(([language, response]) => (typeof response === 'object' && response) || (typeof response === 'string'))" :key="language">
+                            <div>
+                                <template x-if="typeof response === 'object' && response">
+                                    <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
+                                        <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert (<span x-text="language"></span>)</p>
 
-                            <div class="grid grid-cols-3">
-                                <figure>
-                                    <p
-                                        class="text-xl font-semibold text-teal-700"
-                                        x-text="sync.execution.created"
-                                    ></p>
-                                    <figcaption>Erstellt</figcaption>
-                                </figure>
+                                        <div class="grid grid-cols-3">
+                                            <figure>
+                                                <p
+                                                    class="text-xl font-semibold text-teal-700"
+                                                    x-text="response.created"
+                                                ></p>
+                                                <figcaption>Erstellt</figcaption>
+                                            </figure>
 
-                                <figure>
-                                    <p
-                                        class="text-xl font-semibold"
-                                        x-text="sync.execution.updated"
-                                    ></p>
-                                    <figcaption>Aktualisiert</figcaption>
-                                </figure>
+                                            <figure>
+                                                <p
+                                                    class="text-xl font-semibold"
+                                                    x-text="response.updated"
+                                                ></p>
+                                                <figcaption>Aktualisiert</figcaption>
+                                            </figure>
 
-                                <figure>
-                                    <p
-                                        class="text-xl font-semibold text-rose-700"
-                                        x-text="sync.execution.deleted"
-                                    ></p>
-                                    <figcaption>Gelöscht</figcaption>
-                                </figure>
+                                            <figure>
+                                                <p
+                                                    class="text-xl font-semibold text-rose-700"
+                                                    x-text="response.deleted"
+                                                ></p>
+                                                <figcaption>Gelöscht</figcaption>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template x-if="typeof response === 'string'">
+                                    <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
+                                        <p class="font-semibold mb-2">Fehler bei der Synchronisation (<span x-text="language"></span>)</p>
+                                        <p x-text="response"></p>
+                                    </div>
+                                </template>
                             </div>
+                        </template>
+                    </template>
+
+                    <template x-if="sync.error">
+                        <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
+                            <p><strong>Die Synchronisation ist fehlgeschlagen.</strong></p>
+                            <p x-text="sync.error"></p>
                         </div>
                     </template>
                 </div>
