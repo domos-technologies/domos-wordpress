@@ -14,7 +14,7 @@ class SyncManager
 	{
 	}
 
-	public function synchronize()
+	public function synchronize(?string $language = null)
 	{
 		$maxExecutionTime = apply_filters(self::MAX_EXECUTION_TIME_FILTER, 600);
 
@@ -26,7 +26,7 @@ class SyncManager
 		set_time_limit($maxExecutionTime);
 
 		$domos = DOMOS::instance();
-		$estates = $domos->api->estates();
+		$estates = $domos->api->estates(language: $language);
 
 		$cities = array_map(function (Estate $estate) {
 			return $estate->address->city;
@@ -59,10 +59,10 @@ class SyncManager
 			$existingPost = EstatePost::find($estate->id);
 
 			if ($existingPost) {
-				EstatePost::update($estate->id, $estate);
+				EstatePost::update($estate->id, $estate, language: $language);
 				$updated++;
 			} else {
-				EstatePost::create($estate->id, $estate);
+				EstatePost::create($estate->id, $estate, language: $language);
 				$created++;
 			}
 		}

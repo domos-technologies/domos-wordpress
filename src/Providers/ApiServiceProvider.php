@@ -15,8 +15,18 @@ class ApiServiceProvider implements Provider
         add_action('rest_api_init', function () {
             register_rest_route('domos/admin', '/sync', [
                 'methods' => 'POST',
-                'callback' => function () {
-					return $this->sync();
+                'callback' => function (\WP_REST_Request $request) {
+					$language = $request->get_param('language');
+
+					// While we don't validate language codes (to not have to update the plugin every time we add a new language)
+					// we only allow 2-letter language codes.
+					if (!$language || strlen($language) !== 2) {
+						$language = null;
+					} else {
+						$language = strtolower($language);
+					}
+
+					return $this->sync(language: $language);
 				},
                 'permission_callback' => function () {
                     // check if user can manage options
@@ -34,8 +44,13 @@ class ApiServiceProvider implements Provider
                 'callback' => function (\WP_REST_Request $request) {
 					$url = $request->get_param('url');
 					$token = $request->get_param('token');
+					$languages = $request->get_param('languages') ?? [];
 
-					return $this->saveApiSettings($url, $token);
+					if (!is_array($languages)) {
+						$languages = [];
+					}
+
+					return $this->saveApiSettings($url, $token, $languages ?? []);
                 },
                 'permission_callback' => function () {
                     // check if user can manage options
@@ -71,14 +86,14 @@ class ApiServiceProvider implements Provider
     {
     }
 
-	protected function sync()
+	protected function sync(?string $language = null)
 	{
 		try {
 			if (DOMOS::instance()->url() === null) {
 				return new \WP_Error('no_url', 'Es wurde noch keine URL angegeben.');
 			}
 
-            [$created, $updated, $deleted] = DOMOS::instance()->sync->synchronize();
+            [$created, $updated, $deleted] = DOMOS::instance()->sync->synchronize(language: $language);
 
             return [
                 'created' => $created,
@@ -107,7 +122,7 @@ class ApiServiceProvider implements Provider
         }
 	}
 
-	protected function saveApiSettings(string $url, ?string $token = null)
+	protected function saveApiSettings(string $url, ?string $token = null, array $languages = [])
 	{
 		$options = DOMOS::instance()->options;
 
@@ -116,9 +131,9 @@ class ApiServiceProvider implements Provider
 			return new \WP_Error('invalid_url', 'Die URL muss mit https:// beginnen.');
 		}
 
-		// Ends with .domos.test or .domos.app
-		if (!preg_match('/\.domos\.(test|app)$/', $url)) {
-			return new \WP_Error('invalid_url', 'Die URL muss auf .domos.test oder .domos.app enden.');
+		// Ends with .domos.test or .domos.app or .immocore.test or .immocore.app
+		if (!preg_match('/\.domos\.(test|app)$/', $url) && !preg_match('/\.immocore\.(test|app)$/', $url)) {
+			return new \WP_Error('invalid_url', 'Die URL muss folgende Endungen haben: .domos.test, .domos.app, .immocore.test, .immocore.app');
 		}
 
 		// sanitize
@@ -149,9 +164,32 @@ class ApiServiceProvider implements Provider
 				$message = 'Verbindung hergestellt.';
 			}
 
+			if (isset($data['customer']) && isset($data['customer']['language'])) {
+				$language = $data['customer']['language'];
+
+				$language = strtolower($language);
+
+				if (strlen($language) !== 2) {
+					$language = 'de';
+				}
+			} else {
+				$language = 'de';
+			}
+
+
+			$languages = array_filter($languages, fn ($lang) => strlen($lang) === 2 && $lang !== $language);
+			$languages = array_map(fn ($language) => strtolower($language), $languages);
+			$languages = array_unique($languages);
+			$languages = array_values($languages);
+
+			$options->languages->set($languages);
+			$options->default_language->set($language);
+
 			return [
 				'success' => true,
 				'message' => $message,
+				'languages' => $languages,
+				'default_language' => $language,
 			];
 		} catch (CannotConnectToDomos $th) {
 			$this->logThrowable($th);

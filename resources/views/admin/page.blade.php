@@ -1,6 +1,8 @@
 <?php
 /** @var string $url */
 /** @var ?string $token */
+/** @var string[] $languages */
+/** @var string $default_language */
 ?>
 
 <script src="{{ domos_plugin_url('resources/js/cdn/alpine-3.13.8.min.js') }}"></script>
@@ -11,6 +13,8 @@
     x-data="{
         url: '{{ $url }}',
         token: {{ $token ? "'$token'" : 'null'}},
+        languages: {{ $languages ? json_encode($languages) : '[]' }},
+        default_language: {{ $default_language ? "'$default_language'" : 'de' }},
 
         nonce: '{{ wp_create_nonce('wp_rest') }}',
 
@@ -18,6 +22,7 @@
         	synchronizing: false,
         	error: null,
         	execution: null,
+            languages: {},
 		},
 
         settings: {
@@ -34,9 +39,39 @@
             this.sync.synchronizing = true;
             this.sync.error = null;
             this.sync.execution = null;
+            this.sync.languages = {};
+
+            for (const language of [this.default_language, ...this.languages]) {
+                this.sync.languages[language] = false;
+            }
+
+            let response;
 
             try {
-				const response = await fetch('/wp-json/domos/admin/sync', {
+				for (const language of Object.keys(this.sync.languages)) {
+                    this.sync.languages[language] = true;
+
+					response = await this.syncLanguage(language);
+
+                    if (response instanceof Error) {
+                        this.sync.languages[language] = response.message;
+                    } else {
+                        this.sync.execution = response;
+                        this.sync.languages[language] = response;
+                    }
+				}
+            } catch (e) {
+                console.error(e);
+
+                this.sync.error = 'Ein unbekannter Fehler ist aufgetreten.';
+            }
+
+            this.sync.synchronizing = false;
+        },
+
+        async syncLanguage(language) {
+            try {
+				const response = await fetch(`/wp-json/domos/admin/sync?language=${language}`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -47,11 +82,11 @@
                 if (!response.ok) {
                     const data = await response.json();
 
-                    this.sync.error = `${data.message} (${data.code})`;
+                    return new Error(`${data.message} (${data.code})`);
                 } else {
                     const {created, deleted, updated} = await response.json();
 
-                    this.sync.execution = {
+                    return {
                         created,
                         deleted,
                         updated,
@@ -60,10 +95,8 @@
             } catch (e) {
                 console.error(e);
 
-                this.sync.error = 'Ein unbekannter Fehler ist aufgetreten.';
+                return new Error('Ein unbekannter Fehler ist aufgetreten.');
             }
-
-            this.sync.synchronizing = false;
         },
 
         async saveSettings() {
@@ -84,6 +117,7 @@
 					body: JSON.stringify({
 						url: this.url,
 						token: this.token,
+						languages: this.languages,
 					}),
 				});
 
@@ -95,6 +129,14 @@
 				} else {
 					this.settings.message = data.message ?? 'Einstellungen erfolgreich gespeichert.';
 					this.settings.status = 'saved';
+
+                    if (data.languages) {
+                        this.languages = data.languages;
+                    }
+
+                    if (data.default_language) {
+                        this.default_language = data.default_language;
+                    }
 				}
 			} catch (e) {
 				console.error(e);
@@ -105,8 +147,8 @@
         }
     }"
 >
-    <a href="https://domos.de" target="_blank">
-        <img src="{{ domos_plugin_url('resources/images/domos-logo.svg') }}" alt="DOMOS Logo" class="w-32"/>
+    <a href="https://immocore.com" target="_blank">
+        <img src="https://assets.immocore.com/logo/logo.svg" alt="immocore Logo" class="h-8"/>
     </a>
 
     <div
@@ -164,7 +206,7 @@
                 <div class="border rounded-lg shadow-sm bg-gray-50 text-gray-900 overflow-hidden">
                     <div class="flex flex-col space-y-1.5 p-6">
                         <h3 class="text-lg font-semibold leading-none tracking-tight">Sync</h3>
-                        <p class="text-sm text-gray-500">Synchronisiere WordPress mit deiner domos-Instanz.</p>
+                        <p class="text-sm text-gray-500">Synchronisiere WordPress mit deiner immocore-Instanz.</p>
                     </div>
                     <div class="p-6 pt-0 space-y-2">
                         <button
@@ -184,12 +226,42 @@
                         </div>
                     </template>
                     <template x-if="sync.synchronizing">
-                        <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 flex justify-between items-center">
-                            <p class="font-semibold">Synchronisiert...</p>
-                            <x-icons.loader class="w-6 h-6 animate animate-spin" />
+                        <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 ">
+                            <div class="flex justify-between items-center gap-1">
+                                <p class="font-semibold">Synchronisiert...</p>
+                                <x-icons.loader class="w-6 h-6 animate animate-spin" />
+                            </div>
+
+                            <ul>
+                                <template x-for="[language, response] in Object.entries(sync.languages)" :key="language">
+                                    <li>
+                                        <div class="flex items-center gap-2">
+                                            <span x-text="language" class="w-3"></span>
+
+                                            <template x-if="response === true">
+                                                <x-icons.loader class="w-3 h-3 animate animate-spin" />
+                                            </template>
+
+                                            <template x-if="typeof response === 'object' && response">
+                                                <x-icons.check class="w-4 h-4 flex-shrink-0 text-teal-500" />
+                                            </template>
+
+                                            <template x-if="typeof response === 'string'">
+                                                <span class="text-rose-500 font-semibold">
+                                                    x
+                                                </span>
+                                            </template>
+                                        </div>
+
+                                        <template x-if="typeof response === 'string'">
+                                            <span x-text="response" class="text-rose-500 font-semibold"></span>
+                                        </template>
+                                    </li>
+                                </template>
+                            </ul>
                         </div>
                     </template>
-                    <template x-if="sync.execution">
+                    <template x-if="sync.execution && !sync.synchronizing">
                         <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
                             <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert.</p>
 
@@ -232,14 +304,14 @@
 				>
                     <div class="flex flex-col space-y-1.5 p-6">
                         <h3 class="text-lg font-semibold leading-none tracking-tight">API-Einstellungen</h3>
-                        <p class="text-sm text-gray-500">Verbindung zu domos-API herstellen.</p>
+                        <p class="text-sm text-gray-500">Verbindung zu immocore-API herstellen.</p>
                     </div>
 
                     <div class="p-6 pt-0 space-y-2">
                         <div class="space-y-1">
                             <label
                                 class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                for="name">DOMOS-URL</label>
+                                for="name">immocore-URL</label>
                             <input x-model="url"
 								   type="url"
 								   placeholder="URL"
@@ -259,6 +331,66 @@
                                    value="{{ $token }}"
 								   x-model="token"
                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"/>
+                        </div>
+                        <div class="space-y-1 pt-5 pb-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <label
+                                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    for="languages"
+                                >
+                                    Sprachen
+                                </label>
+                                <a 
+                                    href="https://developers.immocore.com/immocore-api-documentation#model/language" 
+                                    target="_blank"
+                                    class="flex items-center gap-1.5"
+                                >
+                                    <span>Verfügbare Sprachen</span>
+                                    <x-icons.chevron-right class="w-3 h-3" />
+                                </a>
+                            </div>
+                            <div class="flex items-center">
+                                <input 
+                                    type="text" 
+                                    disabled
+                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+                                    x-bind:value="default_language + ' (Standard Exposé-Sprache)'"
+                                />
+                                <button type="button" disabled class="text-sm text-gray-300 hover:text-gray-500 w-8 h-full flex items-center justify-center">
+                                    &nbsp;
+                                </button>
+                            </div>
+                            <datalist id="country">
+                                @foreach(\Domos\Core\Options\LanguagesOption::getSuggestions() as $suggestion)
+                                    <option value="{{ $suggestion }}"></option>
+                                @endforeach
+                            </datalist>
+                            <template x-for="(language, index) in languages" :key="index">
+                                <div class="flex items-center">
+                                    <input 
+                                        name="languages[]"
+                                        type="text" 
+                                        x-model="languages[index]" 
+                                        placeholder="z.B. de, en, fr, etc." 
+                                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md peer border-gray-300 ring-offset-background placeholder:text-gray-400 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+                                        list="country"
+                                        maxlength="2"
+                                        minlength="2"
+                                        pattern="[a-z]{2}"
+                                    />
+                                    <button type="button" @click="languages.splice(languages.indexOf(language), 1)" class="text-sm text-gray-300 hover:text-gray-500 w-8 h-full flex items-center justify-center">
+                                        x
+                                    </button>
+                                </div>
+                            </template>
+                            <button 
+                                class="block w-full text-center text-xs text-gray-400 hover:text-gray-500 py-2"
+                                type="button" 
+                                @click="languages.push('')"
+                                x-text="languages.length === 0 ? 'Sprache hinzufügen +' : 'Weitere Sprache hinzufügen +'"
+                            >
+                                Sprache hinzufügen +
+                            </button>
                         </div>
                     </div>
 

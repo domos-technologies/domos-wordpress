@@ -32,6 +32,24 @@ class DOMOS
     }
 
 	/**
+	 * @return string
+	 */
+	public function getFrontendLanguage(): string
+	{
+		$language = $this->options->default_language->get();
+
+		return apply_filters('domos_frontend_language', $language);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function shouldFallbackToDefaultLanguageExpose(): bool
+	{
+		return apply_filters('domos_should_fallback_to_default_language_expose', true);
+	}
+
+	/**
 	 * @return array<'50'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'|'950', string>
 	 */
 	public function getPrimaryShades(): array

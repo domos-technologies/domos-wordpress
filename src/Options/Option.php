@@ -11,12 +11,20 @@ abstract class Option
 
 	protected $value;
 
+	protected $default = null; 
+
 	/**
 	 * @return T
 	 */
 	public function fresh()
 	{
-		return get_option(static::OPTION);
+		$value = get_option(static::OPTION);
+
+		if (!$value) {
+			$value = $this->default;
+		}
+
+		return $value;
 	}
 
 	/**

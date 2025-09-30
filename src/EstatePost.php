@@ -35,9 +35,24 @@ class EstatePost
 		}
 	}
 
-	public static function fromPost(WP_Post $post): self
+	public static function getEstateDataMetaKey(?string $language = null): string
 	{
-		$data = get_post_meta($post->ID, "estate_data", true);
+		$default_language = DOMOS::instance()->options->default_language->get();
+
+		if ($language && $language !== $default_language) {
+			return "estate_data_{$language}";
+		}
+
+		return "estate_data";
+	}
+
+	public static function fromPost(WP_Post $post, ?string $language = null): self
+	{
+		$data = get_post_meta($post->ID, self::getEstateDataMetaKey($language), true);
+
+		if (!$data) {
+			$data = get_post_meta($post->ID, "estate_data", true);
+		}
 
 		// If for some reason the data transfer into WordPress broke and we get invalid data here,
 		// then we try to fail somewhat gracefully and just return an empty Estate.
@@ -66,7 +81,7 @@ class EstatePost
 		return $instance;
 	}
 
-	public static function create(string $external_id, Estate $data)
+	public static function create(string $external_id, Estate $data, ?string $language = null)
 	{
 		$estate_data = $data->toArray();
 		$post = self::find($external_id);
@@ -95,11 +110,12 @@ class EstatePost
 
 		update_post_meta($result, "domos_id", $external_id);
 
-		add_post_meta($result, "estate_data", $estate_data, true);
+		add_post_meta($result, self::getEstateDataMetaKey($language), $estate_data, true);
 	}
 
-	public static function update(string $external_id, Estate $data)
+	public static function update(string $external_id, Estate $data, ?string $language = null)
 	{
+		$default_language = DOMOS::instance()->options->default_language->get();
 		$estate_data = $data->toArray();
 
 		$post = self::find($external_id);
@@ -108,22 +124,32 @@ class EstatePost
 			throw new EstateNotFound($external_id);
 		}
 
+		
+
+		if ($language === $default_language) {
+			$default_language_data = [
+				"post_title" => $data->name,
+				"post_name" => $data->slug,
+				"post_content" => $data->texts->description ?? "",
+				"post_excerpt" => $data->texts->slogan ?? "",
+			];
+		} else {
+			$default_language_data = [];
+		}
+
 		// Update title
 		wp_update_post(
 			[
 				"ID" => $post->id,
 				"comment_status" => "closed",
-
-				"post_title" => $data->name,
 				"post_name" => $data->slug,
-				"post_content" => $data->texts->description ?? "",
-				"post_excerpt" => $data->texts->slogan ?? "",
+				...$default_language_data,
 			],
 			true,
 		);
 
 		// Update data
-		update_post_meta($post->id, "estate_data", $estate_data);
+		update_post_meta($post->id, self::getEstateDataMetaKey($language), $estate_data);
 	}
 
 	public static function delete(string $external_id)
@@ -140,7 +166,7 @@ class EstatePost
 	/**
 	 * @return EstatePost[]
 	 */
-	public static function findUnneeded(array $excluded_ids): array
+	public static function findUnneeded(array $excluded_ids, ?string $language = null): array
 	{
 		$args = [
 			"post_type" => self::POST_TYPE,
@@ -158,7 +184,7 @@ class EstatePost
 		$estates = [];
 
 		foreach ($query->posts as $post) {
-			$estates[] = self::fromPost($post);
+			$estates[] = self::fromPost($post, language: $language);
 		}
 
 		return $estates;
@@ -170,7 +196,7 @@ class EstatePost
 	 * @param string $external_id The external ID to search for.
 	 * @return WP_Post|null The found post or null if not found.
 	 */
-	public static function find(string $external_id): ?self
+	public static function find(string $external_id, ?string $language = null): ?self
 	{
 		// Perform a custom query to search for the post by external ID.
 		$args = [
@@ -186,7 +212,7 @@ class EstatePost
 		if ($query->have_posts()) {
 			$post = $query->posts[0];
 
-			return self::fromPost($post);
+			return self::fromPost($post, language: $language);
 		} else {
 			return null; // No post with the external ID found.
 		}

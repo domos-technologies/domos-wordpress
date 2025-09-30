@@ -35,12 +35,12 @@ class DomosClient
 		$this->host = str($host)->replace(["http://", "https://"], "");
 	}
 
-	public function estate(string $id): ?Estate
+	public function estate(string $id, ?string $language = null): ?Estate
 	{
 		$this->verifyHost();
 
 		try {
-			$endpoint = DOMOS::instance()->urlResolver->estateSyncOneUrl($id);
+			$endpoint = DOMOS::instance()->urlResolver->estateSyncOneUrl($id, language: $language);
 			$token = DOMOS::instance()->options->token->get();
 
 			$response = wp_remote_get($endpoint, [
@@ -91,12 +91,12 @@ class DomosClient
 		}
 	}
 
-	public function estates(): array
+	public function estates(?string $language = null): array
 	{
 		$this->verifyHost();
 
 		try {
-			$endpoint = DOMOS::instance()->urlResolver->estateSyncAllUrl();
+			$endpoint = DOMOS::instance()->urlResolver->estateSyncAllUrl(language: $language);
 			$token = DOMOS::instance()->options->token->get();
 
 			$response = wp_remote_get($endpoint, [

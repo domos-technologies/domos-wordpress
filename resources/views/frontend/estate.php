@@ -1,7 +1,23 @@
 <?php
     global $post;
-    $estatePost = \Domos\Core\EstatePost::fromPost($post);
+	$instance = \Domos\Core\DOMOS::instance();
+	$language = $instance->getFrontendLanguage();
+	$shouldFallbackToDefaultLanguageExpose = $instance->shouldFallbackToDefaultLanguageExpose();
+
+    $estatePost = \Domos\Core\EstatePost::fromPost($post, language: $language);
     $estate = $estatePost->data;
+
+	if ($estate->expose === null) {
+		if ($shouldFallbackToDefaultLanguageExpose) {
+			$estatePost = \Domos\Core\EstatePost::fromPost($post);
+			$estate = $estatePost->data;
+		} else {
+			// Show 404
+			status_header(404);
+			include get_404_template();
+			exit;
+		}
+	}
 
 	// Render WordPress header
 	get_header();

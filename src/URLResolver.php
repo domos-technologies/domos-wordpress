@@ -79,16 +79,24 @@ class URLResolver
 		return "{$domosUrl}/api/sync/v2/search";
 	}
 
-	public function estateSyncOneUrl(string $id): string
+	public function estateSyncOneUrl(string $id, ?string $language = null): string
 	{
 		$domosUrl = DOMOS::instance()->url();
+
+		if ($language) {
+			return "{$domosUrl}/api/sync/v2/estates/{$id}?language={$language}";
+		}
 
 		return "{$domosUrl}/api/sync/v2/estates/{$id}";
 	}
 
-	public function estateSyncAllUrl(): string
+	public function estateSyncAllUrl(?string $language = null): string
 	{
 		$domosUrl = DOMOS::instance()->url();
+
+		if ($language) {
+			return "{$domosUrl}/api/sync/v2/estates?language={$language}";
+		}
 
 		return "{$domosUrl}/api/sync/v2/estates";
 	}

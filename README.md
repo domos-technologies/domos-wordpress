@@ -29,6 +29,8 @@
     - [`domos_lottie_colors`](#6-domos_lottie_colors)
     - [`domos_font_families`](#7-domos_font_families)
     - [`domos_estate_escape_hatch`](#8-domos_estate_escape_hatch)
+    - [`domos_frontend_language`](#9-domos_frontend_language)
+    - [`domos_should_fallback_to_default_language_expose`](#10-domos_should_fallback_to_default_language_expose)
 7. [Hinweise](#hinweise)
 8. [Vollständiges Beispiel](#vollst%C3%A4ndiges-beispiel)
 
@@ -339,6 +341,35 @@ add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
 );
 ```
 
+### 9. `domos_frontend_language`
+
+Legt die Sprache fest, in der die Exposés gerendert werden sollen.
+
+Hiermit können andere Übersetzungs-Plugins wie WPML oder Polylang integriert werden, indem die aktuelle Sprache aus dem Plugin abgefragt wird.
+
+> [!WARNING]
+> Es dürfen nur unterstützte Sprachen über diesen Filter zurückgegeben werden.
+
+
+**Standardwert:** `'de'`
+
+
+**Anwendung:**
+```php
+add_filter('domos_frontend_language', fn () => 'en');
+```
+
+### 10. `domos_should_fallback_to_default_language_expose`
+
+Legt fest, ob die Standardsprache verwendet werden soll, wenn ein Exposé in der gewählten Sprache nicht verfügbar ist.
+Wenn diese Funktion `false` zurückgibt, wird stattdessen ein 404-Fehler angezeigt.
+
+**Standardwert:** `true`
+
+**Anwendung:**
+```php
+add_filter('domos_should_fallback_to_default_language_expose', fn () => false);
+```
 
 ## Hinweise
 
