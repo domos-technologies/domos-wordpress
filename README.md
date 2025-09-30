@@ -20,6 +20,11 @@
 3. [Einbettung der Objektsuche/-karte](#einbettung-der-objektsuche-karte)
 4. [Überschreiben des Theme-Layouts für Exposés](#%C3%BCberschreiben-des-theme-layouts-f%C3%BCr-expos%C3%A9s)
 5. [Zugriff auf Immobiliendaten in WordPress](#zugriff-auf-immobiliendaten-in-wordpress)
+    - [Zugriff auf Immobiliendaten via Immocore-ID](#zugriff-auf-immobiliendaten-via-immocore-id)
+    - [Zugriff auf Immobiliendaten via WordPress-Post](#zugriff-auf-immobiliendaten-via-wordpress-post)
+    - [Zugriff auf übersetzte Immobiliendaten](#zugriff-auf-%C3%BCbersetzte-immobiliendaten)
+    - [Mehrere Immobilien finden](#mehrere-immobilien-finden)
+    - [Immobilienverwaltungsoperationen (Interne Verwendung)](#immobilienverwaltungsoperationen-interne-verwendung)
 6. [Weitere Konfigurationen via WordPress-Filter](#weitere-konfigurationen-via-wordpress-filter)
 	- [`domos_primary_shades`](#1-domos_primary_shades)
     - [`domos_gray_shades`](#2-domos_gray_shades)
@@ -31,8 +36,8 @@
     - [`domos_estate_escape_hatch`](#8-domos_estate_escape_hatch)
     - [`domos_frontend_language`](#9-domos_frontend_language)
     - [`domos_should_fallback_to_default_language_expose`](#10-domos_should_fallback_to_default_language_expose)
+    - [Vollständiges Beispiel](#vollst%C3%A4ndiges-beispiel)
 7. [Hinweise](#hinweise)
-8. [Vollständiges Beispiel](#vollst%C3%A4ndiges-beispiel)
 
 
 ---
@@ -147,6 +152,30 @@ if ($post->post_type === \Domos\Core\EstatePost::POST_TYPE) {
 ```
 
 Dieses Beispiel zeigt, wie auf verschiedene Aspekte der Immobiliendaten in einem WordPress-Template zugegriffen werden kann.
+
+#### Zugriff auf übersetzte Immobiliendaten
+
+Wenn andere Sprachen synchronisiert wurden, kann der `fromPost`-Methode eine Sprache übergeben werden, um die übersetzten Daten zu erhalten:
+
+```php
+$estatePost = \Domos\Core\EstatePost::fromPost($post, language: 'en');
+$estate = $estatePost->data;
+
+// Texte & Exposé sind auf Englisch
+```
+
+Wenn die gewünschte Sprache nicht verfügbar ist, wird die Standardsprache verwendet.
+
+> [!NOTE]
+> Nicht für jede Sprache gibt es auch zwangsläufig ein `WebExpose`, auch wenn das Objekt selber übersetzt wurde.
+> Die Variable `$estate->expose` ist dann `null`.
+
+
+Um zu prüfen, ob Daten für eine bestimmte Sprache verfügbar sind, kann die `EstatePost::hasLanguage($post_id, $language)`-Methode verwendet werden:
+
+```php
+$hasLanguage = \Domos\Core\EstatePost::hasLanguage($post->ID, 'en');
+```
 
 ### Mehrere Immobilien finden
 
@@ -372,13 +401,7 @@ Wenn diese Funktion `false` zurückgibt, wird stattdessen ein 404-Fehler angezei
 add_filter('domos_should_fallback_to_default_language_expose', fn () => false);
 ```
 
-## Hinweise
-
-- Alle Filter sollten vor der Initialisierung des immocore Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
-- Bei der Modifizierung von Farbarrays stellen Sie bitte sicher, dass Sie die gleiche Struktur (50 bis 950) beibehalten, um Fehler zu vermeiden. Für inspiration kannst du dir die [Tailwind-Palette](https://tailwindcss.com/docs/customizing-colors#color-palette-reference) anschauen.
-- Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.0. Ältere PHP-Versionen werden nicht mehr unterstützt.
-
-## Vollständiges Beispiel
+### Vollständiges Beispiel
 
 Hier ist ein vollständiges Beispiel, das zeigt, wie alle Filter zusammen verwendet werden können:
 
@@ -450,3 +473,10 @@ add_action('domos_estate_escape_hatch', function (\SchemaImmo\Estate $estate) {
 ```
 
 Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um das Verhalten und Aussehen des immocore Plugins anzupassen.
+
+
+### Hinweise
+
+- Alle Filter sollten vor der Initialisierung des immocore Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
+- Bei der Modifizierung von Farbarrays stellen Sie bitte sicher, dass Sie die gleiche Struktur (50 bis 950) beibehalten, um Fehler zu vermeiden. Für inspiration kannst du dir die [Tailwind-Palette](https://tailwindcss.com/docs/customizing-colors#color-palette-reference) anschauen.
+- Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.0. Ältere PHP-Versionen werden nicht mehr unterstützt.

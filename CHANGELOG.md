@@ -2,6 +2,8 @@
 
 ## 3.3.0
 - added: multi-language support. Configure other languages in the plugin settings.
+- added: optional `language` parameter to multiple `EstatePost` methods
+- added: `EstatePost::hasLanguage($post_id, $language)` to check if data for a specific language is available
 - fix: remove old domos logo
 
 ## 3.2.1
