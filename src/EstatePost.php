@@ -203,7 +203,7 @@ class EstatePost
 	 */
 	public static function findUnneeded(array $excluded_ids, ?string $language = null): array
 	{
-		$args = [
+		$query = new WP_Query([
 			"post_type" => self::POST_TYPE,
 			"posts_per_page" => -1, // Retrieve all posts of the specified post type.
 			"meta_query" => [
@@ -213,12 +213,26 @@ class EstatePost
 					"compare" => "NOT IN",
 				],
 			],
-		];
+		]);
 
-		$query = new WP_Query($args);
 		$estates = [];
 
 		foreach ($query->posts as $post) {
+			$estates[] = self::fromPost($post, language: $language);
+		}
+
+		$broken_query = new WP_Query([
+			"post_type" => self::POST_TYPE,
+			"posts_per_page" => -1, // Retrieve all posts of the specified post type.
+			"meta_query" => [
+				[
+					"key" => "domos_id",
+					"compare" => "NOT EXISTS",
+				],
+			],
+		]);
+
+		foreach ($broken_query->posts as $post) {
 			$estates[] = self::fromPost($post, language: $language);
 		}
 
