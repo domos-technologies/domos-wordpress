@@ -33,7 +33,7 @@ class Usage implements Arrayable
 		}
 
 		return new self(
-			main: Type::tryFrom($data['main'] ?? ''),
+			main: Type::tryFrom(value: $data['main'] ?? Type::Default, label: $data['label'] ?? null),
 			all: $all
 		);
 	}
@@ -47,6 +47,7 @@ class Usage implements Arrayable
 		}
 
 		return array_filter([
+			'label' => $this->main?->label,
 			'main' => $this->main?->value,
 			'all' => $all,
 		]);

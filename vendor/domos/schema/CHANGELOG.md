@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+- feat: add usage label for main estate usage
+
 ## 1.2.2
 - fix: Document returned Enum class in toArray method instead of string value
 

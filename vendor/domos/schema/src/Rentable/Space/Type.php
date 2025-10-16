@@ -2,8 +2,11 @@
 
 namespace SchemaImmo\Rentable\Space;
 
+use Throwable;
+
 class Type
 {
+    public const Default = self::OpenSpace;
     protected const Office = 'office';
 	protected const Living = 'living';
 	protected const Production = 'production';
@@ -16,14 +19,20 @@ class Type
 	protected const OutdoorSpace = 'outdoor-space';
 
     public string $value;
+    public ?string $label = null;
 
-    protected function __construct(string $value)
+    protected function __construct(string $value, ?string $label = null)
     {
         $this->value = $value;
+        $this->label = $label;
     }
 
-    public function label()
+    public function label(): string
     {
+        if ($this->label) {
+            return $this->label;
+        }
+
         return match ($this->value) {
 			self::Office => 'Büro',
 			self::Living => 'Wohnen',
@@ -35,20 +44,20 @@ class Type
 			self::Health => 'Gesundheit & soziale Nutzungen',
             self::OpenSpace => 'Freifläche',
             self::OutdoorSpace => 'Außenfläche',
-            default => ucfirst($this->value)
+            default => $this->label ?? ucfirst($this->value)
 		};
     }
 
-    public static function from(string $value): static
+    public static function from(string $value, ?string $label = null): static
     {
-        return new static($value);
+        return new static($value, $label);
     }
 
-    public static function tryFrom(string $value): ?static
+    public static function tryFrom(string $value, ?string $label = null): ?static
     {
 		try {
-			return new static($value);
-		} catch (\Throwable $e) {
+			return new static($value, $label);
+		} catch (Throwable $e) {
 			return null;
 		}
     }

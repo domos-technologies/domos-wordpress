@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.1
+- chore: update version of domos/schema to 1.3.0
+- added: usage label for main estate usage when using PHP SDK
+
 ## 3.3.0
 - added: multi-language support. Configure other languages in the plugin settings.
 - added: optional `language` parameter to multiple `EstatePost` methods
