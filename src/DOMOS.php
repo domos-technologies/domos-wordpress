@@ -162,6 +162,14 @@ class DOMOS
 		return apply_filters('domos_show_slogan_in_search', false);
 	}
 
+	/**
+	 * Should previously trashed posts get reactivated if they are synced and available again?
+	 */
+	public function shouldReuseTrashedPosts(): bool
+	{
+		return apply_filters('domos_reuse_trashed_posts', true);
+	}
+
     public static self $instance;
 
     public static function instance(): self

@@ -248,23 +248,65 @@ class EstatePost
 	 * Look up a post type by external ID.
 	 *
 	 * @param string $external_id The external ID to search for.
+	 * @param string|null $language The language to search for (2 letter code e.g. en, de, ...) or null for default language.
+	 * @param bool $trashed Whether to include trashed posts.
+	 * @param bool $drafts Whether to include draft posts.
 	 * @return WP_Post|null The found post or null if not found.
 	 */
-	public static function find(string $external_id, ?string $language = null): ?self
+	public static function find(string $external_id, ?string $language = null, bool $trashed = false): ?self
 	{
+		$statuses = [
+			'publish',
+			'private',
+			'pending',
+			'draft',
+			'future',
+			'auto-draft'
+		];
+
+		if ($trashed) {
+			$statuses[] = 'trash';
+		}
+
 		// Perform a custom query to search for the post by external ID.
 		$args = [
 			"post_type" => self::POST_TYPE,
 			"posts_per_page" => 1,
 			"meta_key" => "domos_id", // Replace with the actual meta key where you store external IDs.
 			"meta_value" => $external_id,
+			"post_status" => $statuses,
 		];
 
 		$query = new WP_Query($args);
 
 		// Check if a post with the external ID exists.
 		if ($query->have_posts()) {
-			$post = $query->posts[0];
+			// Get the first post that matches the external ID, but prefer non-trashed / non-draft posts.
+			$posts = $query->posts;
+
+			// Sort posts by post status (published first, then drafts, then trashed)
+			usort($posts, function($a, $b) {
+				$status_order = [
+					'publish' => 1,
+					'private' => 2,
+					'pending' => 3,
+					'future' => 4,
+					'auto-draft' => 5,
+					'draft' => 6,
+					'trash' => 7,
+				];
+
+				$a_order = array_key_exists($a->post_status, $status_order) ? $status_order[$a->post_status] : 8;
+				$b_order = array_key_exists($b->post_status, $status_order) ? $status_order[$b->post_status] : 8;
+
+				return $a_order <=> $b_order;
+			});
+
+			$post = $posts[0] ?? null;
+
+			if (!$post) {
+				return null;
+			}
 
 			return self::fromPost($post, language: $language);
 		} else {

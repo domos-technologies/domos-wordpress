@@ -55,10 +55,27 @@ class SyncManager
 		$deleted = 0;
 		$updated = 0;
 
+		// Check if we should re-use trashed posts or create new ones regardless of trashed posts
+		$shouldReactivatePosts = DOMOS::instance()->shouldReuseTrashedPosts();
+
 		foreach ($estates as $estate) {
-			$existingPost = EstatePost::find($estate->id, language: $language);
+			// Check if post already exists, including trashed posts.
+			// We search for trashed posts also, because when hiding/showing an estate, we want to re-use the same post
+			$existingPost = EstatePost::find($estate->id, language: $language, trashed: $shouldReactivatePosts);
 
 			if ($existingPost) {
+				// If a post has been trashed, untrash it instead of re-creating it
+				if ($shouldReactivatePosts && $existingPost->post?->post_status === 'trash') {
+					// Moves the post (and comments and attachments) out of the trash
+					wp_untrash_post($existingPost->post->ID);
+
+					// Makes sure the post is published (untrashed posts are `draft` by default)
+					wp_update_post([
+						'ID' => $existingPost->post->ID,
+						'post_status' => 'publish',
+					]);
+				}
+
 				EstatePost::update($estate->id, $estate, language: $language);
 				$updated++;
 			} else {

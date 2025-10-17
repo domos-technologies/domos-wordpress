@@ -36,6 +36,7 @@
     - [`domos_estate_escape_hatch`](#8-domos_estate_escape_hatch)
     - [`domos_frontend_language`](#9-domos_frontend_language)
     - [`domos_should_fallback_to_default_language_expose`](#10-domos_should_fallback_to_default_language_expose)
+    - [`domos_reuse_trashed_posts`](#11-domos_reuse_trashed_posts)
     - [Vollständiges Beispiel](#vollst%C3%A4ndiges-beispiel)
 7. [Hinweise](#hinweise)
 
@@ -401,6 +402,22 @@ Wenn diese Funktion `false` zurückgibt, wird stattdessen ein 404-Fehler angezei
 **Anwendung:**
 ```php
 add_filter('domos_should_fallback_to_default_language_expose', fn () => false);
+```
+
+### 11. `domos_reuse_trashed_posts`
+
+Legt fest, ob Posts im Papierkorb wiederhergestellt werden sollen, statt neue Posts zu erstellen.
+
+Beim Sync wird geschaut, welche Posts mit einer bestimmten immocore ID in den Metadaten gefunden werden kann.
+Wenn diese Option aktiviert ist, wird auch im Papierkorb gesucht und die Posts wieder veröffentlicht. Dabei bleiben die WordPress IDs gleich.
+
+Sollte ein veröffentlichter Post und ein Post im Papierkorb die gleiche immocore ID nutzen, dann wird der bereits veröffentlichte Post bevorzugt.
+
+**Standardwert:** `true`
+
+**Anwendung:**
+```php
+add_filter('domos_reuse_trashed_posts', fn () => false);
 ```
 
 ### Vollständiges Beispiel

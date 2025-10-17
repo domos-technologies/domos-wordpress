@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1
+- added: sync now reuses trashed posts automatically. This prevents duplicate estates when a post is trashed and re-synced while keeps the Post-IDs the same.
+- added: `domos_reuse_trashed_posts` filter to allow disabling this feature
+
 ## 3.4.0
 - change: sync now uses `wp_trash_post` instead of `wp_delete_post`, allowing estates (and any internal links) to be restored in case of bugs or errors
 
