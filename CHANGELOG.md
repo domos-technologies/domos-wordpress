@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.0
+- change: sync now uses `wp_trash_post` instead of `wp_delete_post`, allowing estates (and any internal links) to be restored in case of bugs or errors
+
 ## 3.3.1
 - chore: update version of domos/schema to 1.3.0
 - added: usage label for main estate usage when using PHP SDK

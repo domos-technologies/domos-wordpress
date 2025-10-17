@@ -74,7 +74,7 @@ class SyncManager
 		$postsToDelete = EstatePost::findUnneeded($ids);
 
 		foreach ($postsToDelete as $post) {
-			wp_delete_post($post->id, true);
+			wp_trash_post($post->id);
 			$deleted++;
 		}
 

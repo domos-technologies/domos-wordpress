@@ -200,7 +200,7 @@ class EstatePost
 			throw new EstateNotFound($external_id);
 		}
 
-		wp_delete_post($post->ID);
+		wp_trash_post($post->ID);
 	}
 
 	/**
