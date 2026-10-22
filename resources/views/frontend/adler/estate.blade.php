@@ -2,22 +2,6 @@
 
 use \Domos\Core\Formatters\AddressFormatter;
 
-$hexToRgb = function ($hex) {
-	$hex = str_replace('#', '', $hex);
-	if (strlen($hex) === 3) {
-		$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-		$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-		$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-	} else {
-		$r = hexdec(substr($hex, 0, 2));
-		$g = hexdec(substr($hex, 2, 2));
-		$b = hexdec(substr($hex, 4, 2));
-	}
-	$rgb = array($r, $g, $b);
-
-	return implode(",", $rgb);
-};
-
 $primaryColors = \Domos\Core\DOMOS::instance()->getPrimaryShades();
 $grayColors = \Domos\Core\DOMOS::instance()->getGrayShades();
 $isUsingDarkMode = \Domos\Core\DOMOS::instance()->isUsingDarkMode();
@@ -42,11 +26,11 @@ global $wp_styles;
 					@endforeach
 
 					@foreach($primaryColors as $shade => $color)
-					--primary-{{ $shade }}: {{ $hexToRgb($color) }};
+					--primary-{{ $shade }}: {{ domos_hex_to_oklch($color) }};
 					@endforeach
 
 					@foreach($grayColors as $shade => $color)
-					--gray-{{ $shade }}: {{ $hexToRgb($color) }};
+					--gray-{{ $shade }}: {{ domos_hex_to_oklch($color) }};
 					@endforeach
 
 					--navbar-height: {{ $defaultNavbarHeight }};
