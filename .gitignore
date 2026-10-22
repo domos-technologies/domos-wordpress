@@ -9,3 +9,6 @@ domos-core.zip
 domos-core-*.zip
 .DS_Store
 .idea
+/.phpunit.cache
+/.phpunit.result.cache
+/plugin

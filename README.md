@@ -499,3 +499,47 @@ Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um
 - Alle Filter sollten vor der Initialisierung des immocore Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
 - Bei der Modifizierung von Farbarrays stellen Sie bitte sicher, dass Sie die gleiche Struktur (50 bis 950) beibehalten, um Fehler zu vermeiden. Für inspiration kannst du dir die [Tailwind-Palette](https://tailwindcss.com/docs/customizing-colors#color-palette-reference) anschauen.
 - Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.0. Ältere PHP-Versionen werden nicht mehr unterstützt.
+
+---
+
+## Development
+
+```bash
+composer install          # installs phpunit too, it is a require-dev dependency
+composer test             # or: bun run test, vendor/bin/phpunit
+composer lint             # pint
+bun run build             # compiles public/css + public/js + dist from resources/
+bun run package           # builds domos-core.zip for distribution
+```
+
+### Tests
+
+The suite in `tests/Unit` runs the plugin's own logic against the WordPress
+doubles in `tests/Support`. There is no WordPress install, database or network
+involved, so it runs anywhere and takes milliseconds. It covers the option
+names, the sync run record, the work list `SyncManager` builds, the language
+handling in `EstatePost::update()`, the sync API routes and the release build
+filter.
+
+Behaviour that only a real WordPress can show - post writes, `WP_Query`, the
+background worker's loopback request, the admin screens - is not faked there.
+Those paths are verified against a live install during development. Both sync
+failures found so far came from that gap, so it is worth re-checking by hand
+after touching the sync:
+
+1. Admin screen "immocore" -> Save on the API settings tab.
+2. "Jetzt synchronisieren" -> progress should move off `0/<total>` within seconds.
+3. Rename an estate in immocore, sync again, and confirm the WordPress title
+   and the city/usages filter options actually changed.
+
+### Release build
+
+`bun run package` rsyncs the repository into `./plugin/domos-core` filtered by
+`.distignore`, runs `composer install --no-dev` in that copy and zips it. The
+`vendor/` directory is deliberately not copied from the working tree: it holds
+phpunit and pint, and its generated autoloader requires their files on every
+request, so a naive copy followed by an exclusion either exposes that tooling
+over HTTP or fatals on load. `tests/Unit/PackagingTest.php` fails if the filter
+list or the build step stops keeping test and development tooling out of the
+archive.
+

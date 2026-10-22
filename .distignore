@@ -1,0 +1,63 @@
+# Files and folders that must never end up in the shipped plugin archive.
+#
+# `bun run package` copies this repository into ./plugin/domos-core, installs the
+# runtime Composer dependencies there and zips the result. That zip is what gets
+# installed on customer sites, so test suites, development-only tooling and
+# repository metadata must be listed here.
+#
+# vendor/ is excluded from the copy and rebuilt with `composer install --no-dev`
+# by `bun run package:vendor`. Copying the working tree's vendor/ is not an
+# option: it contains phpunit and pint, and its generated autoloader requires
+# them on every request, so the plugin would either expose that tooling over
+# HTTP or fatal the moment it is removed. tests/Unit/PackagingTest.php locks
+# this in.
+#
+# Note that resources/ is deliberately left alone: resources/js/cdn holds the
+# Alpine build the admin screen loads, and resources/views holds the Blade
+# templates and the frontend estate template. Removing sources from there would
+# break the plugin on install.
+
+# Test suite and its configuration
+/tests
+/phpunit.xml
+/.phpunit.cache
+/.phpunit.result.cache
+
+# Build tooling and frontend build inputs. Only the compiled output in
+# /public, /dist and /resources/js/cdn is used at runtime.
+/node_modules
+/package.json
+/bun.lockb
+/postcss.config.js
+/tailwind.config.js
+/frontend.tailwind.config.js
+/playwright.config.ts
+/tsconfig.json
+
+# Repository and editor metadata
+/.git
+/.gitignore
+/.github
+/.editorconfig
+/.idea
+/.budfiles
+/.distignore
+
+# Composer metadata and dependencies.
+#
+# vendor/ is NOT copied from this working tree: it contains development tooling
+# (phpunit, pint) and the generated autoloader in it requires those packages on
+# every request, so shipping it as-is either exposes the tooling over HTTP or
+# fatals when it is removed. The release build instead runs
+# `composer install --no-dev` in the staging copy, which produces a vendor tree
+# containing only what the plugin needs at runtime.
+# tests/Unit/PackagingTest.php enforces this.
+/vendor
+
+# composer.json and composer.lock stay in the package: the build step above
+# needs them to resolve the runtime dependencies.
+
+# Release artifacts
+/plugin
+/domos-core.zip
+/domos-core-*.zip
