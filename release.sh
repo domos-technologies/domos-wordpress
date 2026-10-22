@@ -84,16 +84,22 @@ ok "test suite passed"
 bold "3. Assets"
 bun run build
 if [ -n "$(git status --porcelain)" ]; then
-	die "The build changed tracked files. Commit them and re-run:
+	if [ "$DRY_RUN" = true ]; then
+		# A different toolchain can produce slightly different CSS (different
+		# autoprefixer/caniuse data), so this is not a failure on CI.
+		warn "the build changed tracked files here (toolchain differences):"
+		git status --short | sed 's/^/      /'
+	else
+		die "The build changed tracked files. Commit them and re-run:
 $(git status --short)"
+	fi
+else
+	ok "assets rebuilt, nothing left to commit"
 fi
-ok "assets rebuilt, nothing left to commit"
 
 bold "4. Package"
-bun run package:rsync >/dev/null
-bun run package:vendor >/dev/null
-bun run package:prune >/dev/null
-bun run package:zip >/dev/null
+# package:clean first, so nothing from a previous build can survive into the archive.
+bun run package >/dev/null
 [ -f "$ZIP" ] || die "No archive at $ZIP."
 
 php -r '

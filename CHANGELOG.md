@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.5.1
+- security: the public inquiry endpoint no longer discloses internals. A debug `var_dump()` was left in the error path, so an unauthenticated request against a site whose immocore URL is not configured yet received the whole exception object - server file paths, the plugin's class and method names and a full stack trace (229 KB of it).
+- fix: a malformed inquiry body is answered with a 400 instead of a fatal error. The JSON body went to a typed argument without validation, and a JSON array or scalar produced an uncaught `TypeError` with the error message in the response.
+- fix: the admin screen embeds the API URL, token, languages and default language with `@js()`, so a quote in one of them can no longer break out of the page's JavaScript. The HTML escaping was undone by the attribute parser, which left the settings screen unusable for such a site.
+
 ## 3.5.0
 - change: rewritten estate sync engine. Sync now runs as a chunked background queue (one request per estate) with live progress, instead of one giant blocking request per language.
 - added: `GET /wp-json/domos/admin/sync-status` endpoint to poll the current sync run.
