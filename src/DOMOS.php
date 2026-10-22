@@ -4,6 +4,7 @@ namespace Domos\Core;
 
 use Domos\Core\Sync\DomosClient;
 use Domos\Core\Sync\SyncManager;
+use Domos\Core\Sync\SyncQueue;
 
 class DOMOS
 {
@@ -11,6 +12,7 @@ class DOMOS
 
 	public DomosClient $api;
     public SyncManager $sync;
+    public SyncQueue $queue;
     public URLResolver $urlResolver;
 	public Options $options;
 
@@ -18,7 +20,8 @@ class DOMOS
     {
 		$this->options = new Options();
         $this->urlResolver = new URLResolver();
-		$this->sync = new SyncManager();
+		$this->queue = new SyncQueue();
+		$this->sync = new SyncManager($this->queue);
 		$this->api = new DomosClient($this->url());
     }
 

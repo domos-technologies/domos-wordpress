@@ -16,26 +16,21 @@ class ApiServiceProvider implements Provider
             register_rest_route('domos/admin', '/sync', [
                 'methods' => 'POST',
                 'callback' => function (\WP_REST_Request $request) {
-					$language = $request->get_param('language');
-
-					// While we don't validate language codes (to not have to update the plugin every time we add a new language)
-					// we only allow 2-letter language codes.
-					if (!$language || strlen($language) !== 2) {
-						$language = null;
-					} else {
-						$language = strtolower($language);
-					}
-
-					return $this->sync(language: $language);
-				},
+                    return $this->sync();
+                },
                 'permission_callback' => function () {
                     // check if user can manage options
-                    if (current_user_can('manage_options')) {
-			            return true;
-			        }
+                    return current_user_can('manage_options');
+                },
+            ]);
 
-					// Disable for now
-					return false;
+			register_rest_route('domos/admin', '/sync-status', [
+                'methods' => 'GET',
+                'callback' => function () {
+                    return \Domos\Core\Sync\SyncRunStatus::get();
+                },
+                'permission_callback' => function () {
+                    return current_user_can('manage_options');
                 },
             ]);
 
@@ -86,34 +81,30 @@ class ApiServiceProvider implements Provider
     {
     }
 
-	protected function sync(?string $language = null)
+	protected function sync()
 	{
 		try {
 			if (DOMOS::instance()->url() === null) {
 				return new \WP_Error('no_url', 'Es wurde noch keine URL angegeben.');
 			}
 
-            [$created, $updated, $deleted] = DOMOS::instance()->sync->synchronize(language: $language);
+            $result = DOMOS::instance()->sync->start();
 
             return [
-                'created' => $created,
-                'updated' => $updated,
-                'deleted' => $deleted,
+                'started' => !$result['already_running'],
+                'run' => $result['run'],
             ];
         } catch (CouldNotSync $th) {
             $this->logThrowable($th);
 
-            // set status code
             return new \WP_Error($th->errorCode, $th->getMessage());
         } catch (\Throwable $th) {
             $this->logThrowable($th);
 
-            // set status code
             $fileAndLine = "{$th->getFile()}:{$th->getLine()}";
 
             if (WP_DEBUG) {
-                $message = $th->getMessage();
-                $message .= " [$fileAndLine]";
+                $message = $th->getMessage()." [$fileAndLine]";
             } else {
                 $message = 'Ein unbekannter Fehler ist aufgetreten.';
             }

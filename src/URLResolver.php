@@ -100,4 +100,11 @@ class URLResolver
 
 		return "{$domosUrl}/api/sync/v2/estates";
 	}
+
+	public function estateSyncIdsUrl(): string
+	{
+		$domosUrl = DOMOS::instance()->url();
+
+		return "{$domosUrl}/api/sync/v2/estate-ids";
+	}
 }

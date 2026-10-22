@@ -44,6 +44,7 @@ class DomosClient
 			$token = DOMOS::instance()->options->token->get();
 
 			$response = wp_remote_get($endpoint, [
+				"timeout" => 30,
 				"sslverify" => $this->shouldVerifySsl($endpoint),
 				// Add API key to header
 				"headers" => array_filter([
@@ -146,6 +147,53 @@ class DomosClient
 
 				throw new CouldNotSync($error, $code);
 			}
+		} catch (CouldNotSync $e) {
+			throw $e;
+		} catch (\Throwable $th) {
+			throw new CouldNotSync($th->getMessage());
+		}
+	}
+
+	/**
+	 * Fetch the list of public estate IDs for chunked syncing.
+	 *
+	 * @return string[]
+	 * @throws CouldNotSync
+	 */
+	public function estateIds(): array
+	{
+		$this->verifyHost();
+
+		try {
+			$endpoint = DOMOS::instance()->urlResolver->estateSyncIdsUrl();
+			$token = DOMOS::instance()->options->token->get();
+
+			$response = wp_remote_get($endpoint, [
+				"timeout" => 30,
+				"sslverify" => $this->shouldVerifySsl($endpoint),
+				"headers" => array_filter([
+					"Authorization" => $token ? "Bearer {$token}" : null,
+					"Content-Type" => "application/json",
+					"Accept" => "application/json",
+				]),
+			]);
+
+			if (is_wp_error($response)) {
+				throw new \Exception($response->get_error_message());
+			}
+
+			$status = wp_remote_retrieve_response_code($response);
+			$body = wp_remote_retrieve_body($response);
+			$data = json_decode($body, true, 512, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+
+			if ($status === 200) {
+				return array_values(array_filter((array) ($data["data"] ?? []), "is_string"));
+			}
+
+			$error = $data["error"]["message"] ?? "Unknown error";
+			$code = $data["error"]["code"] ?? null;
+
+			throw new CouldNotSync($error, $code);
 		} catch (CouldNotSync $e) {
 			throw $e;
 		} catch (\Throwable $th) {

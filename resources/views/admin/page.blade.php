@@ -21,8 +21,7 @@
         sync: {
         	synchronizing: false,
         	error: null,
-        	execution: null,
-            languages: {},
+        	run: null,
 		},
 
         settings: {
@@ -35,69 +34,62 @@
         		return;
 			}
 
-            // Fetch data from the server, with credentials from the current user.
             this.sync.synchronizing = true;
             this.sync.error = null;
-            this.sync.execution = null;
-            this.sync.languages = {};
-
-            for (const language of [this.default_language, ...this.languages]) {
-                this.sync.languages[language] = false;
-            }
+            this.sync.run = null;
 
             try {
-				for (const language of Object.keys(this.sync.languages)) {
-                    this.sync.languages[language] = true;
+                const response = await fetch('{{ rest_url('domos/admin/sync') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': this.nonce,
+                    },
+                });
 
-					const response = await this.syncLanguage(language);
+                const data = await response.json();
 
-                    if (response instanceof Error) {
-                        this.sync.languages[language] = response.message;
+                if (!response.ok) {
+                    throw new Error(`${data.message} (${data.code})`);
+                }
 
-                        if (!this.sync.error) {
-                            this.sync.error = response.message;
-                        }
-                    } else {
-                        this.sync.execution = response;
-                        this.sync.languages[language] = response;
-                    }
-				}
+                this.sync.run = data.run;
+
+                await this.pollSyncStatus();
             } catch (e) {
                 console.error(e);
-
-                this.sync.error = 'Ein unbekannter Fehler ist aufgetreten.';
+                this.sync.error = e.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
             }
 
             this.sync.synchronizing = false;
         },
 
-        async syncLanguage(language) {
-            try {
-				const response = await fetch(`/wp-json/domos/admin/sync?language=${language}`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-WP-Nonce': this.nonce,
-					},
-				});
+        async pollSyncStatus() {
+            // Poll for up to 60 minutes; the queue survives independently either way.
+            for (let i = 0; i < 1800; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 2000));
 
-                if (!response.ok) {
-                    const data = await response.json();
+                try {
+                    const response = await fetch('{{ rest_url('domos/admin/sync-status') }}', {
+                        headers: { 'X-WP-Nonce': this.nonce },
+                    });
 
-                    return new Error(`${data.message} (${data.code})`);
-                } else {
-                    const {created, deleted, updated} = await response.json();
+                    if (!response.ok) {
+                        continue;
+                    }
 
-                    return {
-                        created,
-                        deleted,
-                        updated,
-                    };
+                    const run = await response.json();
+
+                    if (run) {
+                        this.sync.run = run;
+                    }
+
+                    if (!run || run.status !== 'running') {
+                        return;
+                    }
+                } catch (e) {
+                    // transient network error — keep polling
                 }
-            } catch (e) {
-                console.error(e);
-
-                return new Error('Ein unbekannter Fehler ist aufgetreten.');
             }
         },
 
@@ -110,7 +102,7 @@
 			this.settings.message = null;
 
 			try {
-				const response = await fetch('/wp-json/domos/admin/save-api-settings', {
+				const response = await fetch('{{ rest_url('domos/admin/save-api-settings') }}', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -221,81 +213,50 @@
                             <span x-show="sync.synchronizing">Synchronisiert...</span>
                         </button>
                     </div>
-                    <template x-if="sync.synchronizing">
+                    <template x-if="sync.synchronizing && sync.run">
                         <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 ">
                             <div class="flex justify-between items-center gap-1">
-                                <p class="font-semibold">Synchronisiert...</p>
+                                <p class="font-semibold">Synchronisiert... (<span x-text="sync.run.processed"></span>/<span x-text="sync.run.total"></span>)</p>
                                 <x-icons.loader class="w-6 h-6 animate animate-spin" />
                             </div>
-
-                            <ul>
-                                <template x-for="[language, response] in Object.entries(sync.languages)" :key="language">
-                                    <li>
-                                        <div class="flex items-center gap-2">
-                                            <span x-text="language" class="w-3"></span>
-
-                                            <template x-if="response === true">
-                                                <x-icons.loader class="w-3 h-3 animate animate-spin" />
-                                            </template>
-
-                                            <template x-if="typeof response === 'object' && response">
-                                                <x-icons.check class="w-4 h-4 flex-shrink-0 text-teal-500" />
-                                            </template>
-
-                                            <template x-if="typeof response === 'string'">
-                                                <span class="text-rose-500 font-semibold">
-                                                    x
-                                                </span>
-                                            </template>
-                                        </div>
-                                    </li>
-                                </template>
-                            </ul>
                         </div>
                     </template>
-                    <template x-if="!sync.synchronizing">
-                        <template x-for="[language, response] in Object.entries(sync.languages).filter(([language, response]) => (typeof response === 'object' && response) || (typeof response === 'string'))" :key="language">
-                            <div>
-                                <template x-if="typeof response === 'object' && response">
-                                    <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
-                                        <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert (<span x-text="language"></span>)</p>
+                    <template x-if="sync.run && sync.run.status === 'finished'">
+                        <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
+                            <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert</p>
 
-                                        <div class="grid grid-cols-3">
-                                            <figure>
-                                                <p
-                                                    class="text-xl font-semibold text-teal-700"
-                                                    x-text="response.created"
-                                                ></p>
-                                                <figcaption>Erstellt</figcaption>
-                                            </figure>
+                            <div class="grid grid-cols-3">
+                                <figure>
+                                    <p
+                                        class="text-xl font-semibold text-teal-700"
+                                        x-text="sync.run.created"
+                                    ></p>
+                                    <figcaption>Erstellt</figcaption>
+                                </figure>
 
-                                            <figure>
-                                                <p
-                                                    class="text-xl font-semibold"
-                                                    x-text="response.updated"
-                                                ></p>
-                                                <figcaption>Aktualisiert</figcaption>
-                                            </figure>
+                                <figure>
+                                    <p
+                                        class="text-xl font-semibold"
+                                        x-text="sync.run.updated"
+                                    ></p>
+                                    <figcaption>Aktualisiert</figcaption>
+                                </figure>
 
-                                            <figure>
-                                                <p
-                                                    class="text-xl font-semibold text-rose-700"
-                                                    x-text="response.deleted"
-                                                ></p>
-                                                <figcaption>Gelöscht</figcaption>
-                                            </figure>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <template x-if="typeof response === 'string'">
-                                    <div class="px-6 py-4 space-y-1 bg-rose-200 text-rose-950 border-t border-rose-300">
-                                        <p class="font-semibold mb-2">Fehler bei der Synchronisation (<span x-text="language"></span>)</p>
-                                        <p x-text="response"></p>
-                                    </div>
-                                </template>
+                                <figure>
+                                    <p
+                                        class="text-xl font-semibold text-rose-700"
+                                        x-text="sync.run.deleted"
+                                    ></p>
+                                    <figcaption>Gelöscht</figcaption>
+                                </figure>
                             </div>
-                        </template>
+
+                            <template x-if="sync.run.failures && Object.keys(sync.run.failures).length > 0">
+                                <p class="text-sm text-rose-700 mt-2">
+                                    Fehlgeschlagen: <span x-text="Object.keys(sync.run.failures).length"></span>
+                                </p>
+                            </template>
+                        </div>
                     </template>
 
                     <template x-if="sync.error">

@@ -24,6 +24,8 @@ class DomosCoreServiceProvider implements Provider
 
     public function register()
     {
+		\Domos\Core\DOMOS::instance();
+
 		$app = Application::configure()->boot();
 		$app->useNamespace('Domos\\Core\\');
 		$app['view']->addNamespace('adler', __DIR__ . '/../../resources/views/frontend/adler');
