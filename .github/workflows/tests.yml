@@ -1,0 +1,65 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The plugin's dependencies require PHP 8.2 (roots/acorn 5 and illuminate/support
+  # 12 both declare it), so that is the floor the matrix starts at.
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+
+      # vendor/ is committed for distribution, but installing here means the
+      # suite runs against the versions in composer.lock rather than whatever
+      # happened to be committed.
+      - run: composer install --no-interaction --no-progress --prefer-dist
+
+      - run: composer test
+
+  # Builds the distribution archive exactly the way release.sh does, so a broken
+  # filter list (shipping the test suite or the dev tooling to customers) fails
+  # here instead of at release time.
+  package:
+    name: release build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: bun install --frozen-lockfile
+
+      # Runs preflight, tests, the asset build and the archive verification, but
+      # stops before anything is pushed or published.
+      - name: Release build
+        run: |
+          VERSION="$(php -r 'preg_match("/ \* Version: +([0-9.]+)/", file_get_contents("domos-core.php"), $m); echo $m[1];')"
+          ./release.sh "$VERSION" --dry-run
