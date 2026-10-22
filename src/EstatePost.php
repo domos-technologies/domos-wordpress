@@ -47,7 +47,11 @@ class EstatePost
 		return "estate_data";
 	}
 
-	public static function hasLanguage(string $post_id, string $language): bool
+	/**
+	 * @param int|string $post_id Post ID, the way WordPress hands them out
+	 *                          (`$post->ID` is an int).
+	 */
+	public static function hasLanguage(int|string $post_id, string $language): bool
 	{
 		return !!get_post_meta($post_id, self::getEstateDataMetaKey($language), true);
 	}
@@ -124,6 +128,12 @@ class EstatePost
 	public static function update(string $external_id, Estate $data, ?string $language = null)
 	{
 		$default_language = DOMOS::instance()->options->default_language->get();
+
+		// `null` means "the default language" everywhere else in this class
+		// (see getEstateDataMetaKey), so resolve it before comparing against
+		// the configured default language below.
+		$language ??= $default_language;
+
 		$estate_data = $data->toArray();
 
 		$post = self::find($external_id);
