@@ -498,7 +498,7 @@ Dieses Beispiel zeigt, wie alle verfügbaren Filter verwendet werden können, um
 
 - Alle Filter sollten vor der Initialisierung des immocore Plugins hinzugefügt werden, z.B. in `functions.php` oder einem eigenen Plugin.
 - Bei der Modifizierung von Farbarrays stellen Sie bitte sicher, dass Sie die gleiche Struktur (50 bis 950) beibehalten, um Fehler zu vermeiden. Für inspiration kannst du dir die [Tailwind-Palette](https://tailwindcss.com/docs/customizing-colors#color-palette-reference) anschauen.
-- Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.0. Ältere PHP-Versionen werden nicht mehr unterstützt.
+- Dieses Plugin benötigt eine WordPress-Installation mit mindestens PHP 8.2. Ältere PHP-Versionen werden nicht mehr unterstützt.
 
 ---
 
