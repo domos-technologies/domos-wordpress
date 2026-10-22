@@ -8,7 +8,7 @@
   "scripts": {
     "package": "bun run package:clean && bun run package:rsync && bun run package:vendor && bun run package:prune && bun run package:zip",
     "package:clean": "rm -rf ./plugin ./domos-core.zip",
-    "package:rsync": "rsync -a --exclude-from=.distignore ./ ./plugin/domos-core/",
+    "package:rsync": "mkdir -p ./plugin/domos-core && rsync -a --exclude-from=.distignore ./ ./plugin/domos-core/",
     "package:vendor": "composer install --no-dev --optimize-autoloader --no-interaction --working-dir=./plugin/domos-core",
     "package:prune": "rm -rf ./plugin/domos-core/vendor/bin",
     "package:zip": "cd ./plugin && zip -qr ../domos-core.zip ./domos-core",
