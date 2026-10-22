@@ -1722,6 +1722,9 @@ video {
 .whitespace-nowrap {
 	white-space: nowrap;
 }
+.rounded {
+	border-radius: 0.25rem;
+}
 .rounded-full {
 	border-radius: 9999px;
 }
@@ -1816,10 +1819,6 @@ video {
 .bg-gray-100 {
 	--tw-bg-opacity: 1;
 	background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-.bg-gray-200 {
-	--tw-bg-opacity: 1;
-	background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 .bg-gray-50 {
 	--tw-bg-opacity: 1;
@@ -2100,14 +2099,6 @@ video {
 .text-gray-600 {
 	--tw-text-opacity: 1;
 	color: rgb(75 85 99 / var(--tw-text-opacity));
-}
-.text-gray-700 {
-	--tw-text-opacity: 1;
-	color: rgb(55 65 81 / var(--tw-text-opacity));
-}
-.text-gray-950 {
-	--tw-text-opacity: 1;
-	color: rgb(3 7 18 / var(--tw-text-opacity));
 }
 .text-primary-50 {
 	--tw-text-opacity: 1;
