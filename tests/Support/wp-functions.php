@@ -190,6 +190,26 @@ function admin_url(string $path = ''): string
 	return 'https://example.test/wp-admin/'.ltrim($path, '/');
 }
 
+function current_user_can(string $capability): bool
+{
+	return in_array($capability, WpState::instance()->capabilities, true);
+}
+
+/**
+ * @param array<string, mixed> $args
+ */
+function register_rest_route(string $namespace, string $route, array $args = [], bool $override = false): bool
+{
+	WpState::instance()->restRoutes[] = ['namespace' => $namespace, 'route' => $route, 'args' => $args];
+
+	return true;
+}
+
+function rest_url(string $path = ''): string
+{
+	return 'https://example.test/wp-json/'.ltrim($path, '/');
+}
+
 function wp_generate_uuid4(): string
 {
 	static $counter = 0;

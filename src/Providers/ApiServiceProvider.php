@@ -58,6 +58,20 @@ class ApiServiceProvider implements Provider
                 'callback' => function (\WP_REST_Request $request) {
 					$jsonBody = $request->get_json_params();
 
+					// This route is public, so the body is untrusted input: a missing,
+					// scalar or list payload used to reach a typed array argument and
+					// turn into an uncaught TypeError (a 500 with the error in the
+					// response) instead of a plain bad request. The endpoint expects an
+					// object, so a JSON array - including the empty one a `{}` body
+					// decodes to - is rejected here rather than sent upstream.
+					if (!is_array($jsonBody) || array_is_list($jsonBody)) {
+						return new \WP_Error(
+							'validation',
+							'Es wurde keine gültige Anfrage übermittelt.',
+							['status' => 400]
+						);
+					}
+
 					return $this->passInquiryToDomos($jsonBody);
                 },
                 'permission_callback' => function () {
@@ -205,7 +219,12 @@ class ApiServiceProvider implements Provider
 		} catch (CannotConnectToDomos $exception) {
 			return new \WP_Error('cannot_connect_to_domos', $exception->getMessage());
 		} catch (\Throwable $exception) {
-			var_dump($exception);
+			// Never dump the throwable here: this route is reachable without
+			// authentication, so a var_dump() would hand an anonymous caller the
+			// server's file paths, the plugin's internals and a full stack trace
+			// (it did, whenever the immocore URL was not configured yet).
+			$this->logThrowable($exception);
+
 			return new \WP_Error('unknown', $exception->getMessage());
 		}
 	}

@@ -164,3 +164,34 @@ if (! class_exists('WP_Query')) {
 		}
 	}
 }
+
+if (! class_exists('WP_REST_Request')) {
+	/**
+	 * Enough of a REST request for the route callbacks under test: query and body
+	 * parameters plus the JSON body WordPress would have decoded.
+	 */
+	class WP_REST_Request
+	{
+		/** @var array<string, mixed> */
+		private array $params = [];
+
+		private mixed $json = null;
+
+		/** @param array<string, mixed> $params */
+		public function __construct(array $params = [], mixed $json = null)
+		{
+			$this->params = $params;
+			$this->json = $json;
+		}
+
+		public function get_param(string $key): mixed
+		{
+			return $this->params[$key] ?? null;
+		}
+
+		public function get_json_params(): mixed
+		{
+			return $this->json;
+		}
+	}
+}

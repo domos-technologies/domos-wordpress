@@ -11,10 +11,10 @@
 <div
     class="w-full mx-auto flex flex-col items-center justify-center p-10 space-y-10"
     x-data="{
-        url: '{{ $url }}',
-        token: {{ $token ? "'$token'" : 'null'}},
-        languages: {{ $languages ? json_encode($languages) : '[]' }},
-        default_language: {{ $default_language ? "'$default_language'" : 'de' }},
+        url: @js($url),
+        token: @js($token),
+        languages: @js($languages ?? []),
+        default_language: @js($default_language ?? 'de'),
 
         nonce: '{{ wp_create_nonce('wp_rest') }}',
 

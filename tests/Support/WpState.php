@@ -54,6 +54,12 @@ class WpState
 
 	public int $rewriteRuleFlushes = 0;
 
+	/** @var array<int, array{namespace: string, route: string, args: array<string, mixed>}> */
+	public array $restRoutes = [];
+
+	/** @var array<int, string> Capabilities the current user is granted. */
+	public array $capabilities = [];
+
 	/** @var (callable(bool): void)|null Called on every flush_rewrite_rules(), with the $hard flag. */
 	public $onRewriteRuleFlush = null;
 
@@ -118,6 +124,22 @@ class WpState
 		foreach ($this->actions[$hook] ?? [] as $callback) {
 			$callback();
 		}
+	}
+
+	/**
+	 * Look up a registered REST route, e.g. 'domos/inquiry' + '/submit'.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	public function restRoute(string $namespace, string $route): ?array
+	{
+		foreach ($this->restRoutes as $registered) {
+			if ($registered['namespace'] === $namespace && $registered['route'] === $route) {
+				return $registered['args'];
+			}
+		}
+
+		return null;
 	}
 
 	/** @return array<int, string> */
