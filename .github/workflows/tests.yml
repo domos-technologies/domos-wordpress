@@ -54,7 +54,11 @@ jobs:
         with:
           bun-version: latest
 
-      - run: composer install --no-interaction --no-progress --prefer-dist
+      # No composer install here on purpose: vendor/ is committed and
+      # vendor/composer/installed.php records the commit it was installed from,
+      # so any composer run rewrites that file and leaves the tree dirty - which
+      # the release script's preflight correctly refuses. The archive step
+      # installs its own runtime dependencies in the staging copy.
       - run: bun install --frozen-lockfile
 
       # Runs preflight, tests, the asset build and the archive verification, but

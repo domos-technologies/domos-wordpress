@@ -3,7 +3,7 @@
         'name' => 'domos/wordpress-core',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'eb7279d88153022418cf0f60876c405c711f798c',
+        'reference' => '807b516941cd86b7c9bdce44b981f3a8599ceec2',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -67,7 +67,7 @@
         'domos/wordpress-core' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'eb7279d88153022418cf0f60876c405c711f798c',
+            'reference' => '807b516941cd86b7c9bdce44b981f3a8599ceec2',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

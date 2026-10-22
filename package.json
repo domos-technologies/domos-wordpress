@@ -6,10 +6,6 @@
   "description": "domos",
   "homepage": "https://domos.de",
   "scripts": {
-    "install": "bun run install:remove-old && bun run install:rsync",
-    "install:watch": "fswatch -o ~/Projects/wordpress/domos-core | xargs -n1 -I{} bun run install:rsync",
-    "install:remove-old": "rm -rf ~/Projects/wordpress-new/wp-content/plugins/domos-core",
-    "install:rsync": "rsync -av --exclude='node_modules' --exclude='.git' ~/Projects/wordpress/domos-core ~/Projects/wordpress-new/wp-content/plugins",
     "package": "bun run package:clean && bun run package:rsync && bun run package:vendor && bun run package:prune && bun run package:zip",
     "package:clean": "rm -rf ./plugin ./domos-core.zip",
     "package:rsync": "rsync -a --exclude-from=.distignore ./ ./plugin/domos-core/",
