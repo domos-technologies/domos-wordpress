@@ -1,6 +1,0 @@
-{
-  "editor.js": "js/editor.js",
-  "js/dynamic/node_modules_roots_bud-client_lib_hot_client_js.chunk.js": "js/dynamic/node_modules_roots_bud-client_lib_hot_client_js.chunk.js",
-  "js/dynamic/node_modules_roots_bud-client_lib_hot_components_indicator_index_js.chunk.js": "js/dynamic/node_modules_roots_bud-client_lib_hot_components_indicator_index_js.chunk.js",
-  "js/dynamic/node_modules_roots_bud-client_lib_hot_components_overlay_index_js.chunk.js": "js/dynamic/node_modules_roots_bud-client_lib_hot_components_overlay_index_js.chunk.js"
-}

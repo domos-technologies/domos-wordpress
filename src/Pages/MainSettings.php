@@ -7,7 +7,6 @@ use Domos\Core\Pages\AdminPage\HasMenuItem;
 use Domos\Core\Pages\AdminPage\MenuItem;
 use Domos\Core\Pages\AdminPage\OutputsHTML;
 use Domos\Core\Sync\SyncManager;
-use function Roots\bundle;
 
 class MainSettings implements AdminPage, HasMenuItem
 {
