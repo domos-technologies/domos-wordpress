@@ -44,6 +44,18 @@ final class PackagingTest extends TestCase
 		self::assertContains('/.git', $this->rules);
 	}
 
+	/**
+	 * Repository-level development files are not part of the plugin. AGENTS.md
+	 * documents how to work in the repo and release.sh is the release tooling;
+	 * neither belongs in a customer's plugin directory.
+	 */
+	public function test_distignore_excludes_repository_only_files(): void
+	{
+		foreach (['/AGENTS.md', '/release.sh', '/.github', '/.editorconfig'] as $rule) {
+			self::assertContains($rule, $this->rules, "{$rule} would ship to customers.");
+		}
+	}
+
 	public function test_distignore_excludes_the_working_tree_vendor_directory(): void
 	{
 		self::assertContains(

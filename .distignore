@@ -34,7 +34,12 @@
 /playwright.config.ts
 /tsconfig.json
 
-# Repository and editor metadata
+# Repository and editor metadata. AGENTS.md and release.sh are development
+# documentation and tooling: they were being shipped in the archive, which is
+# untidy and puts a shell script in a customer's web root.
+/AGENTS.md
+/release.sh
+
 /.git
 /.gitignore
 /.github
