@@ -8,7 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Throwable;
 use WP_CLI;
 
@@ -37,10 +41,14 @@ trait Bootable
         if ($this->runningInConsole()) {
             $this->enableHttpsInConsole();
 
-            if (class_exists('WP_CLI')) {
+            if (defined('WP_CLI') && WP_CLI) {
                 $this->bootWpCli();
             } elseif (defined('USING_ACORN_CLI') && USING_ACORN_CLI) {
-                $this->bootConsole();
+                if (did_action('wp_loaded')) {
+                    $this->bootConsole();
+                } else {
+                    add_action('wp_loaded', fn () => $this->bootConsole(), PHP_INT_MAX);
+                }
             }
 
             return $this;
@@ -59,8 +67,8 @@ trait Bootable
         $kernel = $this->make(ConsoleKernelContract::class);
 
         $status = $kernel->handle(
-            $input = new \Symfony\Component\Console\Input\ArgvInput,
-            new \Symfony\Component\Console\Output\ConsoleOutput
+            $input = new ArgvInput,
+            new ConsoleOutput
         );
 
         $kernel->terminate($input, $status);
@@ -77,8 +85,6 @@ trait Bootable
         $kernel->bootstrap();
 
         WP_CLI::add_command('acorn', function ($args, $options) use ($kernel) {
-            $kernel->commands();
-
             $escaped = array_map(fn ($arg) => escapeshellarg($arg), $args);
 
             $command = implode(' ', $escaped);
@@ -100,8 +106,8 @@ trait Bootable
             $command = str_replace('\\', '\\\\', $command);
 
             $status = $kernel->handle(
-                $input = new \Symfony\Component\Console\Input\StringInput($command),
-                new \Symfony\Component\Console\Output\ConsoleOutput
+                $input = new StringInput($command),
+                new ConsoleOutput
             );
 
             $kernel->terminate($input, $status);
@@ -116,7 +122,26 @@ trait Bootable
     protected function bootHttp(): void
     {
         $kernel = $this->make(HttpKernelContract::class);
+
+        $originalGet = $_GET;
+        $originalPost = $_POST;
+        $originalCookie = $_COOKIE;
+        $originalServer = $_SERVER;
+        $originalRequest = $_REQUEST;
+
+        $_GET = stripslashes_deep($_GET);
+        $_POST = stripslashes_deep($_POST);
+        $_COOKIE = stripslashes_deep($_COOKIE);
+        $_SERVER = stripslashes_deep($_SERVER);
+        $_REQUEST = array_merge($_GET, $_POST);
+
         $request = Request::capture();
+
+        $_GET = $originalGet;
+        $_POST = $originalPost;
+        $_COOKIE = $originalCookie;
+        $_SERVER = $originalServer;
+        $_REQUEST = $originalRequest;
 
         $this->instance('request', $request);
 
@@ -124,8 +149,10 @@ trait Bootable
 
         $kernel->bootstrap($request);
 
+        URL::forceRootUrl(home_url());
+
         if ($this->app->handlesWordPressRequests()) {
-            $this->registerWordPressRoute();
+            $this->registerWordPressRoute(ob_get_level());
         }
 
         try {
@@ -152,9 +179,9 @@ trait Bootable
     /**
      * Register a default route for WordPress requests.
      */
-    protected function registerWordPressRoute(): void
+    protected function registerWordPressRoute(int $initialObLevel): void
     {
-        Route::any('{any?}', fn () => tap(response(''), function (Response $response) {
+        Route::any('{any?}', fn () => tap(response(''), function (Response $response) use ($initialObLevel) {
             foreach (headers_list() as $header) {
                 [$header, $value] = preg_split("/:\s{0,1}/", $header, 2);
 
@@ -171,12 +198,13 @@ trait Bootable
 
             $levels = ob_get_level();
 
-            for ($i = 0; $i < $levels; $i++) {
+            for ($i = $initialObLevel; $i < $levels; $i++) {
                 $content .= ob_get_clean();
             }
 
             $response->setContent($content);
         }))
+            ->middleware('wordpress')
             ->where('any', '.*')
             ->name('wordpress');
     }
@@ -185,7 +213,7 @@ trait Bootable
      * Register the request handler.
      */
     protected function registerRequestHandler(
-        \Illuminate\Http\Request $request,
+        Request $request,
         ?\Illuminate\Routing\Route $route
     ): void {
         $path = Str::finish($request->getBaseUrl(), $request->getPathInfo());
@@ -225,8 +253,6 @@ trait Bootable
             return;
         }
 
-        $route->middleware('wordpress');
-
         ob_start();
 
         remove_action('shutdown', 'wp_ob_end_flush_all', 1);
@@ -235,8 +261,21 @@ trait Bootable
 
         $response = $kernel->handle($request);
 
+        $response->headers->remove('cache-control');
+
+        add_action('send_headers', fn () => $response->setStatusCode(http_response_code())->sendHeaders(), 100);
+
         add_action('shutdown', function () use ($kernel, $request, $response) {
-            $response->send();
+            $response->sendContent();
+
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            } elseif (function_exists('litespeed_finish_request')) {
+                litespeed_finish_request();
+            } elseif (! in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+                Response::closeOutputBuffers(0, true);
+                flush();
+            }
 
             $kernel->terminate($request, $response);
 
