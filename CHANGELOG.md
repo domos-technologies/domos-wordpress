@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.2
+- security: upgrades the bundled dependencies, which clears 22 known advisories (5 high, 16 medium, 1 low) in `symfony/http-foundation`, `symfony/mime`, `symfony/routing`, `guzzlehttp/guzzle`, `guzzlehttp/psr7`, `league/flysystem` and `symfony/polyfill-intl-idn`. The plugin ships its dependencies, so those versions were installed on every site. Symfony moves to 7.4 and Guzzle to 7.16; PHP 8.2 remains supported.
+- chore: removes the unused `dist/` directory, which was build output from the old Bud toolchain (including its hot-reload client chunks) and was only referenced by commented-out code.
+
 ## 3.5.1
 - security: the public inquiry endpoint no longer discloses internals. A debug `var_dump()` was left in the error path, so an unauthenticated request against a site whose immocore URL is not configured yet received the whole exception object - server file paths, the plugin's class and method names and a full stack trace (229 KB of it).
 - fix: a malformed inquiry body is answered with a 400 instead of a fatal error. The JSON body went to a typed argument without validation, and a JSON array or scalar produced an uncaught `TypeError` with the error message in the response.
