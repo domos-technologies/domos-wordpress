@@ -210,7 +210,11 @@ class EstatePost
 			throw new EstateNotFound($external_id);
 		}
 
-		wp_trash_post($post->ID);
+		// $post is an EstatePost, which exposes the post id as a string on ->id;
+		// ->ID only exists on the wrapped WP_Post. Reading ->ID here raised an
+		// undefined-property warning and passed null to wp_trash_post(), so the
+		// method silently did nothing.
+		wp_trash_post((int) $post->id);
 	}
 
 	/**

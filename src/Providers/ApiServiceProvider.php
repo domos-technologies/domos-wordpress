@@ -136,16 +136,15 @@ class ApiServiceProvider implements Provider
 			return new \WP_Error('invalid_url', 'Die URL muss mit https:// beginnen.');
 		}
 
+		// sanitize, and drop a trailing slash before validating: pasting
+		// "https://kunde.immocore.app/" is the normal case, and the suffix check
+		// below is anchored to the end of the string.
+		$url = rtrim(filter_var($url, FILTER_SANITIZE_URL), '/');
+
 		// Ends with .domos.test or .domos.app or .immocore.test or .immocore.app
 		if (!preg_match('/\.domos\.(test|app)$/', $url) && !preg_match('/\.immocore\.(test|app)$/', $url)) {
 			return new \WP_Error('invalid_url', 'Die URL muss folgende Endungen haben: .domos.test, .domos.app, .immocore.test, .immocore.app');
 		}
-
-		// sanitize
-		$url = filter_var($url, FILTER_SANITIZE_URL);
-
-		// Remove trailing slash
-		$url = rtrim($url, '/');
 
 		try {
 			$options->url->set($url);

@@ -95,6 +95,7 @@ if (! class_exists('WP_Query')) {
 				'posts_per_page',
 				'meta_key',
 				'meta_value',
+				'meta_query',
 				'fields',
 			]);
 
@@ -127,10 +128,16 @@ if (! class_exists('WP_Query')) {
 			$wantedStatuses = $this->args['post_status'] ?? null;
 			$metaKey = $this->args['meta_key'] ?? null;
 			$metaValue = $this->args['meta_value'] ?? null;
+			$metaQuery = $this->args['meta_query'] ?? null;
 			$idsOnly = ($this->args['fields'] ?? null) === 'ids';
 
 			if (is_string($wantedStatuses)) {
 				$wantedStatuses = [$wantedStatuses];
+			}
+
+			// WordPress defaults a secondary query to published posts.
+			if ($wantedStatuses === null) {
+				$wantedStatuses = ['publish'];
 			}
 
 			$matched = [];
@@ -155,12 +162,48 @@ if (! class_exists('WP_Query')) {
 					}
 				}
 
+				if ($metaQuery !== null && ! $this->matchesMetaQuery($state, $id, $metaQuery)) {
+					continue;
+				}
+
 				$matched[] = $idsOnly ? $id : new WP_Post($post);
 			}
 
 			$limit = (int) ($this->args['posts_per_page'] ?? -1);
 
 			return $limit > 0 ? array_slice($matched, 0, $limit) : $matched;
+		}
+
+		/**
+		 * Supports the two comparison operators the plugin uses to find estates
+		 * that no longer exist upstream.
+		 *
+		 * @param array<int, array<string, mixed>> $metaQuery
+		 */
+		private function matchesMetaQuery(WpState $state, int $id, array $metaQuery): bool
+		{
+			foreach ($metaQuery as $clause) {
+				$key = $clause['key'] ?? null;
+				$compare = strtoupper((string) ($clause['compare'] ?? '='));
+				$actual = $key === null ? null : ($state->postMeta[$id][$key] ?? null);
+
+				// WordPress joins the meta table for these comparisons, so a post
+				// that does not have the key matches neither IN nor NOT IN.
+				$ok = match ($compare) {
+					'NOT IN' => $actual !== null && ! in_array($actual, (array) ($clause['value'] ?? []), true),
+					'EXISTS' => $actual !== null,
+					'NOT EXISTS' => $actual === null,
+					'IN' => $actual !== null && in_array($actual, (array) ($clause['value'] ?? []), true),
+					'=' => $actual == ($clause['value'] ?? null),
+					default => throw new RuntimeException("WP_Query double does not support compare {$compare}."),
+				};
+
+				if (! $ok) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

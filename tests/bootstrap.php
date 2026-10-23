@@ -35,5 +35,21 @@ define('DOMOS_CORE_ROOT_FILE', dirname(__DIR__).'/domos-core.php');
 define('DOMOS_CORE_URL', 'https://example.test/wp-content/plugins/domos-core/');
 define('DOMOS_CORE_SLUG', 'domos-core');
 
+/*
+ * WordPress defines this in wp-includes/default-constants.php, and the plugin
+ * reads it to decide whether an error message may contain internals. The tests
+ * run with the production value, so the "does not leak" assertions mean
+ * something.
+ */
+define('WP_DEBUG', false);
+
+/*
+ * The plugin logs expected conditions through error_log() (a failing import, a
+ * post whose payload is missing). Those are covered by assertions instead, so
+ * send them to /dev/null rather than into the test output. PHP's own warnings
+ * and notices still surface, because PHPUnit reads them from the error handler.
+ */
+ini_set('error_log', '/dev/null');
+
 require __DIR__.'/Support/wp-functions.php';
 require __DIR__.'/Support/wp-classes.php';

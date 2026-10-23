@@ -33,8 +33,10 @@ if (! function_exists('domos_plugin_url')) {
      */
     function domos_plugin_url(?string $path = null): string
     {
-        // ensure $path does not start with a slash
-        $path = ltrim($path, '/');
+        // ensure $path does not start with a slash; the parameter is nullable, so
+        // an omitted path must not reach ltrim() as null (deprecated since PHP 8.1,
+        // a TypeError in PHP 9).
+        $path = ltrim((string) $path, '/');
 
         return DOMOS_CORE_URL.$path;
     }

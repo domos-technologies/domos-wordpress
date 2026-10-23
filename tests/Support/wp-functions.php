@@ -65,8 +65,12 @@ function get_post_meta(int|string $postId, string $key = '', bool $single = fals
 
 	$value = $state->postMeta[$postId][$key] ?? null;
 
+	// WordPress returns an empty string for a single missing value and an empty
+	// array otherwise, not null. Plugin code (and third-party code) relies on
+	// that: `new Foo(get_post_meta(...))` with a string parameter type only
+	// survives because the value is '' rather than null.
 	if ($single) {
-		return $value;
+		return $value ?? '';
 	}
 
 	return $value === null ? [] : [$value];
@@ -103,9 +107,16 @@ function delete_post_meta(int|string $postId, string $key): bool
 /**
  * @param array<string, mixed> $data
  */
-function wp_insert_post(array $data, bool $wpError = false): int
+function wp_insert_post(array $data, bool $wpError = false): mixed
 {
 	$state = WpState::instance();
+
+	// Lets a test make the insert fail, which is the branch EstatePost::create()
+	// has to turn into CouldNotCreatePost.
+	if ($state->insertPostResult !== null) {
+		return $state->insertPostResult;
+	}
+
 	$id = $state->addPost($data);
 
 	$state->insertedPosts[] = $data;
@@ -185,9 +196,81 @@ function is_wp_error(mixed $thing): bool
 	return $thing instanceof WP_Error;
 }
 
+function wp_remote_retrieve_response_code(mixed $response): int
+{
+	return (int) ($response['response']['code'] ?? 0);
+}
+
+function wp_remote_retrieve_body(mixed $response): string
+{
+	return (string) ($response['body'] ?? '');
+}
+
+function wp_remote_retrieve_header(mixed $response, string $header): string
+{
+	return (string) ($response['headers'][$header] ?? '');
+}
+
+function wp_trash_post(int|string $id): mixed
+{
+	$state = WpState::instance();
+	$id = (int) $id;
+	$state->trashedPosts[] = $id;
+
+	if (isset($state->posts[$id])) {
+		$state->posts[$id]['post_status'] = 'trash';
+	}
+
+	return $state->post($id);
+}
+
+function wp_untrash_post(int|string $id): mixed
+{
+	$state = WpState::instance();
+	$id = (int) $id;
+	$state->untrashedPosts[] = $id;
+
+	if (isset($state->posts[$id])) {
+		$state->posts[$id]['post_status'] = 'draft';
+	}
+
+	return $state->post($id);
+}
+
 function admin_url(string $path = ''): string
 {
 	return 'https://example.test/wp-admin/'.ltrim($path, '/');
+}
+
+/**
+ * @param array<int, string> $dependencies
+ */
+function wp_register_script(string $handle, string $src = '', array $dependencies = [], mixed $version = false, bool $inFooter = false): bool
+{
+	WpState::instance()->registeredScripts[$handle] = [
+		'src' => $src, 'dependencies' => $dependencies, 'version' => $version, 'in_footer' => $inFooter,
+	];
+
+	return true;
+}
+
+/**
+ * @param array<int, string> $dependencies
+ */
+function wp_register_style(string $handle, string $src = '', array $dependencies = [], mixed $version = false): bool
+{
+	WpState::instance()->registeredStyles[$handle] = [
+		'src' => $src, 'dependencies' => $dependencies, 'version' => $version,
+	];
+
+	return true;
+}
+
+function wp_localize_script(string $handle, string $objectName, array $data): bool
+{
+	WpState::instance()->localizedScripts[$handle] = ['name' => $objectName, 'data' => $data];
+
+	return true;
 }
 
 function current_user_can(string $capability): bool

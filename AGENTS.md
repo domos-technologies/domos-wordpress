@@ -93,12 +93,32 @@ composer test        # or: vendor/bin/phpunit, bun run test
 Fast (~50ms), no WordPress, no database, no network. `tests/Unit` runs the
 plugin's own logic against the WordPress doubles in `tests/Support`.
 
+- The suite is **strict**: a PHP warning, notice or deprecation raised during a
+  test fails the run (`phpunit.xml`). That is deliberate and it has already
+  earned its keep - two real defects (`wp_trash_post($post->ID)` on an object
+  that only has `->id`, and `ltrim(null)` in a nullable helper) were silent
+  warnings and a deprecation rather than failing assertions.
 - The doubles cover the WordPress functions and classes the plugin touches.
-  Extend them there rather than reaching for a mocking library.
+  Extend them there rather than reaching for a mocking library. They mirror
+  WordPress semantics on purpose, and two of these differences were bugs in the
+  doubles that made the plugin look broken:
+  - `get_post_meta()` returns `''` for a missing single value, not `null`
+  - a `meta_query` with `IN`/`NOT IN` joins the meta table, so a post without
+    the key matches neither (which is exactly why `findUnneeded()` needs its
+    second `NOT EXISTS` query)
+- `Fixtures::useFakeQueue()` swaps the real queue for a double. Use it for
+  anything that goes through a REST route: the real queue stores batches in the
+  options table and needs `$wpdb`.
 - `WP_Query` in the doubles **throws** on query arguments it does not implement,
   on purpose: a double that quietly matches nothing is how you get green tests
   over broken code.
 - `WpState` is the in-memory WordPress; call `WpState::reset()` in `setUp()`.
+- Error handling is covered end to end for the parts that matter: the API
+  client's failure modes (network error, error status with and without a
+  message, a non-JSON body, a malformed id list, missing configuration), the
+  queue's three-attempt retry and failure recording, `reconcile()`'s guards and
+  its trashing, the REST routes' permission checks and error mapping, and the
+  cron handler swallowing failures.
 - `Fixtures::bootDomos()` installs a fresh `DOMOS` singleton per test, which
   matters because the real one caches option values for the process.
 

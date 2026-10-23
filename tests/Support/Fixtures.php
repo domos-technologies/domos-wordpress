@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domos\Core\Tests\Support;
 
 use Domos\Core\DOMOS;
+use Domos\Core\Sync\SyncManager;
 use SchemaImmo\Estate;
 
 /**
@@ -30,6 +31,21 @@ final class Fixtures
 		DOMOS::$instance = $domos;
 
 		return $client;
+	}
+
+	/**
+	 * Point the DOMOS singleton at a queue double, so a test that goes through
+	 * the REST route does not need $wpdb (the real queue talks to the options
+	 * table to store batches).
+	 */
+	public static function useFakeQueue(): FakeSyncQueue
+	{
+		$queue = new FakeSyncQueue;
+		$domos = DOMOS::instance();
+		$domos->queue = $queue;
+		$domos->sync = new SyncManager($queue);
+
+		return $queue;
 	}
 
 	/**

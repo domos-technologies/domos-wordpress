@@ -2,6 +2,9 @@
 
 ## 3.5.2
 - security: upgrades the bundled dependencies, which clears 22 known advisories (5 high, 16 medium, 1 low) in `symfony/http-foundation`, `symfony/mime`, `symfony/routing`, `guzzlehttp/guzzle`, `guzzlehttp/psr7`, `league/flysystem` and `symfony/polyfill-intl-idn`. The plugin ships its dependencies, so those versions were installed on every site. Symfony moves to 7.4 and Guzzle to 7.16; PHP 8.2 remains supported.
+- fix: `EstatePost::delete()` trashes the post it was given. It read `->ID`, which only exists on the wrapped WordPress post, so it passed `null` to `wp_trash_post()` and silently did nothing.
+- fix: the settings screen accepts the URL with a trailing slash. The suffix check is anchored to the end of the string and ran before the trailing slash was trimmed, so pasting `https://kunde.immocore.app/` was rejected as an invalid domain.
+- fix: `domos_plugin_url()` no longer passes `null` to `ltrim()` when called without a path, which is deprecated since PHP 8.1.
 - chore: removes the unused `dist/` directory, which was build output from the old Bud toolchain (including its hot-reload client chunks) and was only referenced by commented-out code.
 
 ## 3.5.1

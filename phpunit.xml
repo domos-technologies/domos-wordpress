@@ -6,6 +6,8 @@
          colors="true"
          failOnRisky="true"
          failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          displayDetailsOnTestsThatTriggerWarnings="true"

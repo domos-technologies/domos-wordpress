@@ -28,6 +28,15 @@ class WpState
 	/** @var array<string, array<int, callable>> */
 	public array $filters = [];
 
+	/** @var array<string, array{s?string, dependencies: array<int, string>, version: mixed, in_footer: bool}> */
+	public array $registeredScripts = [];
+
+	/** @var array<string, array{src: string, dependencies: array<int, string>, version: mixed}> */
+	public array $registeredStyles = [];
+
+	/** @var array<string, array{name: string, data: array<string, mixed>}> */
+	public array $localizedScripts = [];
+
 	/** @var array<string, array<int, callable>> */
 	public array $actions = [];
 
@@ -48,6 +57,15 @@ class WpState
 
 	/** @var array<int, string> */
 	public array $scheduledEvents = [];
+
+	/** @var array<int, int> Post ids passed to wp_trash_post(), in order. */
+	public array $trashedPosts = [];
+
+	/** @var array<int, int> Post ids passed to wp_untrash_post(), in order. */
+	public array $untrashedPosts = [];
+
+	/** @var mixed When set, wp_insert_post() returns this (a WP_Error, say) instead of creating a post. */
+	public mixed $insertPostResult = null;
 
 	/** @var array<int, array{post_type: string, args: array<string, mixed>}> */
 	public array $registeredPostTypes = [];
