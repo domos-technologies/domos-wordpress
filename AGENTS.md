@@ -191,6 +191,15 @@ Conventions worth knowing before you touch things:
   `immocore_default_language` and `immocore_rewrite_version` are current.
   `OptionTest` pins them, because renaming one orphans every customer's stored
   settings.
+- **`composer.json` pins `config.platform.php` to `8.2.0`. Keep it.** Without the
+  pin, composer resolves against whatever PHP you happen to run, and a dependency
+  can quietly resolve to a version that needs a newer one - symfony 8 requires
+  PHP >= 8.4.1, and the generated `vendor/composer/platform_check.php` then
+  refuses to load the plugin at all on the versions we declare support for,
+  which is a fatal on every page load for those customers. It shipped like that
+  once already (caught by CI, before the release went out). After changing
+  dependencies, check that the guard still says `>= 8.2.0`:
+  `grep -oE '>= [0-9.]+' vendor/composer/platform_check.php | head -2`
 - **`vendor/` is committed.** It is a distribution channel (see section 5), so a
   dependency added only to `composer.json` is not actually present for anyone
   installing from a tag. After changing dependencies, commit the vendor changes

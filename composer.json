@@ -57,5 +57,10 @@
             "type": "path",
             "url": "../../schema.immo"
         }
-    ]
+    ],
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        }
+    }
 }
