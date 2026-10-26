@@ -208,7 +208,9 @@ final class RestApiTest extends TestCase
 		$callback = $this->routes['domos/admin/sync']['callback'];
 		Fixtures::useFakeQueue();
 
-		// The probe fails, so SyncManager::start() throws before queueing.
+		// There is work to do, so the probe runs; it fails and SyncManager::start()
+		// throws before queueing.
+		$this->client->estateIdsResponse = ['estate-1'];
 		WpState::instance()->httpResponse = new WP_Error('http_request_failed', 'cURL error 60: certificate has expired');
 
 		$result = $callback(new WP_REST_Request);

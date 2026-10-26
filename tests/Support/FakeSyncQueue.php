@@ -28,6 +28,9 @@ final class FakeSyncQueue extends SyncQueue
 
 	public mixed $dispatchResult = null;
 
+	/** @var mixed When set, dispatch() throws this instead of returning. */
+	public mixed $dispatchThrows = null;
+
 	public function is_active()
 	{
 		return $this->active;
@@ -49,6 +52,10 @@ final class FakeSyncQueue extends SyncQueue
 
 	public function dispatch()
 	{
+		if ($this->dispatchThrows !== null) {
+			throw $this->dispatchThrows;
+		}
+
 		return $this->dispatchResult;
 	}
 

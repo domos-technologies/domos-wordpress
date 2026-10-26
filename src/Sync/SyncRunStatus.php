@@ -34,6 +34,10 @@ class SyncRunStatus
 			'created' => 0,
 			'updated' => 0,
 			'deleted' => 0,
+			// Set when a run was stopped before it built a queue, so the admin
+			// screen can explain why nothing happened instead of showing counters.
+			// See SyncManager::start().
+			'skipped' => null,
 			'failures' => [],
 			'started_at' => time(),
 			'finished_at' => null,
@@ -75,7 +79,12 @@ class SyncRunStatus
 		update_option(self::OPTION, $run, false);
 	}
 
-	public static function finish(int $deleted): void
+	/**
+	 * @param int $deleted Number of posts the reconcile step trashed.
+	 * @param string|null $skipped Reason the run imported nothing, when it was
+	 *                             stopped before the queue was built.
+	 */
+	public static function finish(int $deleted, ?string $skipped = null): void
 	{
 		$run = self::get();
 
@@ -85,6 +94,7 @@ class SyncRunStatus
 
 		$run['status'] = 'finished';
 		$run['deleted'] = $deleted;
+		$run['skipped'] = $skipped;
 		$run['finished_at'] = time();
 
 		update_option(self::OPTION, $run, false);

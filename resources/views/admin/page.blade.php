@@ -29,11 +29,49 @@
         	message: null,
         },
 
-        async syncNow() {
-        	if (this.sync.synchronizing) {
-        		return;
-			}
+        async init() {
+            // A reload must not hide a running sync: the background queue keeps
+            // working regardless of who is watching, so pick the run up again
+            // instead of showing an idle screen.
+            const { run } = await this.fetchSyncStatus();
 
+            if (!run || run.status !== 'running') {
+                return;
+            }
+
+            this.sync.run = run;
+            this.sync.synchronizing = true;
+
+            await this.pollSyncStatus();
+
+            this.sync.synchronizing = false;
+        },
+
+        /**
+         * Returns ok: false when the request itself failed, so the caller can keep
+         * polling instead of treating it as 'no run'.
+         */
+        async fetchSyncStatus() {
+            try {
+                const response = await fetch('{{ rest_url('domos/admin/sync-status') }}', {
+                    headers: { 'X-WP-Nonce': this.nonce },
+                });
+
+                if (!response.ok) {
+                    return { ok: false, run: null };
+                }
+
+                return { ok: true, run: await response.json() };
+            } catch (e) {
+                return { ok: false, run: null };
+            }
+        },
+
+        async syncNow() {
+            // Deliberately no early return for a tracked run: a run whose worker
+            // died keeps reporting as running, and starting a fresh one is the only
+            // way out of that state. A run that really is alive answers
+            // already_running and is picked up again below.
             this.sync.synchronizing = true;
             this.sync.error = null;
             this.sync.run = null;
@@ -69,26 +107,19 @@
             for (let i = 0; i < 1800; i++) {
                 await new Promise((resolve) => setTimeout(resolve, 2000));
 
-                try {
-                    const response = await fetch('{{ rest_url('domos/admin/sync-status') }}', {
-                        headers: { 'X-WP-Nonce': this.nonce },
-                    });
+                const { ok, run } = await this.fetchSyncStatus();
 
-                    if (!response.ok) {
-                        continue;
-                    }
-
-                    const run = await response.json();
-
-                    if (run) {
-                        this.sync.run = run;
-                    }
-
-                    if (!run || run.status !== 'running') {
-                        return;
-                    }
-                } catch (e) {
+                if (!ok) {
                     // transient network error — keep polling
+                    continue;
+                }
+
+                if (run) {
+                    this.sync.run = run;
+                }
+
+                if (!run || run.status !== 'running') {
+                    return;
                 }
             }
         },
@@ -207,13 +238,12 @@
                             type="button"
                             class="inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-gray-950 hover:bg-gray-900 focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 focus:shadow-outline focus:outline-none"
                             @click="syncNow"
-                            :disabled="sync.synchronizing"
                         >
                             <span x-show="!sync.synchronizing">Jetzt synchronisieren</span>
                             <span x-show="sync.synchronizing">Synchronisiert...</span>
                         </button>
                     </div>
-                    <template x-if="sync.synchronizing && sync.run">
+                    <template x-if="sync.synchronizing && sync.run && sync.run.status === 'running'">
                         <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200 ">
                             <div class="flex justify-between items-center gap-1">
                                 <p class="font-semibold">Synchronisiert... (<span x-text="sync.run.processed"></span>/<span x-text="sync.run.total"></span>)</p>
@@ -221,7 +251,7 @@
                             </div>
                         </div>
                     </template>
-                    <template x-if="sync.run && sync.run.status === 'finished'">
+                    <template x-if="sync.run && sync.run.status === 'finished' && !sync.run.skipped">
                         <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
                             <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert</p>
 
@@ -256,6 +286,28 @@
                                     Fehlgeschlagen: <span x-text="Object.keys(sync.run.failures).length"></span>
                                 </p>
                             </template>
+                        </div>
+                    </template>
+
+                    <template x-if="sync.run && sync.run.status === 'finished' && sync.run.skipped">
+                        <div class="px-6 py-4 space-y-1 bg-amber-50 text-amber-950 border-t border-amber-100">
+                            <p class="font-semibold">Nichts zu synchronisieren</p>
+
+                            <p class="text-sm">
+                                In immocore gibt es derzeit keine veröffentlichten Objekte mit Exposé, die
+                                synchronisiert werden könnten.
+                            </p>
+
+                            <p class="text-sm">
+                                Bereits veröffentlichte Objekte bleiben unverändert. Das ist ein
+                                Schutzmechanismus: ein leeres, pausiertes oder falsch konfiguriertes Portfolio
+                                darf die Website nicht leeren.
+                            </p>
+
+                            <p class="text-sm">
+                                Sollen die Objekte von der Website verschwinden, müssen sie manuell in WordPress
+                                gelöscht werden.
+                            </p>
                         </div>
                     </template>
 

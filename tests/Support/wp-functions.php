@@ -273,6 +273,46 @@ function wp_localize_script(string $handle, string $objectName, array $data): bo
 	return true;
 }
 
+/*
+ * WordPress defines these in wp-includes/default-constants.php, and cron code
+ * needs them: the queue library registers its own cron_schedules callback, which
+ * multiplies MINUTE_IN_SECONDS.
+ */
+defined('MINUTE_IN_SECONDS') || define('MINUTE_IN_SECONDS', 60);
+defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS);
+defined('DAY_IN_SECONDS') || define('DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS);
+defined('WEEK_IN_SECONDS') || define('WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS);
+defined('MONTH_IN_SECONDS') || define('MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS);
+defined('YEAR_IN_SECONDS') || define('YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS);
+
+/**
+ * @return array<string, array{interval: int, display: string}>
+ */
+function wp_get_schedules(): array
+{
+	// WordPress merges its own schedules with whatever the filter returns; the
+	// double only has to run the filter, since that is where third-party
+	// callbacks live and where they can throw.
+	return apply_filters('cron_schedules', [
+		'hourly' => ['interval' => 3600, 'display' => 'Once Hourly'],
+		'daily' => ['interval' => 86400, 'display' => 'Once Daily'],
+	]);
+}
+
+/**
+ * Translations are not the subject of these tests; returning the string keeps
+ * WordPress code that translates its labels working.
+ */
+function __(string $text, string $domain = 'default'): string
+{
+	return $text;
+}
+
+function esc_html__(string $text, string $domain = 'default'): string
+{
+	return $text;
+}
+
 function current_user_can(string $capability): bool
 {
 	return in_array($capability, WpState::instance()->capabilities, true);

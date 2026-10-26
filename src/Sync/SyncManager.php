@@ -26,6 +26,26 @@ class SyncManager
 			return ['already_running' => true, 'run' => SyncRunStatus::get()];
 		}
 
+		$ids = DOMOS::instance()->api->estateIds();
+
+		if ($ids === []) {
+			// Nothing to import. Deliberately no queue and no reconcile:
+			//
+			// - wp-background-processing writes no batch for an empty queue, and its
+			//   worker returns before it ever reaches complete(), so a dispatched
+			//   empty run would sit at "Synchronisiert... (0/0)" forever with
+			//   nothing to show for it - the admin screen would poll a run that can
+			//   never progress.
+			// - reconcile() trashes every published estate that is missing from the
+			//   work list. On an empty list that is the whole website, and an empty
+			//   list is exactly what an empty, paused or briefly unreachable
+			//   portfolio returns. Removing those posts stays a manual decision.
+			SyncRunStatus::start([], []);
+			SyncRunStatus::finish(0, skipped: 'no_estates');
+
+			return ['already_running' => false, 'run' => SyncRunStatus::get()];
+		}
+
 		// The queue is drained by a worker we reach through a loopback request
 		// to our own site. wp-background-processing fires that request without
 		// waiting for an answer, and its HTTP layer drops transport errors for
@@ -34,13 +54,24 @@ class SyncManager
 		// and fail loudly instead.
 		$this->assertWorkerIsReachable();
 
-		$ids = DOMOS::instance()->api->estateIds();
+		// The queue schedules its own healthcheck while dispatching, by calling
+		// wp_schedule_event() - which asks wp_get_schedules() for the schedule list,
+		// and that runs every cron_schedules callback registered by other plugins.
+		// A broken one (a callback expecting more arguments than core passes, say)
+		// therefore aborts the whole sync, and without this probe the admin only
+		// sees "Ein unbekannter Fehler ist aufgetreten.".
+		$this->assertCronSchedulesAreUsable();
 
 		// null = default language; must come first so newly created posts
 		// get their title/content from the default language payload.
 		$languages = [null];
 
-		foreach (DOMOS::instance()->options->languages->get() ?? [] as $language) {
+		// (array) because the option is written as an array but read back as
+		// whatever is stored: a value from an older version, a wp-cli edit or a
+		// stray string was silently ignored here, and the foreach raised a PHP
+		// warning - which any site with a strict error handler turns into a thrown
+		// exception, aborting the whole sync with a generic error.
+		foreach ((array) (DOMOS::instance()->options->languages->get() ?? []) as $language) {
 			if (is_string($language) && strlen($language) === 2) {
 				$languages[] = strtolower($language);
 			}
@@ -60,7 +91,20 @@ class SyncManager
 			}
 		}
 
-		$dispatched = $this->queue->save()->dispatch();
+		$dispatched = null;
+
+		try {
+			$dispatched = $this->queue->save()->dispatch();
+		} catch (\Throwable $th) {
+			// A throw rather than a WP_Error means the worker request was never sent
+			// - scheduling the healthcheck happens first. Leaving the queue behind
+			// would make every later attempt report "already running" instead of the
+			// error, so a site could never recover without deleting options by hand.
+			$this->queue->delete_all();
+			SyncRunStatus::clear();
+
+			throw $th;
+		}
 
 		if (is_wp_error($dispatched)) {
 			// The worker is reached through a loopback request to our own
@@ -78,6 +122,26 @@ class SyncManager
 		}
 
 		return ['already_running' => false, 'run' => $run];
+	}
+
+	/**
+	 * The queue's dispatch schedules a cron healthcheck, and WordPress runs every
+	 * third-party cron_schedules callback while doing so. Those callbacks are not
+	 * ours, but a broken one makes the sync fail in a way that is impossible to
+	 * diagnose from the admin screen, so check it early and name the problem.
+	 *
+	 * @throws CouldNotSync
+	 */
+	protected function assertCronSchedulesAreUsable(): void
+	{
+		try {
+			wp_get_schedules();
+		} catch (\Throwable $th) {
+			throw new CouldNotSync(
+				'Der Sync kann nicht eingeplant werden, weil die Cron-Zeitpläne einer anderen Erweiterung fehlerhaft sind: '.$th->getMessage(),
+				'broken_cron_schedules'
+			);
+		}
 	}
 
 	/**

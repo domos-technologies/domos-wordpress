@@ -76,6 +76,31 @@ final class OptionTest extends TestCase
 		self::assertSame('en', WpState::instance()->options['immocore_default_language']);
 	}
 
+	public function test_languages_option_refuses_to_store_anything_but_a_list_of_codes(): void
+	{
+		$option = new LanguagesOption;
+
+		foreach (['en', 42, ['en' => 'de'], [['nested']], [null]] as $invalid) {
+			try {
+				$option->set($invalid);
+				self::fail('Storing '.var_export($invalid, true).' should have been rejected.');
+			} catch (\Exception $e) {
+				self::assertSame('Invalid value', $e->getMessage());
+			}
+		}
+
+		self::assertArrayNotHasKey('immocore_languages', WpState::instance()->options);
+	}
+
+	public function test_languages_option_still_accepts_an_empty_list_and_codes(): void
+	{
+		(new LanguagesOption)->set([]);
+		self::assertSame([], WpState::instance()->options['immocore_languages']);
+
+		(new LanguagesOption)->set(['en', 'fr']);
+		self::assertSame(['en', 'fr'], WpState::instance()->options['immocore_languages']);
+	}
+
 	public function test_url_option_accepts_an_absolute_url(): void
 	{
 		(new UrlOption)->set('https://anh-hausbesitz.immocore.app');
