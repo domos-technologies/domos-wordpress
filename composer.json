@@ -23,6 +23,9 @@
         },
         "files": [
             "src/helpers.php"
+        ],
+        "exclude-from-classmap": [
+            "/vendor/deliciousbrains/wp-background-processing/"
         ]
     },
     "autoload-dev": {

@@ -218,9 +218,18 @@ Conventions worth knowing before you touch things:
   copy and fails if the committed files are stale.
   `tests/Unit/Sync/BackgroundProcessIsolationTest.php` pins the wiring: it fails
   if `SyncQueue` extends the library's global class again, or if the generated
-  tree stops being loaded. The unscoped copy stays in `vendor/` (nothing loads
-  it); a third party calling `class_exists('WP_Background_Process')` can still
-  make our autoloader declare that global, so never rely on it being absent.
+  tree stops being loaded. The package stays in `composer.json` `require`
+  because its code is what runs - just prefixed - and `composer strauss` needs it
+  installed to regenerate that copy. Its unprefixed copy in `vendor/` is kept out
+  of every generated classmap by `autoload.exclude-from-classmap`, so no call to
+  `class_exists('WP_Background_Process')` (the guard other plugins use before
+  loading their own copy) can make our autoloader declare the global one. The
+  rule that follows from this: any dependency declaring symbols in the *global*
+  namespace has to be scoped this way or excluded from the classmap - namespaced
+  ones need nothing. A scan of the runtime tree shows the library was the only
+  unguarded case; everything else is namespaced (Illuminate, Symfony, Guzzle) or
+  guarded (`roots/support` and Illuminate helpers, Symfony polyfills) or
+  version-namespaced on purpose (plugin-update-checker's `Puc\v5p7\`).
 - **`public/` is committed build output - run `bun run build` after touching
   views or CSS.** The admin screen links `public/css/admin.css` and the front-end
   loads `public/js/estate.js`; the release copies the working tree instead of
