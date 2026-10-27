@@ -22,6 +22,22 @@ class SyncManager
 	 */
 	public function start(): array
 	{
+		$stored = SyncRunStatus::get();
+
+		if (SyncRunStatus::is_stalled($stored)) {
+			// Circuit breaker for a run whose worker never came back. Recovery cannot
+			// wait for the queue's healthcheck cron: that is one of the things that is
+			// broken when this happens, and the leftover batch keeps is_active() true,
+			// so every later attempt answered "already running" and the site could not
+			// be synced again without touching options by hand.
+			$lastProgress = (int) ($stored['progress_at'] ?? $stored['started_at'] ?? time());
+
+			error_log('[domos-sync] Clearing stalled run, no progress for '.(time() - $lastProgress).'s');
+
+			$this->queue->abort();
+			SyncRunStatus::clear();
+		}
+
 		if ($this->queue->is_active()) {
 			return ['already_running' => true, 'run' => SyncRunStatus::get()];
 		}
@@ -122,6 +138,32 @@ class SyncManager
 		}
 
 		return ['already_running' => false, 'run' => $run];
+	}
+
+	/**
+	 * Stop the current run on request from the admin screen.
+	 *
+	 * The queue is emptied, so a worker that is mid-request finishes the estate it
+	 * is holding and then finds nothing left to do. The run is recorded as
+	 * cancelled, which also stops reconcile() from trashing the estates that were
+	 * simply not reached yet - they keep their posts, exactly like a run that
+	 * failed part way through.
+	 *
+	 * @return array{cancelled: bool, run: array|null}
+	 */
+	public function cancel(): array
+	{
+		$this->queue->abort();
+
+		SyncRunStatus::cancel();
+
+		$run = SyncRunStatus::get();
+
+		return [
+			// False when there was nothing to cancel (a click after the run ended).
+			'cancelled' => (bool) ($run['cancelled'] ?? false),
+			'run' => $run,
+		];
 	}
 
 	/**

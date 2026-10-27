@@ -285,4 +285,64 @@ final class SyncManagerTest extends TestCase
 		self::assertSame([$published], array_map(fn (EstatePost $post) => (int) $post->id, EstatePost::findUnneeded([])));
 		self::assertSame([], WpState::instance()->trashedPosts);
 	}
+
+	/**
+	 * The circuit breaker: a run whose worker never came back must not block the
+	 * next one. It cannot wait for the queue's healthcheck cron, since a broken
+	 * cron (or a blocked loopback) is one of the reasons a run stalls.
+	 */
+	public function test_start_replaces_a_stalled_run_instead_of_reporting_already_running(): void
+	{
+		$queue = new FakeSyncQueue;
+		$client = Fixtures::bootDomos(['estate-1']);
+
+		$stalled = SyncRunStatus::start(['estate-1'], [null]);
+		$stalled['progress_at'] = time() - SyncRunStatus::STALL_AFTER - 1;
+		update_option(SyncRunStatus::OPTION, $stalled);
+
+		// The dead worker's batch is still there, so the queue reports itself busy.
+		$queue->active = true;
+
+		$result = (new SyncManager($queue))->start();
+
+		self::assertTrue($queue->abortCalled, 'The stalled queue has to be released first.');
+		self::assertFalse($result['already_running']);
+		self::assertSame('running', $result['run']['status']);
+		self::assertNotSame($stalled['id'], $result['run']['id'], 'A new run replaces the dead one.');
+		self::assertSame(1, $result['run']['total']);
+		self::assertSame(1, $client->estateIdsCalls);
+	}
+
+	public function test_start_leaves_a_run_that_is_still_making_progress_alone(): void
+	{
+		$queue = new FakeSyncQueue;
+		Fixtures::bootDomos(['estate-1']);
+
+		$running = SyncRunStatus::start(['estate-1'], [null]);
+		$queue->active = true;
+
+		$result = (new SyncManager($queue))->start();
+
+		self::assertTrue($result['already_running']);
+		self::assertSame($running['id'], $result['run']['id']);
+		self::assertFalse($queue->abortCalled);
+	}
+
+	public function test_cancel_empties_the_queue_and_records_a_cancelled_run(): void
+	{
+		$queue = new FakeSyncQueue;
+		Fixtures::bootDomos(['estate-1']);
+		$queue->dispatchResult = ['response' => ['code' => 200, 'message' => 'OK']];
+
+		$manager = new SyncManager($queue);
+		$manager->start();
+
+		$result = $manager->cancel();
+
+		self::assertTrue($result['cancelled']);
+		self::assertTrue($queue->abortCalled);
+		self::assertSame([], $queue->queued);
+		self::assertSame('finished', $result['run']['status']);
+		self::assertTrue($result['run']['cancelled']);
+	}
 }

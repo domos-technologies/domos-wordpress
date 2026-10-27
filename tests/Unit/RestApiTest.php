@@ -318,4 +318,24 @@ final class RestApiTest extends TestCase
 		self::assertSame([$payload], $this->client->inquireCalls);
 		self::assertSame(['data' => ['received' => true]], $result);
 	}
+
+	public function test_sync_cancel_empties_the_queue_and_reports_a_cancelled_run(): void
+	{
+		$sync = $this->routes['domos/admin/sync']['callback'];
+		$cancel = $this->routes['domos/admin/sync-cancel']['callback'];
+		$queue = Fixtures::useFakeQueue();
+		$this->client->estateIdsResponse = ['estate-1', 'estate-2'];
+
+		$sync(new WP_REST_Request);
+
+		self::assertCount(2, $queue->queued);
+
+		$result = $cancel(new WP_REST_Request);
+
+		self::assertTrue($result['cancelled']);
+		self::assertTrue($queue->abortCalled);
+		self::assertSame([], $queue->queued, 'A cancelled run leaves no work behind.');
+		self::assertSame('finished', $result['run']['status']);
+		self::assertTrue($result['run']['cancelled']);
+	}
 }

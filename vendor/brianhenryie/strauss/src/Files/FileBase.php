@@ -1,0 +1,64 @@
+<?php
+
+namespace BrianHenryIE\Strauss\Files;
+
+use BrianHenryIE\Strauss\Types\DiscoveredSymbol;
+use BrianHenryIE\Strauss\Types\DiscoveredSymbols;
+
+interface FileBase
+{
+
+    public function getSourcePath(): string;
+
+    public function getTargetAbsolutePath(): string;
+
+    public function setTargetAbsolutePath(string $absoluteTargetPath): void;
+
+    public function getVendorRelativePath(): string;
+
+    public function isPhpFile(): bool;
+
+    public function isAutoloaded(): bool;
+    public function setIsAutoloaded(bool $isAutoloaded): void;
+
+    public function setDoCopy(bool $doCopy): void;
+
+    public function isDoCopy(): bool;
+
+    public function setDoPrefix(bool $doPrefix): void;
+
+    public function isDoPrefix(): bool;
+
+    /**
+     * Used to mark files that should be deleted after moving when `delete_vendor_files` is enabled.
+     * Used to mark files that are symlinked as not-to-be-deleted.
+     *
+     * @param bool $doDelete
+     *
+     * @return void
+     */
+    public function setDoDelete(bool $doDelete): void;
+
+    /**
+     * Should file be deleted?
+     *
+     * NB: Also respect the "delete_vendor_files"|"delete_vendor_packages" settings.
+     */
+    public function isDoDelete(): bool;
+
+    public function setDidDelete(bool $didDelete): void;
+
+    public function getDidDelete(): bool;
+
+    public function setDoUpdate(bool $doUpdate): void;
+
+    public function getDoUpdate(): bool;
+
+    public function setDidUpdate(): void;
+
+    public function addDiscoveredSymbol(DiscoveredSymbol $symbol): void;
+
+    public function getDiscoveredSymbols(): DiscoveredSymbols;
+
+    public function getNamespaces(): DiscoveredSymbols;
+}

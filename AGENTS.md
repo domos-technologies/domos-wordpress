@@ -206,6 +206,46 @@ Conventions worth knowing before you touch things:
   too - and expect `composer install` to rewrite `vendor/composer/installed.php`
   with the current commit hash, which is normal, harmless, and must be committed
   before releasing (the release script refuses a dirty tree).
+- **`src/Dependencies/` is a generated, committed copy of the background
+  processing library**, with its classes prefixed (`WP_Background_Process` →
+  `DOMOS_WP_Background_Process`). PHP resolves a parent class to whichever copy
+  was declared first, and WordPress runs every plugin in one process, so another
+  plugin bundling the same library could win the class name while `SyncQueue`
+  extended it. On the customer site that surfaced as `Call to undefined method
+  Domos\Core\Sync\SyncQueue::is_active()` before anything was queued. Run
+  `composer strauss` after touching that dependency (config in
+  `composer.json` → `extra.strauss`) and commit the result; CI regenerates the
+  copy and fails if the committed files are stale.
+  `tests/Unit/Sync/BackgroundProcessIsolationTest.php` pins the wiring: it fails
+  if `SyncQueue` extends the library's global class again, or if the generated
+  tree stops being loaded. The unscoped copy stays in `vendor/` (nothing loads
+  it); a third party calling `class_exists('WP_Background_Process')` can still
+  make our autoloader declare that global, so never rely on it being absent.
+- **`public/` is committed build output - run `bun run build` after touching
+  views or CSS.** The admin screen links `public/css/admin.css` and the front-end
+  loads `public/js/estate.js`; the release copies the working tree instead of
+  building it. Tailwind only emits the classes it finds in
+  `resources/views/**/*.php`, so adding a panel with new utility classes and
+  forgetting the build leaves it unstyled for every customer while looking fine
+  locally if your browser has the old stylesheet cached. The admin stylesheet is
+  linked with `?ver=DOMOS_CORE_VERSION` so an upgrade busts that cache; the
+  version query alone will not help during development, where the version does
+  not change - hard-reload when in doubt. CI runs `bun run build` and fails if
+  `public/` differs.
+- **A stuck sync has three ways out, and the order in `start()` matters.** A run
+  whose `progress_at` is older than `SyncRunStatus::STALL_AFTER` (15 minutes) is
+  cleared *before* the queue is asked whether it is busy: a worker that died
+  leaves its batch behind, and `is_active()` counts that batch as work in
+  progress, so with the check the other way round every later attempt answers
+  "already running" and the site can never be synced again. `SyncQueue::abort()`
+  drops the batch, releases the lock and clears the healthcheck, and
+  `POST /wp-json/domos/admin/sync-cancel` (the "Sync abbrechen" button) gives an
+  administrator the same escape by hand. Cancel marks the run finished on
+  purpose: `reconcile()` trashes estates missing from the work list, and a run
+  that was stopped early must not trash the ones it never reached.
+  `SyncRunStatusTest` and `SyncManagerTest` cover the paths a test can reach;
+  `abort()` itself cannot be unit tested because the library enumerates batches
+  with raw SQL against `$wpdb`, so it is verified on a live site.
 - **Do not run `composer lint` blindly.** Pint's default preset uses four
   spaces, while `.editorconfig` and most of `src/` use tabs, so it would
   reindent the repository. There is no lint job in CI for the same reason.

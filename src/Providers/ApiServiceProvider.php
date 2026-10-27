@@ -27,7 +27,28 @@ class ApiServiceProvider implements Provider
 			register_rest_route('domos/admin', '/sync-status', [
                 'methods' => 'GET',
                 'callback' => function () {
-                    return \Domos\Core\Sync\SyncRunStatus::get();
+                    $run = \Domos\Core\Sync\SyncRunStatus::get();
+
+                    if ($run === null) {
+                        return null;
+                    }
+
+                    // The admin screen decides whether the run is hanging with the
+                    // same threshold the orchestrator uses, so this is the only place
+                    // they can drift apart.
+                    return array_merge($run, [
+                        'stall_after' => \Domos\Core\Sync\SyncRunStatus::STALL_AFTER,
+                    ]);
+                },
+                'permission_callback' => function () {
+                    return current_user_can('manage_options');
+                },
+            ]);
+
+			register_rest_route('domos/admin', '/sync-cancel', [
+                'methods' => 'POST',
+                'callback' => function () {
+                    return DOMOS::instance()->sync->cancel();
                 },
                 'permission_callback' => function () {
                     return current_user_can('manage_options');

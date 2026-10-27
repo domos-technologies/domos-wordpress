@@ -6,7 +6,10 @@
 ?>
 
 <script src="{{ domos_plugin_url('resources/js/cdn/alpine-3.13.8.min.js') }}"></script>
-<link rel="stylesheet" href="{{ domos_plugin_url('public/css/admin.css') }}" />
+{{-- The version query matters: without it a browser keeps serving the previous
+     release's stylesheet after an upgrade, so new classes (a new panel, say)
+     render unstyled until the cache expires. --}}
+<link rel="stylesheet" href="{{ domos_plugin_url('public/css/admin.css') }}?ver={{ DOMOS_CORE_VERSION }}" />
 
 <div
     class="w-full mx-auto flex flex-col items-center justify-center p-10 space-y-10"
@@ -100,6 +103,54 @@
             }
 
             this.sync.synchronizing = false;
+        },
+
+        async cancelSync() {
+            this.sync.error = null;
+
+            try {
+                const response = await fetch('{{ rest_url('domos/admin/sync-cancel') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': this.nonce,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(`${data.message} (${data.code})`);
+                }
+
+                // The run is finished now, so the poll loop ends by itself and the
+                // cancelled panel replaces the progress one.
+                this.sync.run = data.run;
+                this.sync.synchronizing = false;
+            } catch (e) {
+                console.error(e);
+                this.sync.error = e.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+            }
+        },
+
+        /**
+         * Is the run we are watching one that stopped moving? The queue's worker is
+         * reached through a request to the site itself, and its healthcheck cron is
+         * the only thing that could still pick a dead run up - which is part of what
+         * is broken when this happens. The threshold comes from the server
+         * (SyncRunStatus::STALL_AFTER) so both sides agree on when a run is dead.
+         */
+        isStalled() {
+            const run = this.sync.run;
+
+            if (!run || run.status !== 'running') {
+                return false;
+            }
+
+            const lastProgress = (run.progress_at ?? run.started_at ?? 0) * 1000;
+            const threshold = (run.stall_after ?? 900) * 1000;
+
+            return lastProgress > 0 && (Date.now() - lastProgress) > threshold;
         },
 
         async pollSyncStatus() {
@@ -249,9 +300,26 @@
                                 <p class="font-semibold">Synchronisiert... (<span x-text="sync.run.processed"></span>/<span x-text="sync.run.total"></span>)</p>
                                 <x-icons.loader class="w-6 h-6 animate animate-spin" />
                             </div>
+
+                            <template x-if="isStalled()">
+                                <p class="text-sm text-amber-700">
+                                    Seit über 15 Minuten kein Fortschritt. Der Hintergrund-Worker antwortet nicht mehr -
+                                    ein neuer Sync räumt den hängenden Lauf auf, oder er wird hier abgebrochen.
+                                </p>
+                            </template>
+
+                            <div class="pt-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                                    @click="cancelSync"
+                                >
+                                    Sync abbrechen
+                                </button>
+                            </div>
                         </div>
                     </template>
-                    <template x-if="sync.run && sync.run.status === 'finished' && !sync.run.skipped">
+                    <template x-if="sync.run && sync.run.status === 'finished' && !sync.run.skipped && !sync.run.cancelled">
                         <div class="px-6 py-4 space-y-1 bg-teal-50 text-teal-950 border-t border-teal-100">
                             <p class="font-semibold mb-2">Objekte erfolgreich synchronisiert</p>
 
@@ -307,6 +375,22 @@
                             <p class="text-sm">
                                 Sollen die Objekte von der Website verschwinden, müssen sie manuell in WordPress
                                 gelöscht werden.
+                            </p>
+                        </div>
+                    </template>
+
+                    <template x-if="sync.run && sync.run.status === 'finished' && sync.run.cancelled">
+                        <div class="px-6 py-4 space-y-1 bg-gray-100 text-gray-950 border-t border-gray-200">
+                            <p class="font-semibold">Sync abgebrochen</p>
+
+                            <p class="text-sm">
+                                <span x-text="sync.run.processed"></span> von <span x-text="sync.run.total"></span>
+                                Objekten wurden vor dem Abbruch verarbeitet.
+                            </p>
+
+                            <p class="text-sm">
+                                Bereits importierte Objekte bleiben unverändert, es wurde nichts entfernt. Der nächste
+                                Sync arbeitet die restlichen Objekte ab.
                             </p>
                         </div>
                     </template>

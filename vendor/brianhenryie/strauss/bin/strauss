@@ -1,0 +1,70 @@
+#!/usr/bin/env php
+<?php
+call_user_func(function (string $version) {
+    $autoloaders = Phar::running() === ''
+        ? [
+            __DIR__ . '/../../autoload.php',     // Relative path from vendor/brianhenryie/strauss/bin/strauss to vendor/autoload.php.
+            __DIR__ . '/../autoload.php',        // Relative path from vendor/bin/strauss to vendor/autoload.php.
+            __DIR__ . '/../vendor/autoload.php', // Relative path from bin/strauss to vendor/autoload.php.
+            getcwd() . '/vendor/autoload.php',
+            getcwd() . '/../../autoload.php',
+            __DIR__ . '/../../../autoload.php',  // I don't know if these last three are necessary.
+        ]
+        : [
+            __DIR__ . '/../vendor/autoload.php', // Inside phar.
+        ];
+
+    foreach ($autoloaders as $autoloader) {
+        if (!is_file($autoloader)) {
+            continue;
+        }
+
+        // When composer/composer is installed, this prevents the wrong "instance" of the static class being used.
+        $composerVendorDir = dirname($autoloader);
+        require_once $composerVendorDir .  '/composer/InstalledVersions.php';
+
+        /**
+         * PHP Deprecated:  DI\autowire(): Implicitly marking parameter $className as nullable is deprecated, the
+         * explicit nullable type must be used instead in /path/to/vendor/php-di/php-di/src/functions.php on line 48
+         */
+        set_error_handler(function (int $errNo, string $errstr, string $errFile, int $errLine): bool {
+            return true;
+        }, E_DEPRECATED | E_USER_DEPRECATED);
+
+        require $autoloader;
+
+        restore_error_handler();
+
+        break;
+    }
+
+    if (Phar::running()) {
+        spl_autoload_register(
+            function (string $class) {
+                // Inside the `.phar` [Composer's] classes are prefixed.
+                $prefix = 'BrianHenryIE\\Strauss\\';
+                // When the autoloader is being queried for an already-prefixed class, this autoloader cannot help.
+                if (0 === strpos($class, $prefix)) {
+                    return;
+                }
+                $prefixed = $prefix . $class;
+                // If the `.phar` does contain a prefixed class matching the missing classname, add an alias.
+                if (class_exists($prefixed) || interface_exists($prefixed) || trait_exists($prefixed)) {
+                    class_alias($prefixed, $class);
+                }
+            }
+        );
+    }
+
+    if (!class_exists(BrianHenryIE\Strauss\Console\Application::class)) {
+        fwrite(STDERR,
+            'You must set up the project dependencies, run the following commands:' . PHP_EOL
+            . 'curl -s https://getcomposer.org/installer | php' . PHP_EOL
+            . 'php composer.phar install' . PHP_EOL
+        );
+        exit(1);
+    }
+
+    $app = new BrianHenryIE\Strauss\Console\Application($version);
+    $app->run();
+}, '0.31.1');

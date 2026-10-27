@@ -23,6 +23,8 @@ final class FakeSyncQueue extends SyncQueue
 
 	public bool $deleteAllCalled = false;
 
+	public bool $abortCalled = false;
+
 	/** @var array<int, array<string, mixed>> */
 	public array $queued = [];
 
@@ -63,6 +65,17 @@ final class FakeSyncQueue extends SyncQueue
 	{
 		$this->deleteAllCalled = true;
 		$this->queued = [];
+	}
+
+	/**
+	 * Mirrors the real abort(): the queue is emptied and it stops reporting
+	 * itself as active, which is what lets a stalled run be replaced.
+	 */
+	public function abort(): void
+	{
+		$this->abortCalled = true;
+		$this->active = false;
+		$this->delete_all();
 	}
 
 	/** Simulate the transport failing the way a dead loopback would. */

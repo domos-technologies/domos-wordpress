@@ -130,4 +130,100 @@ final class SyncRunStatusTest extends TestCase
 		self::assertNull(SyncRunStatus::get());
 		self::assertArrayNotHasKey(SyncRunStatus::OPTION, WpState::instance()->options);
 	}
+
+	public function test_a_fresh_run_is_not_stalled(): void
+	{
+		self::assertFalse(SyncRunStatus::is_stalled(SyncRunStatus::start(['a'], [null])));
+	}
+
+	public function test_a_run_that_stopped_reporting_progress_is_stalled_until_it_reports_again(): void
+	{
+		SyncRunStatus::start(['a'], [null]);
+		$this->pretendNoProgressFor(SyncRunStatus::STALL_AFTER + 1);
+
+		self::assertTrue(SyncRunStatus::is_stalled(SyncRunStatus::get()));
+
+		SyncRunStatus::record('processed');
+
+		self::assertFalse(SyncRunStatus::is_stalled(SyncRunStatus::get()));
+	}
+
+	public function test_a_failed_estate_counts_as_progress(): void
+	{
+		SyncRunStatus::start(['a'], [null]);
+		$this->pretendNoProgressFor(SyncRunStatus::STALL_AFTER + 1);
+
+		SyncRunStatus::fail('a:default', 'boom');
+
+		// The worker is alive and working through the queue, even when estates fail.
+		self::assertFalse(SyncRunStatus::is_stalled(SyncRunStatus::get()));
+	}
+
+	public function test_a_run_written_before_progress_existed_falls_back_to_its_start_time(): void
+	{
+		$run = SyncRunStatus::start(['a'], [null]);
+		unset($run['progress_at']);
+		$run['started_at'] = time() - SyncRunStatus::STALL_AFTER - 1;
+
+		update_option(SyncRunStatus::OPTION, $run);
+
+		self::assertTrue(SyncRunStatus::is_stalled(SyncRunStatus::get()));
+	}
+
+	public function test_missing_and_finished_runs_are_never_stalled(): void
+	{
+		self::assertFalse(SyncRunStatus::is_stalled(null));
+
+		SyncRunStatus::start(['a'], [null]);
+		SyncRunStatus::finish(0, skipped: 'no_estates');
+
+		self::assertFalse(SyncRunStatus::is_stalled(SyncRunStatus::get()));
+	}
+
+	public function test_cancel_ends_the_run_and_keeps_the_counters(): void
+	{
+		SyncRunStatus::start(['a', 'b'], [null, 'en']);
+		SyncRunStatus::record('updated');
+
+		SyncRunStatus::cancel();
+
+		$run = SyncRunStatus::get();
+
+		self::assertSame('finished', $run['status']);
+		self::assertTrue($run['cancelled']);
+		self::assertNotNull($run['finished_at']);
+		self::assertSame(1, $run['processed'], 'What ran before the cancel stays visible.');
+		self::assertSame(1, $run['updated']);
+	}
+
+	public function test_cancel_without_a_run_does_nothing(): void
+	{
+		SyncRunStatus::cancel();
+
+		self::assertNull(SyncRunStatus::get());
+	}
+
+	public function test_cancel_leaves_a_run_that_already_ended_alone(): void
+	{
+		SyncRunStatus::start(['a'], [null]);
+		SyncRunStatus::finish(1);
+
+		$before = SyncRunStatus::get();
+
+		SyncRunStatus::cancel();
+
+		// A click after the run finished must not turn a completed sync into a
+		// cancelled one.
+		self::assertSame($before, SyncRunStatus::get());
+		self::assertFalse(SyncRunStatus::get()['cancelled']);
+	}
+
+	/** Move the run's last progress into the past, as a dead worker would leave it. */
+	private function pretendNoProgressFor(int $seconds): void
+	{
+		$run = SyncRunStatus::get();
+		$run['progress_at'] = time() - $seconds;
+
+		update_option(SyncRunStatus::OPTION, $run);
+	}
 }

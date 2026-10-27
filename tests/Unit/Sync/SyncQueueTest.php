@@ -195,4 +195,5 @@ final class SyncQueueTest extends TestCase
 
 		return $run[$key];
 	}
+
 }

@@ -18,6 +18,10 @@ if (! defined('ABSPATH') && PHP_SAPI !== 'cli') {
 
 require __DIR__.'/../vendor/autoload.php';
 
+// The prefixed background processing classes, the same files the plugin loads
+// in domos-core.php.
+require __DIR__.'/../src/Dependencies/autoload.php';
+
 /*
  * domos-core.php defines these, but it needs WordPress. Read the version out of
  * it rather than hardcoding a second copy, and fail loudly if the file stops

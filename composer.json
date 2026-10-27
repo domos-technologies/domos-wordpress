@@ -42,13 +42,41 @@
     "scripts": {
         "lint": "pint",
         "test": "phpunit",
+        "strauss": "vendor/bin/strauss",
         "post-autoload-dump": [
             "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
         ]
     },
     "require-dev": {
         "laravel/pint": "^1.2",
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5",
+        "brianhenryie/strauss": "^0.31"
+    },
+    "extra": {
+        "strauss": {
+            "target_directory": "src/Dependencies",
+            "namespace_prefix": "Domos\\Core\\Dependencies\\",
+            "classmap_prefix": "DOMOS_",
+            "packages": [
+                "deliciousbrains/wp-background-processing"
+            ],
+            "delete_vendor_packages": false,
+            "update_call_sites": false,
+            "exclude_from_copy": {
+                "file_patterns": [
+                    "/\\.circleci/",
+                    "/\\.github/",
+                    "/\\.phpcs\\.xml/",
+                    "/bin/",
+                    "/tests/",
+                    "/Makefile/",
+                    "/phpunit\\.xml/",
+                    "/composer\\.lock/",
+                    "/wp-background-processing\\.php/",
+                    "/\\.gitignore/"
+                ]
+            }
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
